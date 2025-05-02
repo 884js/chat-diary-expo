@@ -7,7 +7,6 @@ import { ChatMessages } from '../components/ChatMessages';
 export const ChatScreen = () => {
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom();
 
-
   if (isLoadingRoom) {
     return (
       <View className="flex-1 justify-center items-center">

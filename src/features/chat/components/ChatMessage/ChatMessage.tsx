@@ -1,5 +1,6 @@
+import { Text } from '@/components/Text';
 import { useState } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 import { MessageContextMenu } from './MessageContextMenu';
 import { MessageReaction } from './MessageReaction';
 import { ReactionButton } from './ReactionButton';

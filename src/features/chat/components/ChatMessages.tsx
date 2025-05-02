@@ -1,9 +1,9 @@
 import { formatDate, isSameDay, parseISO } from '@/lib/date-fns';
+import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
+import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import React, { useEffect, useMemo } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { ChatMessage } from './ChatMessage';
-import { ChatRoom } from '@/lib/supabase/api/ChatRoom';
-import { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 
 type Props = {
   chatRoom: ChatRoom;
