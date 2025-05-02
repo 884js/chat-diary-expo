@@ -1,5 +1,5 @@
-import { Feather } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native";
+import { Feather } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 
 // ReactionButton コンポーネント
 export function ReactionButton({ onClick }: { onClick: () => void }) {

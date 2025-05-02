@@ -1,15 +1,9 @@
-import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
-import {
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { ReactionButton } from './ReactionButton';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { MessageContextMenu } from './MessageContextMenu';
-import { ReactionPicker } from './ReactionPicker';
 import { MessageReaction } from './MessageReaction';
+import { ReactionButton } from './ReactionButton';
+import { ReactionPicker } from './ReactionPicker';
 
 // リアクション型定義
 type Reaction = {
@@ -68,9 +62,14 @@ export function ChatMessage({
   // 現在のユーザーID（仮の値、実際には認証コンテキストなどから取得）
   const currentUserId = 'user1';
 
-  // メニュー表示切り替え
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  // コンテキストメニューを開く
+  const handleLongPress = () => {
+    setIsMenuOpen(true);
+  };
+
+  // コンテキストメニューを閉じる
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
   const handleDelete = async () => {
@@ -156,15 +155,16 @@ export function ChatMessage({
 
       {/* メッセージコンテンツ */}
       <View className="flex-1 min-w-0 relative">
-        {/* メッセージ内容とメニューボタンを横に並べる */}
-        <View className="flex-row items-start">
-          {/* メッセージ内容部分 */}
-          <View className="flex-1 text-[#222]">
+        {/* メッセージ内容部分 */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onLongPress={handleLongPress}
+          delayLongPress={300}
+        >
+          <View className="flex-1 text-[#222] bg-white p-3 rounded-lg shadow-sm">
             {replyTo && (
               <View>
-                <Text className="text-xs text-gray-500">
-                  {replyTo.content}
-                </Text>
+                <Text className="text-xs text-gray-500">{replyTo.content}</Text>
                 <View className="h-px bg-gray-200 my-2" />
               </View>
             )}
@@ -208,29 +208,20 @@ export function ChatMessage({
 
             {/* タイムスタンプ */}
             <View className="flex-row justify-end">
-              <Text className="text-xs text-gray-500">{timestamp}</Text>
+              <Text className="text-xs text-gray-500 mt-1">{timestamp}</Text>
             </View>
           </View>
-
-          {/* 三点リーダーメニューボタン */}
-          <TouchableOpacity
-            onPress={toggleMenu}
-            className="p-1.5 ml-2 rounded-full"
-            accessibilityLabel="メッセージメニューを開く"
-          >
-            <Feather name="more-vertical" size={16} color="#6b7280" />
-          </TouchableOpacity>
-        </View>
-
-        {/* コンテキストメニュー */}
-        {isMenuOpen && (
-          <MessageContextMenu
-            onEdit={handleEdit}
-            onReply={handleReply}
-            onDelete={handleDelete}
-          />
-        )}
+        </TouchableOpacity>
       </View>
+
+      {/* コンテキストメニュー */}
+      <MessageContextMenu
+        isVisible={isMenuOpen}
+        onEdit={handleEdit}
+        onReply={handleReply}
+        onDelete={handleDelete}
+        onClose={closeMenu}
+      />
 
       {/* リアクションピッカーモーダル */}
       <ReactionPicker

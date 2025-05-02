@@ -1,4 +1,4 @@
-import { Modal, Pressable, View, TouchableOpacity, Text } from "react-native";
+import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 
 // スタンプの種類
 const REACTION_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🙏', '🎉', '🔥'];

@@ -1,10 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '../databaseTypes';
 import { ChatRoomApi } from './ChatRoom';
 import { ChatRoomMessageApi } from './ChatRoomMessage';
 import { CalendarApi } from './calendar';
 import { ChatSettingApi } from './chatSetting';
 import { UserApi } from './user';
-import { Database } from '../databaseTypes';
 
 export class SupabaseApi {
   private readonly supabase: SupabaseClient<Database>;

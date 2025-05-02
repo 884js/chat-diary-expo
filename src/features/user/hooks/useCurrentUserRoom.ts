@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useQuery } from '@tanstack/react-query';
 
 export const useCurrentUserRoom = () => {
   const { api, supabase } = useSupabase();

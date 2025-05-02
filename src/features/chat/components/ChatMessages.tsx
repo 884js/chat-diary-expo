@@ -2,24 +2,8 @@ import { formatDate, isSameDay, parseISO } from '@/lib/date-fns';
 import React, { useEffect, useMemo } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { ChatMessage } from './ChatMessage';
-
-// 型定義（簡略化）
-type ChatRoom = {
-  owner: {
-    id: string;
-    display_name: string;
-    avatar_url: string;
-  };
-};
-
-type ChatRoomMessage = {
-  id: string;
-  content: string;
-  sender: 'user' | 'ai';
-  created_at: string;
-  reply_to: any | null;
-  image_path: string | null;
-};
+import { ChatRoom } from '@/lib/supabase/api/ChatRoom';
+import { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 
 type Props = {
   chatRoom: ChatRoom;
@@ -48,11 +32,10 @@ export const ChatMessages = ({
   messages,
   isOwner,
 }: Props) => {
-  // useAutoScrollBottomの代わりに簡易実装
   const scrollViewRef = React.useRef<ScrollView>(null);
 
   const handleScrollToBottom = () => {
-    scrollViewRef.current?.scrollToEnd({ animated: true });
+    scrollViewRef.current?.scrollToEnd({ animated: false });
   };
 
   // メッセージを日付とインデックスでグループ化
