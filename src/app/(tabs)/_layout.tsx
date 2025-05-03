@@ -1,11 +1,9 @@
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import type React from 'react';
 
-// カスタムタブバーアイコンコンポーネント
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof Feather>['name'];
   color: string;
@@ -21,11 +19,14 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: useClientOnlyValue(false, true),
-        tabBarStyle: {
-          backgroundColor: 'white',
-          borderTopColor: '#e5e7eb',
-        },
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+        tabBarStyle: [
+          {
+            backgroundColor: 'white',
+            borderTopColor: '#e5e7eb',
+          },
+        ],
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         tabBarInactiveTintColor: '#6b7280',
         tabBarLabelStyle: {
@@ -36,8 +37,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          title: 'ホーム',
           headerShown: false,
-          title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />

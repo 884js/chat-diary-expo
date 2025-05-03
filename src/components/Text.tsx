@@ -1,10 +1,10 @@
-import { Text as DefaultText, type TextProps } from './Themed';
+import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 
-export function Text(props: TextProps) {
+export function Text(props: RNTextProps) {
+  const { style, children, ...rest } = props;
   return (
-    <DefaultText
-      {...props}
-      style={[props.style, { fontFamily: 'MPlus1-Regular' }]}
-    />
+    <RNText style={[{ fontFamily: 'MPlus1-Regular' }, style]} {...rest}>
+      {children}
+    </RNText>
   );
 }

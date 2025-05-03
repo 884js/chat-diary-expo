@@ -1,13 +1,10 @@
 import { useSupabase } from '@/hooks/useSupabase';
 import { useQuery } from '@tanstack/react-query';
+import { useCurrentUser } from './useCurrentUser';
 
 export const useCurrentUserRoom = () => {
   const { api, supabase } = useSupabase();
-  // const { currentUser } = useCurrentUser();
-
-  const currentUser = {
-    id: '3096ab0c-a88d-4126-b297-3ad80870aed4',
-  };
+  const { currentUser } = useCurrentUser();
 
   const {
     data: chatRoom,

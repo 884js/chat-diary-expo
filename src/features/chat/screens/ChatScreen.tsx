@@ -1,7 +1,13 @@
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
-import { ActivityIndicator, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  View,
+} from 'react-native';
 import { Text } from 'react-native';
 import { ChatHeader } from '../components/ChatHeader';
+import { ChatInput } from '../components/ChatInput';
 import { ChatMessages } from '../components/ChatMessages';
 
 export const ChatScreen = () => {
@@ -20,15 +26,26 @@ export const ChatScreen = () => {
   }
 
   return (
-    <View className="flex-1">
-      <ChatHeader />
-      <ChatMessages
-        chatRoom={chatRoom}
-        isLoading={false}
-        messages={chatRoom.chat_room_messages}
-        isChatEnded={false}
-        isOwner={true}
-      />
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={60}
+    >
+      <View className="flex-1">
+        <ChatHeader />
+        <ChatMessages
+          chatRoom={chatRoom}
+          isLoading={false}
+          messages={chatRoom.chat_room_messages}
+          isChatEnded={false}
+          isOwner={true}
+        />
+        <ChatInput
+          onSend={() => {}}
+          isDisabled={false}
+          onHeightChange={() => {}}
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
 };

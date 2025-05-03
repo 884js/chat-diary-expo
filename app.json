@@ -4,7 +4,6 @@
     "slug": "chat-diary-expo-v2",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "chatdiaryexpov2",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.chat-diary-expo-v2"
     },
     "android": {
       "adaptiveIcon": {

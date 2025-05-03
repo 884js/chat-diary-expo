@@ -1,4 +1,5 @@
-import { FiX } from 'react-icons/fi';
+import { Feather } from '@expo/vector-icons';
+import { Image, TouchableOpacity, View } from 'react-native';
 
 type ImagePreviewProps = {
   imageUrl: string | null;
@@ -9,22 +10,22 @@ export const ImagePreview = ({ imageUrl, onCancel }: ImagePreviewProps) => {
   if (!imageUrl) return null;
 
   return (
-    <div className="max-w-4xl mx-auto mb-2 relative">
-      <div className="relative h-32 overflow-hidden rounded-md border border-slate-300 w-fit">
-        <img
-          src={imageUrl}
-          alt="プレビュー"
-          className="h-full w-auto object-contain"
+    <View className="w-full mb-2">
+      <View className="relative h-32 rounded-md border border-slate-300 overflow-hidden">
+        <Image
+          source={{ uri: imageUrl }}
+          className="h-full w-full"
+          resizeMode="contain"
+          accessibilityLabel="プレビュー画像"
         />
-        <button
-          type="button"
-          onClick={onCancel}
-          className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
-          aria-label="画像選択をキャンセル"
+        <TouchableOpacity
+          onPress={onCancel}
+          className="absolute right-2 top-2 rounded-full bg-black/50 p-1"
+          accessibilityLabel="画像選択をキャンセル"
         >
-          <FiX size={16} />
-        </button>
-      </div>
-    </div>
+          <Feather name="x" size={16} color="#ffffff" />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };

@@ -48,7 +48,7 @@ export const ChatMessages = ({
 
     let previousDate: Date | null = null;
     // 各メッセージを処理
-    messages.forEach((msg) => {
+    for (const msg of messages) {
       const messageDate = msg.created_at ? parseISO(msg.created_at) : null;
       let showDateDivider = false;
 
@@ -67,12 +67,13 @@ export const ChatMessages = ({
         showDateDivider,
         date: messageDate,
       });
-    });
+    }
 
     return result;
   }, [messages]);
 
   // メッセージが変更されたら一番下にスクロール
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     handleScrollToBottom();
   }, [messages.length]);

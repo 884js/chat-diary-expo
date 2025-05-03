@@ -1,13 +1,13 @@
-import { FiCamera, FiImage, FiPaperclip } from 'react-icons/fi';
+import { Feather } from '@expo/vector-icons';
+import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 
 type AttachMenuProps = {
   isOpen: boolean;
   isDisabled: boolean;
   isUploading: boolean;
-  toggleMenu: (e: React.MouseEvent) => void;
+  toggleMenu: () => void;
   onSelectImage: () => void;
   onSelectCamera: () => void;
-  menuRef: React.RefObject<HTMLDivElement>;
 };
 
 export const AttachMenu = ({
@@ -17,7 +17,6 @@ export const AttachMenu = ({
   toggleMenu,
   onSelectImage,
   onSelectCamera,
-  menuRef,
 }: AttachMenuProps) => {
   // 添付メニューから選択時の処理
   const handleAttachOption = (callback: () => void) => {
@@ -27,44 +26,62 @@ export const AttachMenu = ({
   if (isDisabled) return null;
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={toggleMenu}
-        disabled={isUploading}
-        className={`rounded-full w-10 h-10 flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-colors ${
-          isUploading ? 'opacity-50 cursor-not-allowed' : ''
-        } ${isOpen ? 'bg-slate-200' : ''}`}
-        aria-label="ファイルを添付"
-        title="ファイルを添付"
-      >
-        <FiPaperclip size={20} className="text-slate-600" />
-      </button>
-
+    <View>
       {/* 添付オプションメニュー */}
       {isOpen && (
-        <div
-          ref={menuRef}
-          className="absolute left-0 bottom-12 bg-white shadow-lg rounded-md py-1 min-w-[120px] border border-slate-200 z-10"
+        <Modal
+          visible={isOpen}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={toggleMenu}
         >
-          <button
-            type="button"
-            onClick={() => handleAttachOption(onSelectImage)}
-            className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center"
+          <Pressable
+            className="flex-1 bg-black/30 justify-end"
+            onPress={toggleMenu}
           >
-            <FiImage className="mr-2" size={16} />
-            <span>写真</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => handleAttachOption(onSelectCamera)}
-            className="md:hidden w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center"
-          >
-            <FiCamera className="mr-2" size={16} />
-            <span>カメラ</span>
-          </button>
-        </div>
+            <View className="bg-white rounded-t-xl p-4 mb-4 mx-4">
+              <Text className="text-lg font-medium text-gray-700 mb-3 text-center">
+                添付ファイル
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => handleAttachOption(onSelectImage)}
+                className="flex-row items-center py-3 border-b border-gray-100"
+              >
+                <Feather
+                  name="image"
+                  size={22}
+                  color="#4b5563"
+                  className="mr-3"
+                />
+                <Text className="text-base text-gray-700">写真を選択</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleAttachOption(onSelectCamera)}
+                className="flex-row items-center py-3"
+              >
+                <Feather
+                  name="camera"
+                  size={22}
+                  color="#4b5563"
+                  className="mr-3"
+                />
+                <Text className="text-base text-gray-700">カメラを起動</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={toggleMenu}
+                className="mt-3 py-3 bg-gray-100 rounded-lg items-center"
+              >
+                <Text className="text-base font-medium text-gray-500">
+                  キャンセル
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Modal>
       )}
-    </div>
+    </View>
   );
 };
