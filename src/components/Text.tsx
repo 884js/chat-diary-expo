@@ -1,5 +1,7 @@
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 
+export type TextProps = RNTextProps;
+
 export function Text(props: RNTextProps) {
   const { style, children, ...rest } = props;
   return (

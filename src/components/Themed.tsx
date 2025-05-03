@@ -3,7 +3,8 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, View as DefaultView } from 'react-native';
+import { View as DefaultView } from 'react-native';
+import { Text as DefaultText, type TextProps as DefaultTextProps } from '@/components/Text';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
@@ -13,7 +14,7 @@ type ThemeProps = {
   darkColor?: string;
 };
 
-export type TextProps = ThemeProps & DefaultText['props'];
+export type TextProps = ThemeProps & DefaultTextProps;
 export type ViewProps = ThemeProps & DefaultView['props'];
 
 export function useThemeColor(
