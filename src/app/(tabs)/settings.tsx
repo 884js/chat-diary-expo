@@ -1,4 +1,5 @@
-import { Text, View } from '@/components/Themed';
+import { View } from '@/components/ThemedView';
+import { Text } from "@/components/ThemedText";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function WindScreen() {
