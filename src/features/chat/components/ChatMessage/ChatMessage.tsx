@@ -162,7 +162,7 @@ export function ChatMessage({
           onLongPress={handleLongPress}
           delayLongPress={300}
         >
-          <View className="flex-1 text-[#222] bg-white p-3 rounded-lg shadow-sm">
+          <View className="flex-1 text-[#222] p-3">
             {replyTo && (
               <View>
                 <Text className="text-xs text-gray-500">{replyTo.content}</Text>
