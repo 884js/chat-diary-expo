@@ -1,4 +1,3 @@
-import { useKeyboard } from '@/hooks/useKeyboard';
 import { Feather } from '@expo/vector-icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -31,13 +30,11 @@ interface ChatInputProps {
     message: string;
   }) => Promise<void>;
   isDisabled: boolean;
-  onHeightChange?: (height: number) => void;
 }
 
 export function ChatInput({
   onSend,
   isDisabled,
-  onHeightChange,
 }: ChatInputProps) {
   const { selectedMessage, mode, replyMessageRef } = useMessageAction();
   const [message, setMessage] = useState('');
@@ -49,7 +46,6 @@ export function ChatInput({
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const { isKeyboardVisible } = useKeyboard();
 
   // 選択されたメッセージがある場合
   useEffect(() => {

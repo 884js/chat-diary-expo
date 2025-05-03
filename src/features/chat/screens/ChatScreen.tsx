@@ -9,9 +9,16 @@ import { Text } from 'react-native';
 import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
 import { ChatMessages } from '../components/ChatMessages';
+import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
+import { useMessageAction } from '../contexts/MessageActionContext';
+import { useSupabase } from '@/hooks/useSupabase';
 
 export const ChatScreen = () => {
-  const { chatRoom, isLoadingRoom } = useCurrentUserRoom();
+  const { api } = useSupabase();
+  const { chatRoom, isLoadingRoom, refetchRoom } = useCurrentUserRoom();
+  const { currentUser } = useCurrentUser();
+  const isOwner = currentUser ? currentUser.id === chatRoom?.user_id : false;
+  const { mode, handleSaveEdit, handleSendReplyMessage } = useMessageAction();
 
   if (isLoadingRoom) {
     return (
@@ -25,9 +32,48 @@ export const ChatScreen = () => {
     return <Text>チャットルームが見つかりません</Text>;
   }
 
+  // メッセージ送信処理
+  const handleSendMessage = async ({
+    imagePath,
+    message,
+  }: {
+    imagePath: string | undefined;
+    message: string;
+  }) => {
+    if (!chatRoom?.id || !currentUser?.id) return;
+
+    const trimmedMessage = message.trim();
+
+    const senderType = isOwner ? "user" : "ai";
+
+    if (mode === "edit") {
+      await handleSaveEdit({ message: trimmedMessage });
+      refetchRoom();
+      return;
+    }
+
+    if (mode === "reply") {
+      await handleSendReplyMessage({ message: trimmedMessage });
+      refetchRoom();
+      return;
+    }
+
+    try {
+      await api.chatRoomMessage.sendMessage({
+        content: trimmedMessage,
+        sender: senderType,
+        imagePath: imagePath,
+        senderId: currentUser.id,
+      });
+      refetchRoom();
+    } catch (error) {
+      console.error("メッセージ送信エラー:", error);
+    }
+  };
+
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
       keyboardVerticalOffset={60}
     >
@@ -41,9 +87,8 @@ export const ChatScreen = () => {
           isOwner={true}
         />
         <ChatInput
-          onSend={() => {}}
+          onSend={handleSendMessage}
           isDisabled={false}
-          onHeightChange={() => {}}
         />
       </View>
     </KeyboardAvoidingView>
