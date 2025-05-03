@@ -5,8 +5,8 @@ import {
   Keyboard,
   TextInput,
   TouchableOpacity,
-  View,
 } from 'react-native';
+import { View } from '@/components/ThemedView';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { AttachMenu } from './AttachMenu';
 import { ErrorMessage } from './ErrorMessage';

@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  View,
 } from 'react-native';
 import { Text } from 'react-native';
 import { ChatHeader } from '../components/ChatHeader';
@@ -12,6 +11,7 @@ import { ChatMessages } from '../components/ChatMessages';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSupabase } from '@/hooks/useSupabase';
+import { View } from '@/components/ThemedView';
 
 export const ChatScreen = () => {
   const { api } = useSupabase();

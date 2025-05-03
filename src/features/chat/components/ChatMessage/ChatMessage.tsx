@@ -1,4 +1,4 @@
-import { Text } from '@/components/Text';
+import { Text } from '@/components/ThemedText';
 import { useState } from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { MessageContextMenu } from './MessageContextMenu';
@@ -187,7 +187,7 @@ export function ChatMessage({
             )}
 
             {/* リアクション表示エリア */}
-            <View className="mt-2 flex-row items-center">
+            {/* <View className="mt-2 flex-row items-center">
               <View className="flex-row flex-wrap">
                 {reactions.length > 0 &&
                   reactions.map((reaction) => (
@@ -200,12 +200,10 @@ export function ChatMessage({
                     />
                   ))}
               </View>
-
-              {/* リアクションボタンとピッカー */}
               <View className="ml-2">
                 <ReactionButton onClick={() => setIsReactionPickerOpen(true)} />
               </View>
-            </View>
+            </View> */}
 
             {/* タイムスタンプ */}
             <View className="flex-row justify-end">

@@ -80,7 +80,7 @@ export const ChatMessages = ({
 
   if (isLoading) {
     return (
-      <View className="justify-center items-center min-h-[200px] bg-ivory-50">
+      <View className="justify-center items-center min-h-[200px]">
         <ActivityIndicator size="large" color="#6366f1" />
       </View>
     );
@@ -88,7 +88,7 @@ export const ChatMessages = ({
 
   if (messages.length === 0) {
     return (
-      <View className="items-center justify-center py-10 bg-ivory-50">
+      <View className="items-center justify-center py-10">
         <Text className="text-gray-500">まだメッセージはありません。</Text>
       </View>
     );
@@ -97,7 +97,7 @@ export const ChatMessages = ({
   return (
     <ScrollView
       ref={scrollViewRef}
-      className="flex-1 bg-ivory-50"
+      className="flex-1"
       contentContainerStyle={{ paddingVertical: 8 }}
     >
       {/* チャットメッセージ */}
