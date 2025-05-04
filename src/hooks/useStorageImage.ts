@@ -15,7 +15,7 @@ export const useStorageImage = ({
 }: Props) => {
   const { supabase } = useSupabase();
 
-  const { data: imageUrl, refetch } = useQuery({
+  const { data: imageUrl, refetch, isLoading } = useQuery({
     queryKey: ['storageImage', storageName, imagePath],
     queryFn: async () => {
       if (!imagePath) return null;
@@ -25,7 +25,6 @@ export const useStorageImage = ({
       return data?.signedUrl || null;
     },
     enabled: !!imagePath,
-    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -34,5 +33,8 @@ export const useStorageImage = ({
     }
   }, [imageUrl, onSuccess]);
 
-  return { imageUrl, refetch };
+  return {
+    imageUrl,
+    refetch,
+    isLoading };
 };

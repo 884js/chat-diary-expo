@@ -1,16 +1,16 @@
+import { useThemeColor } from '@/hooks/useThemeColor';
+import type { StyleProp, ViewStyle } from 'react-native';
 import {
-  SafeAreaView,
+  SafeAreaView as RNFSafeAreaView,
   type SafeAreaViewProps,
-} from "react-native-safe-area-context";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import type { StyleProp, ViewStyle } from "react-native";
+} from 'react-native-safe-area-context';
 
 type ThemedSafeAreaViewProps = SafeAreaViewProps & {
   lightColor?: string;
   darkColor?: string;
 };
 
-export function ThemedSafeAreaView({
+export function SafeAreaView({
   style,
   lightColor,
   darkColor,
@@ -18,11 +18,11 @@ export function ThemedSafeAreaView({
 }: ThemedSafeAreaViewProps) {
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "background"
+    'background',
   );
 
   return (
-    <SafeAreaView
+    <RNFSafeAreaView
       style={[{ backgroundColor }, style] as StyleProp<ViewStyle>}
       {...otherProps}
     />

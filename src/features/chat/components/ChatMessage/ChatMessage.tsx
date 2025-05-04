@@ -1,10 +1,11 @@
-import { Text } from '@/components/ThemedText';
+import { Text, View } from '@/components/Themed';
+import { useStorageImage } from '@/hooks/useStorageImage';
 import { useState } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { useMessageAction } from '../../contexts/MessageActionContext';
 import { MessageContextMenu } from './MessageContextMenu';
 import { ReactionPicker } from './ReactionPicker';
-import { useMessageAction } from '../../contexts/MessageActionContext';
-import { useStorageImage } from '@/hooks/useStorageImage';
+import { useRouter } from 'expo-router';
 
 // リアクション型定義
 type Reaction = {
@@ -16,7 +17,7 @@ type Reaction = {
 export interface MessageProps {
   id: string;
   content: string;
-  sender: "user" | "ai";
+  sender: 'user' | 'ai';
   replyTo: any | null;
   owner: {
     id: string;
@@ -44,13 +45,14 @@ export function ChatMessage({
     handleReplyMessage,
     messageId,
   } = useMessageAction();
+  const router = useRouter();
 
   // アバター画像のURL
-  const getImageUrl = owner.avatar_url;
+  const avatarUrl = owner.avatar_url;
   const displayName = owner.display_name;
-  const { imageUrl: storageImageUrl } = useStorageImage({
+  const { imageUrl: storageImageUrl, isLoading } = useStorageImage({
     imagePath,
-    storageName: 'chats',
+    storageName: "chats",
   });
 
   // メニュー表示状態を管理
@@ -70,7 +72,8 @@ export function ChatMessage({
 
   // コンテキストメニューを開く
   const handleLongPress = () => {
-    setIsMenuOpen(true);
+    // setIsMenuOpen(true);r
+    router.navigate('/(chat)/message-context-menu');
   };
 
   // コンテキストメニューを閉じる
@@ -148,9 +151,9 @@ export function ChatMessage({
     >
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
-        {getImageUrl ? (
+        {avatarUrl ? (
           <Image
-            source={{ uri: getImageUrl }}
+            source={{ uri: avatarUrl }}
             className="w-full h-full rounded-md"
           />
         ) : (
@@ -177,22 +180,22 @@ export function ChatMessage({
                 <View className="h-px bg-gray-200 my-2" />
               </View>
             )}
-            {content && (
-              <View>
-                <Text>{content}</Text>
-              </View>
-            )}
+            {content && <Text>{content}</Text>}
 
             {/* 画像があれば表示する */}
-            {storageImageUrl && (
+            {isLoading ? (
+              <View className="h-[200px] justify-center items-center mt-2">
+                <ActivityIndicator size="small" color="#888" />
+              </View>
+            ) : storageImageUrl ? (
               <View className="mt-2">
                 <Image
                   source={{ uri: storageImageUrl }}
-                  className="w-full h-[200px] rounded-lg"
+                  style={{ width: "100%", height: 200, borderRadius: 12 }}
                   resizeMode="cover"
                 />
               </View>
-            )}
+            ) : null}
 
             {/* リアクション表示エリア */}
             {/* <View className="mt-2 flex-row items-center">

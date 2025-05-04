@@ -1,17 +1,16 @@
-import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
+import { Text, View } from "@/components/Themed";
+import { useCurrentUser } from "@/features/user/hooks/useCurrentUser";
+import { useCurrentUserRoom } from "@/features/user/hooks/useCurrentUserRoom";
+import { useSupabase } from "@/hooks/useSupabase";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { Text } from 'react-native';
-import { ChatHeader } from '../components/ChatHeader';
-import { ChatInput } from '../components/ChatInput';
-import { ChatMessages } from '../components/ChatMessages';
-import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { useMessageAction } from '../contexts/MessageActionContext';
-import { useSupabase } from '@/hooks/useSupabase';
-import { View } from '@/components/ThemedView';
+} from "react-native";
+import { ChatHeader } from "../components/ChatHeader";
+import { ChatInput } from "../components/ChatInput";
+import { ChatMessages } from "../components/ChatMessages";
+import { useMessageAction } from "../contexts/MessageActionContext";
 
 export const ChatScreen = () => {
   const { api } = useSupabase();
@@ -86,10 +85,7 @@ export const ChatScreen = () => {
           isChatEnded={false}
           isOwner={true}
         />
-        <ChatInput
-          onSend={handleSendMessage}
-          isDisabled={false}
-        />
+        <ChatInput onSend={handleSendMessage} isDisabled={false} />
       </View>
     </KeyboardAvoidingView>
   );

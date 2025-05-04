@@ -1,8 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+import { Text, View } from "@/components/Themed";
 import { ExternalLink } from './ExternalLink';
-import { View } from "@/components/ThemedView";
-import { Text } from "@/components/ThemedText";
 
 import Colors from '@/constants/Colors';
 
