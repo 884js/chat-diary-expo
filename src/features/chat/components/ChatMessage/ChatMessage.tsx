@@ -2,9 +2,8 @@ import { Text } from '@/components/ThemedText';
 import { useState } from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { MessageContextMenu } from './MessageContextMenu';
-import { MessageReaction } from './MessageReaction';
-import { ReactionButton } from './ReactionButton';
 import { ReactionPicker } from './ReactionPicker';
+import { useMessageAction } from '../../contexts/MessageActionContext';
 
 // リアクション型定義
 type Reaction = {
@@ -16,7 +15,7 @@ type Reaction = {
 export interface MessageProps {
   id: string;
   content: string;
-  sender: 'user' | 'ai';
+  sender: "user" | "ai";
   replyTo: any | null;
   owner: {
     id: string;
@@ -38,11 +37,12 @@ export function ChatMessage({
   owner,
   replyTo,
 }: MessageProps) {
-  // 簡略化のため、MessageActionContextの処理は省略
-  const handleEditMessage = () => {};
-  const handleDeleteMessage = () => {};
-  const handleReplyMessage = () => {};
-  const messageId = '';
+  const {
+    handleEditMessage,
+    handleDeleteMessage,
+    handleReplyMessage,
+    messageId,
+  } = useMessageAction();
 
   // アバター画像のURL
   const getImageUrl = owner.avatar_url;
@@ -75,16 +75,19 @@ export function ChatMessage({
 
   const handleDelete = async () => {
     // 実際の削除処理（省略）
+    handleDeleteMessage({ messageId: id });
     setIsMenuOpen(false);
   };
 
   const handleEdit = () => {
     // 実際の編集処理（省略）
+    handleEditMessage({ messageId: id, message: content });
     setIsMenuOpen(false);
   };
 
   const handleReply = () => {
     // 実際の返信処理（省略）
+    handleReplyMessage({ parentMessageId: id, message: content });
     setIsMenuOpen(false);
   };
 
@@ -134,7 +137,7 @@ export function ChatMessage({
 
   return (
     <View
-      className={`flex-row mb-4 transition-all px-2 py-1 w-full ${
+      className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
         messageId === id ? 'bg-gray-100' : ''
       }`}
     >
@@ -162,7 +165,7 @@ export function ChatMessage({
           onLongPress={handleLongPress}
           delayLongPress={300}
         >
-          <View className="flex-1 text-[#222] p-3">
+          <View className="flex-1 text-[#222]">
             {replyTo && (
               <View>
                 <Text className="text-xs text-gray-500">{replyTo.content}</Text>

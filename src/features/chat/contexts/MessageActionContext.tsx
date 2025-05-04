@@ -3,8 +3,7 @@
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useSupabase } from '@/hooks/useSupabase';
-import { createContext, useContext, useRef, useState } from 'react';
-import type { View } from 'react-native';
+import { createContext, useContext, useState } from 'react';
 
 const MessageActionContext = createContext<{
   mode: 'edit' | 'reply' | null;
@@ -28,7 +27,6 @@ const MessageActionContext = createContext<{
     message: string;
   }) => Promise<void>;
   handleSendReplyMessage: ({ message }: { message: string }) => Promise<void>;
-  replyMessageRef: React.RefObject<View | null>;
 } | null>(null);
 
 export const MessageActionProvider = ({
@@ -39,7 +37,6 @@ export const MessageActionProvider = ({
   const { api } = useSupabase();
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);
   const [messageId, setMessageId] = useState<string | null>(null);
-  const replyMessageRef = useRef<View>(null);
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
 
   const handleEditMessage = ({
@@ -112,7 +109,6 @@ export const MessageActionProvider = ({
         handleDeleteMessage,
         handleReplyMessage,
         handleSendReplyMessage,
-        replyMessageRef,
       }}
     >
       {children}

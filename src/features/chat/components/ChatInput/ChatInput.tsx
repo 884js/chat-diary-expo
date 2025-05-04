@@ -36,7 +36,7 @@ export function ChatInput({
   onSend,
   isDisabled,
 }: ChatInputProps) {
-  const { selectedMessage, mode, replyMessageRef } = useMessageAction();
+  const { selectedMessage, mode } = useMessageAction();
   const [message, setMessage] = useState('');
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   // 入力コンポーネントの参照
@@ -153,7 +153,7 @@ export function ChatInput({
 
       {/* 返信プレビュー */}
       {mode === 'reply' && selectedMessage && (
-        <ReplyPreview content={selectedMessage} replyRef={replyMessageRef} />
+        <ReplyPreview content={selectedMessage} />
       )}
 
       {/* 入力エリア */}

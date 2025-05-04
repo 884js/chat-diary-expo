@@ -1,24 +1,16 @@
 import { Feather } from '@expo/vector-icons';
-import { useRef } from 'react';
 import { Text, View } from 'react-native';
 
 type ReplyPreviewProps = {
   content: string | null;
-  replyRef?: any;
+  replyRef?: React.RefObject<View>;
 };
 
 export const ReplyPreview = ({ content, replyRef }: ReplyPreviewProps) => {
-  const viewRef = useRef(null);
-
-  // refをマージする
-  if (replyRef) {
-    replyRef.current = viewRef.current;
-  }
-
   if (!content) return null;
 
   return (
-    <View className="w-full mb-2" ref={viewRef}>
+    <View className="w-full mb-2" ref={replyRef}>
       <View className="p-2 bg-blue-50 rounded-md flex-row items-start">
         <Feather
           name="corner-up-right"
