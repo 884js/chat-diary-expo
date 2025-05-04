@@ -4,6 +4,7 @@ import { Image, TouchableOpacity, View } from 'react-native';
 import { MessageContextMenu } from './MessageContextMenu';
 import { ReactionPicker } from './ReactionPicker';
 import { useMessageAction } from '../../contexts/MessageActionContext';
+import { useStorageImage } from '@/hooks/useStorageImage';
 
 // リアクション型定義
 type Reaction = {
@@ -47,6 +48,10 @@ export function ChatMessage({
   // アバター画像のURL
   const getImageUrl = owner.avatar_url;
   const displayName = owner.display_name;
+  const { imageUrl: storageImageUrl } = useStorageImage({
+    imagePath,
+    storageName: 'chats',
+  });
 
   // メニュー表示状態を管理
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -138,7 +143,7 @@ export function ChatMessage({
   return (
     <View
       className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
-        messageId === id ? 'bg-gray-100' : ''
+        messageId === id ? "bg-gray-100" : ""
       }`}
     >
       {/* プロフィール画像 */}
@@ -179,10 +184,10 @@ export function ChatMessage({
             )}
 
             {/* 画像があれば表示する */}
-            {imagePath && (
+            {storageImageUrl && (
               <View className="mt-2">
                 <Image
-                  source={{ uri: imagePath }}
+                  source={{ uri: storageImageUrl }}
                   className="w-full h-[200px] rounded-lg"
                   resizeMode="cover"
                 />
