@@ -22,6 +22,7 @@ import {
   configureReanimatedLogger,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AuthProvider } from '@/features/auth/contexts/AuthContext';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -58,14 +59,19 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <ReactQueryProvider>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </ReactQueryProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const router = useRouter();
-
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const top = typeof insets.top === 'number' ? insets.top : 0;
   const bottom = typeof insets.bottom === 'number' ? insets.bottom : 0;
@@ -73,46 +79,58 @@ function RootLayoutNav() {
   const right = typeof insets.right === 'number' ? insets.right : 0;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <ReactQueryProvider>
-        <MessageActionProvider>
-          <View
-            style={{
-              paddingTop: top,
-              paddingBottom: bottom,
-              paddingLeft: left,
-              paddingRight: right,
-              flex: 1,
-            }}
-          >
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(chat)/message-context-menu"
-                options={{
-                  contentStyle: {
-                    flex: 1,
-                  },
-                  headerShown: false,
-                  presentation: 'formSheet',
-                  gestureDirection: 'vertical',
-                  sheetInitialDetentIndex: 0,
-                  sheetAllowedDetents: [0.3],
-                  animationDuration: 100,
-                  headerRight: (navigation) => (
-                    <TouchableOpacity
-                      onPress={() => router.back()}
-                      style={{ padding: 8 }}
-                    >
-                      <Ionicons name="close" size={24} />
-                    </TouchableOpacity>
-                  ),
-                }}
-              />
-            </Stack>
-          </View>
-        </MessageActionProvider>
-      </ReactQueryProvider>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <MessageActionProvider>
+        <View
+          style={{
+            paddingTop: top,
+            paddingBottom: bottom,
+            paddingLeft: left,
+            paddingRight: right,
+            flex: 1,
+          }}
+        >
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(chat)/message-context-menu"
+              options={{
+                contentStyle: {
+                  flex: 1,
+                },
+                headerShown: false,
+                presentation: "formSheet",
+                gestureDirection: "vertical",
+                sheetInitialDetentIndex: 0,
+                sheetAllowedDetents: [0.3],
+                animationDuration: 100,
+                headerRight: (navigation) => (
+                  <TouchableOpacity
+                    onPress={() => router.back()}
+                    style={{ padding: 8 }}
+                  >
+                    <Ionicons name="close" size={24} />
+                  </TouchableOpacity>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="auth/login"
+              options={{
+                headerShown: false,
+                presentation: "transparentModal",
+                gestureEnabled: true,
+              }}
+            />
+            <Stack.Screen
+              name="auth/callback"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+        </View>
+      </MessageActionProvider>
     </ThemeProvider>
   );
 }

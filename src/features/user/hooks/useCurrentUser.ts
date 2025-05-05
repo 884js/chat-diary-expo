@@ -1,13 +1,10 @@
+import { useAuth } from '@/features/auth/contexts/AuthContext';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCurrentUser = () => {
   const { api } = useSupabase();
-  // const { user, isLoading } = useAuth();
-  const user = {
-    id: '3096ab0c-a88d-4126-b297-3ad80870aed4',
-  };
-  const isLoading = false;
+  const { user, isLoading } = useAuth();
 
   const { data: userProfile } = useQuery({
     queryKey: ['user', user?.id],

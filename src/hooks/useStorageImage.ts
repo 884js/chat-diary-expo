@@ -4,13 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 type Props = {
   imagePath: string | null;
   storageName: 'users' | 'chats';
-  onSuccess?: () => void;
 };
 
 export const useStorageImage = ({
   imagePath,
   storageName,
-  onSuccess,
 }: Props) => {
   const { supabase } = useSupabase();
 
@@ -22,10 +20,10 @@ export const useStorageImage = ({
     queryKey: ['storageImage', storageName, imagePath],
     queryFn: async () => {
       if (!imagePath) return null;
-      const { data } = await supabase.storage
+      const { data } = supabase.storage
         .from(storageName)
-        .createSignedUrl(imagePath, 60 * 10);
-      return data?.signedUrl || null;
+        .getPublicUrl(imagePath);
+      return data?.publicUrl || null;
     },
     enabled: !!imagePath,
   });

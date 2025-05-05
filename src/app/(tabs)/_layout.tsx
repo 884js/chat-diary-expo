@@ -1,8 +1,10 @@
 import Colors from '@/constants/Colors';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Feather } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import type React from 'react';
+import { Loader } from '@/components/Loader';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof Feather>['name'];
@@ -15,6 +17,15 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { session, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!session) {
+    return <Redirect href="/auth/login" />;
+  }
 
   return (
     <Tabs
