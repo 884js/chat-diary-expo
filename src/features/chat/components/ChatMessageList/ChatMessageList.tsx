@@ -2,8 +2,9 @@ import { formatDate } from '@/lib/date-fns';
 import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import React, { useEffect } from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { ChatMessage } from './ChatMessage';
+import { ScrollView, View } from 'react-native';
+import { ChatMessage } from '../ChatMessage';
+import { DateDivider } from './DateDivider';
 
 type Props = {
   chatRoom: ChatRoom;
@@ -17,20 +18,7 @@ type Props = {
   isOwner: boolean;
 };
 
-// 日付区切り線コンポーネント
-const DateDivider = ({ date }: { date: string }) => (
-  <View className="flex-row items-center my-4">
-    <View className="flex-grow h-px bg-gray-200" />
-    <View className="mx-4">
-      <Text className="text-xs text-gray-500 font-medium bg-ivory-50 px-2 py-1 rounded-full border border-gray-200">
-        {date}
-      </Text>
-    </View>
-    <View className="flex-grow h-px bg-gray-200" />
-  </View>
-);
-
-export const ChatMessages = ({ chatRoom, messages, isOwner }: Props) => {
+export const ChatMessageList = ({ chatRoom, messages, isOwner }: Props) => {
   const scrollViewRef = React.useRef<ScrollView>(null);
 
   // メッセージが変更されたら一番下にスクロール
@@ -38,14 +26,6 @@ export const ChatMessages = ({ chatRoom, messages, isOwner }: Props) => {
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: false });
   }, [messages.length]);
-
-  if (messages.length === 0) {
-    return (
-      <View className="items-center justify-center py-10">
-        <Text className="text-gray-500">まだメッセージはありません。</Text>
-      </View>
-    );
-  }
 
   return (
     <ScrollView

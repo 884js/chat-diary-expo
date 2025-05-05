@@ -63,6 +63,21 @@ export class ChatRoomMessageApi {
     return data;
   }
 
+  async getMessageDetail({ messageId }: { messageId: string }) {
+    const { data, error } = await this.supabase
+      .from('room_messages')
+      .select('*')
+      .eq('id', messageId)
+      .maybeSingle();
+
+    if (error || !data) {
+      console.error('Message detail fetch error:', error);
+      throw error;
+    }
+
+    return data;
+  }
+
   // トークン付きでメッセージを送信
   async sendMessage({
     content,

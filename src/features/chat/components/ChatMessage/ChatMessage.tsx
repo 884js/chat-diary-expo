@@ -1,11 +1,11 @@
 import { Text, View } from '@/components/Themed';
 import { useStorageImage } from '@/hooks/useStorageImage';
+import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { ReactionPicker } from './ReactionPicker';
-import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 // リアクション型定義
 type Reaction = {
   emoji: string;
@@ -37,12 +37,7 @@ export function ChatMessage({
   owner,
   replyTo,
 }: MessageProps) {
-  const {
-    handleEditMessage,
-    handleDeleteMessage,
-    handleReplyMessage,
-    messageId,
-  } = useMessageAction();
+  const { messageId } = useMessageAction();
   const router = useRouter();
 
   // アバター画像のURL
@@ -68,22 +63,7 @@ export function ChatMessage({
 
   // コンテキストメニューを開く
   const handleLongPress = () => {
-    router.navigate('/(chat)/message-context-menu');
-  };
-
-  const handleDelete = async () => {
-    // 実際の削除処理（省略）
-    handleDeleteMessage({ messageId: id });
-  };
-
-  const handleEdit = () => {
-    // 実際の編集処理（省略）
-    handleEditMessage({ messageId: id, message: content });
-  };
-
-  const handleReply = () => {
-    // 実際の返信処理（省略）
-    handleReplyMessage({ parentMessageId: id, message: content });
+    router.navigate(`/(chat)/message-context-menu?messageId=${id}`);
   };
 
   // リアクション追加/削除処理
@@ -133,7 +113,7 @@ export function ChatMessage({
   return (
     <View
       className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
-        messageId === id ? 'bg-gray-100' : ''
+        messageId === id ? "bg-gray-100" : ""
       }`}
     >
       {/* プロフィール画像 */}
@@ -160,13 +140,14 @@ export function ChatMessage({
           onLongPress={handleLongPress}
           delayLongPress={300}
         >
-          <View className="flex-1 text-[#222]">
+          <View className="flex-1 text-gray-500">
             {replyTo && (
               <View>
                 <Text className="text-xs text-gray-500">{replyTo.content}</Text>
-                <View className="h-px bg-gray-200 my-2" />
+                <View className="border-b border-gray-200 pt-2 rounded-md" />
               </View>
             )}
+
             {content && <Text>{content}</Text>}
 
             {/* 画像があれば表示する */}
@@ -178,7 +159,7 @@ export function ChatMessage({
               <View className="mt-2">
                 <Image
                   source={{ uri: storageImageUrl }}
-                  style={{ width: '100%', height: 200, borderRadius: 12 }}
+                  style={{ width: "100%", height: 200, borderRadius: 12 }}
                   resizeMode="cover"
                 />
               </View>

@@ -106,7 +106,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     if (isButtonDisabled) return;
 
     try {
-      setMessage("");
+      setMessage('');
       setSelectedImage(null);
       setImagePreviewUrl(null);
 

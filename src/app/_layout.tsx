@@ -12,6 +12,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { View } from '@/components/Themed';
+import { MessageActionProvider } from '@/features/chat/contexts/MessageActionContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
 import { Ionicons } from '@expo/vector-icons';
@@ -74,42 +75,43 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ReactQueryProvider>
-        <View
-          style={{
-            paddingTop: top,
-            paddingBottom: bottom,
-            paddingLeft: left,
-            paddingRight: right,
-            flex: 1,
-          }}
-        >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="(chat)/message-context-menu"
-              options={{
-                contentStyle: {
-                  flex: 1,
-                },
-                headerShown: false,
-                presentation: 'formSheet',
-                gestureDirection: 'vertical',
-                sheetInitialDetentIndex: 0,
-                sheetAllowedDetents: [0.3],
-                animationDuration: 100,
-                // headerTitle: "Title",
-                headerRight: (navigation) => (
-                  <TouchableOpacity
-                    onPress={() => router.back()}
-                    style={{ padding: 8 }}
-                  >
-                    <Ionicons name="close" size={24} />
-                  </TouchableOpacity>
-                ),
-              }}
-            />
-          </Stack>
-        </View>
+        <MessageActionProvider>
+          <View
+            style={{
+              paddingTop: top,
+              paddingBottom: bottom,
+              paddingLeft: left,
+              paddingRight: right,
+              flex: 1,
+            }}
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(chat)/message-context-menu"
+                options={{
+                  contentStyle: {
+                    flex: 1,
+                  },
+                  headerShown: false,
+                  presentation: 'formSheet',
+                  gestureDirection: 'vertical',
+                  sheetInitialDetentIndex: 0,
+                  sheetAllowedDetents: [0.3],
+                  animationDuration: 100,
+                  headerRight: (navigation) => (
+                    <TouchableOpacity
+                      onPress={() => router.back()}
+                      style={{ padding: 8 }}
+                    >
+                      <Ionicons name="close" size={24} />
+                    </TouchableOpacity>
+                  ),
+                }}
+              />
+            </Stack>
+          </View>
+        </MessageActionProvider>
       </ReactQueryProvider>
     </ThemeProvider>
   );

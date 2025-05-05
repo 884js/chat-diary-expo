@@ -1,18 +1,18 @@
-import { Text, View } from '@/components/Themed';
+import { View } from '@/components/Themed';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
+import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
-import { ChatMessages } from '../components/ChatMessages';
+import { ChatMessageList } from "../components/ChatMessageList/ChatMessageList";
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
-import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
-import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
+import { Loader } from "@/components/Loader";
 
 export const ChatScreen = () => {
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom();
@@ -60,30 +60,22 @@ export const ChatScreen = () => {
     refetchMessages();
   };
 
-  if (isLoadingRoom || !chatRoom || !messages) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#888" />
-      </View>
-    );
+  if (isLoadingRoom) {
+    return <Loader />;
   }
 
-  if (chatRoom && messages.length === 0) {
-    return (
-      <View className="items-center justify-center py-10">
-        <Text className="text-gray-500">まだメッセージはありません。</Text>
-      </View>
-    );
+  if (!chatRoom) {
+    return <Loader />;
   }
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
       <View className="flex-1">
         <ChatHeader />
-        <ChatMessages
+        <ChatMessageList
           chatRoom={chatRoom}
           isLoading={isLoadingRoom}
           messages={messages}
