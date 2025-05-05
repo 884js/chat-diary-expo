@@ -122,7 +122,7 @@ export function ChatMessage({
         {avatarUrl ? (
           <Image
             source={avatarUrl}
-            className="w-full h-full rounded-md"
+            style={{ width: 40, height: 40 }}
           />
         ) : (
           <View className="w-full h-full items-center justify-center bg-gray-300">
