@@ -1,10 +1,11 @@
 import { useSupabase } from '@/hooks/useSupabase';
 import { useQuery } from '@tanstack/react-query';
-import { useCurrentUser } from './useCurrentUser';
 
-export const useCurrentUserRoom = () => {
+type Props = {
+  userId: string;
+};
+export const useCurrentUserRoom = ({ userId }: Props) => {
   const { api, supabase } = useSupabase();
-  const { currentUser } = useCurrentUser();
 
   const {
     data: chatRoom,
@@ -12,12 +13,12 @@ export const useCurrentUserRoom = () => {
     isRefetching,
     refetch,
   } = useQuery({
-    queryKey: ['room', currentUser?.id],
+    queryKey: ['room', userId],
     queryFn: async () => {
-      if (!currentUser) return null;
+      if (!userId) return null;
 
       const defaultChatRoom = await api.chatRoom.getDefaultChatRoom(
-        currentUser.id,
+        userId,
       );
 
       if (!defaultChatRoom) {
@@ -25,7 +26,7 @@ export const useCurrentUserRoom = () => {
         const newChatRoom = await supabase
           .from('rooms')
           .insert({
-            user_id: currentUser.id,
+            user_id: userId,
           })
           .select('id')
           .single();
@@ -45,7 +46,7 @@ export const useCurrentUserRoom = () => {
       });
       return chatRoomData;
     },
-    enabled: !!currentUser?.id,
+    enabled: !!userId,
   });
 
   return {

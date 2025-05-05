@@ -10,15 +10,19 @@ import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
 
 export const ChatScreen = () => {
-  const { chatRoom, isLoadingRoom } = useCurrentUserRoom();
+  const { sendMessage } = useSendMessage();
+  const { session } = useAuth();
+  const { currentUser } = useCurrentUser();
+  const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
+    userId: session?.user?.id ?? "",
+  });
   const { messages, refetchMessages } = useRoomUserMessages({
     userId: chatRoom?.user_id,
   });
-  const { sendMessage } = useSendMessage();
-  const { currentUser } = useCurrentUser();
-  const isOwner = currentUser ? currentUser.id === chatRoom?.user_id : false;
+  const isOwner = chatRoom ? chatRoom.id === chatRoom?.user_id : false;
   const { mode, handleSaveEdit, handleSendReplyMessage } = useMessageAction();
 
   useRefreshOnFocus(refetchMessages);
@@ -56,10 +60,6 @@ export const ChatScreen = () => {
     });
     refetchMessages();
   };
-
-  if (isLoadingRoom) {
-    return <Loader />;
-  }
 
   if (!chatRoom) {
     return <Loader />;

@@ -8,10 +8,9 @@ import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { AppState, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
-
 interface AuthContextProps {
   user: User | null;
   session: Session | null;
@@ -32,14 +31,6 @@ const AuthContext = createContext<AuthContextProps>({
   signOut: async () => ({ error: null }),
   signInWithGoogle: async () => {},
   isAuthLoading: false,
-});
-
-AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
-    supabase.auth.startAutoRefresh();
-  } else {
-    supabase.auth.stopAutoRefresh();
-  }
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -83,17 +74,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('セッション取得失敗:', error.message);
-        return;
-      }
-      setSession(data.session);
-      queryClient.setQueryData(['auth', 'user'], data.session?.user ?? null);
-    };
+    const restoreSession = async () => {
+      const sessionStr = await SecureStore.getItemAsync("google-access-token");
+      if (sessionStr) {
+        const session = JSON.parse(sessionStr);
+        const { error, data } = await supabase.auth.setSession({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        });
+        setSession(data.session);
 
-    fetchSession();
+        router.replace("/(tabs)");
+
+        if (error) {
+          await SecureStore.deleteItemAsync("google-access-token");
+        }
+      }
+    };
+    restoreSession();
   }, []);
 
   const signInWithX = async () => {
@@ -128,12 +126,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const getGoogleOAuthUrl = async (): Promise<string | null> => {
     const redirectUri = AuthSession.makeRedirectUri({
-      scheme: 'chat-diary',
-      preferLocalhost: true,
+      scheme: "chat-diary",
     });
 
     const result = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
         redirectTo: redirectUri,
       },
@@ -143,34 +140,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     setIsAuthLoading(true);
+    await supabase.auth.signOut();
+
     try {
       const url = await getGoogleOAuthUrl();
       if (!url) return;
 
       const result = await WebBrowser.openAuthSessionAsync(
         url,
-        'chat-diary://google-auth',
+        'chat-diary://',
         { showInRecents: true },
       );
 
       if (result.type === 'success') {
-        const data = extractParamsFromUrl(result.url);
+        const data = getQueryParams(result.url);
         if (!data.access_token || !data.refresh_token) return;
 
-        await setOAuthSession({
+        const session =await setOAuthSession({
           access_token: data.access_token,
           refresh_token: data.refresh_token,
         });
 
+        setSession(session.session);
+
         await SecureStore.setItemAsync(
           'google-access-token',
-          JSON.stringify(data.provider_token),
+          JSON.stringify(data),
         );
+
+        setIsAuthLoading(false);
         router.replace('/(tabs)');
       }
     } catch (error) {
       console.error(error);
-    } finally {
       setIsAuthLoading(false);
     }
   };
@@ -179,11 +181,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     access_token: string;
     refresh_token: string;
   }) => {
-    const { error } = await supabase.auth.setSession({
+    const { error, data } = await supabase.auth.setSession({
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
     });
+
     if (error) throw error;
+
+    return data;
   };
 
   const signOut = async () => {
@@ -192,13 +197,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         return { error: new Error(error.message) };
       }
-      router.replace('/');
+      await SecureStore.deleteItemAsync("google-access-token");
+      setSession(null);
+      router.navigate('/auth/login');
       return { error: null };
     } catch (err) {
-      return {
-        error:
-          err instanceof Error ? err : new Error('不明なエラーが発生しました'),
-      };
+      console.error(err);
+      router.navigate("/auth/login");
     }
   };
 
@@ -224,13 +229,16 @@ export function useAuth() {
   return context;
 }
 
-const extractParamsFromUrl = (url: string) => {
-  const params = new URLSearchParams(url.split('#')[1]);
-  return {
-    access_token: params.get('access_token'),
-    refresh_token: params.get('refresh_token'),
-    expires_in: Number.parseInt(params.get('expires_in') || '0'),
-    token_type: params.get('token_type'),
-    provider_token: params.get('provider_token'),
-  };
+const getQueryParams = (url: string) => {
+  const queryParams: Record<string, string> = {};
+  const [, queryString] = url.split("#");
+  if (queryString) {
+    const pairs = queryString.split("&");
+    for (const pair of pairs) {
+      const [key, value] = pair.split("=");
+      queryParams[key] = decodeURIComponent(value || "");
+    }
+  }
+
+  return queryParams;
 };

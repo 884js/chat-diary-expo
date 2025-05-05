@@ -122,12 +122,6 @@ function RootLayoutNav() {
                 gestureEnabled: true,
               }}
             />
-            <Stack.Screen
-              name="auth/callback"
-              options={{
-                headerShown: false,
-              }}
-            />
           </Stack>
         </View>
       </MessageActionProvider>

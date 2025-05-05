@@ -33,7 +33,9 @@ export const MessageActionProvider = ({
   children,
 }: { children: React.ReactNode }) => {
   const { currentUser } = useCurrentUser();
-  const { refetch } = useCurrentUserRoom();
+  const { refetch } = useCurrentUserRoom({
+    userId: currentUser?.id ?? '',
+  });
   const { api } = useSupabase();
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);
   const [messageId, setMessageId] = useState<string | null>(null);
