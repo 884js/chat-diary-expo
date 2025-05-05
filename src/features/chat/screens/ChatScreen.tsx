@@ -1,35 +1,30 @@
-import { Text, View } from "@/components/Themed";
-import { useCurrentUser } from "@/features/user/hooks/useCurrentUser";
-import { useCurrentUserRoom } from "@/features/user/hooks/useCurrentUserRoom";
-import { useSupabase } from "@/hooks/useSupabase";
+import { Text, View } from '@/components/Themed';
+import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
+import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import { ChatHeader } from "../components/ChatHeader";
-import { ChatInput } from "../components/ChatInput";
-import { ChatMessages } from "../components/ChatMessages";
-import { useMessageAction } from "../contexts/MessageActionContext";
+} from 'react-native';
+import { ChatHeader } from '../components/ChatHeader';
+import { ChatInput } from '../components/ChatInput';
+import { ChatMessages } from '../components/ChatMessages';
+import { useMessageAction } from '../contexts/MessageActionContext';
+import { useSendMessage } from '../hooks/useSendMessage';
+import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
+import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 
 export const ChatScreen = () => {
-  const { api } = useSupabase();
-  const { chatRoom, isLoadingRoom, refetchRoom } = useCurrentUserRoom();
+  const { chatRoom, isLoadingRoom } = useCurrentUserRoom();
+  const { messages, refetchMessages } = useRoomUserMessages({
+    userId: chatRoom?.user_id,
+  });
+  const { sendMessage } = useSendMessage();
   const { currentUser } = useCurrentUser();
   const isOwner = currentUser ? currentUser.id === chatRoom?.user_id : false;
   const { mode, handleSaveEdit, handleSendReplyMessage } = useMessageAction();
 
-  if (isLoadingRoom) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#888" />
-      </View>
-    );
-  }
-
-  if (!chatRoom) {
-    return <Text>チャットルームが見つかりません</Text>;
-  }
+  useRefreshOnFocus(refetchMessages);
 
   // メッセージ送信処理
   const handleSendMessage = async ({
@@ -43,50 +38,60 @@ export const ChatScreen = () => {
 
     const trimmedMessage = message.trim();
 
-    const senderType = isOwner ? "user" : "ai";
+    const senderType = isOwner ? 'user' : 'ai';
 
-    if (mode === "edit") {
+    if (mode === 'edit') {
       await handleSaveEdit({ message: trimmedMessage });
-      refetchRoom();
+      refetchMessages();
       return;
     }
 
-    if (mode === "reply") {
+    if (mode === 'reply') {
       await handleSendReplyMessage({ message: trimmedMessage });
-      refetchRoom();
+      refetchMessages();
       return;
     }
 
-    try {
-      await api.chatRoomMessage.sendMessage({
-        content: trimmedMessage,
-        sender: senderType,
-        imagePath: imagePath,
-        senderId: currentUser.id,
-      });
-      refetchRoom();
-    } catch (error) {
-      console.error("メッセージ送信エラー:", error);
-    }
+    await sendMessage({
+      senderType,
+      content: trimmedMessage,
+      imagePath,
+    });
+    refetchMessages();
   };
+
+  if (isLoadingRoom || !chatRoom || !messages) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#888" />
+      </View>
+    );
+  }
+
+  if (chatRoom && messages.length === 0) {
+    return (
+      <View className="items-center justify-center py-10">
+        <Text className="text-gray-500">まだメッセージはありません。</Text>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1 }}
-      keyboardVerticalOffset={60}
     >
       <View className="flex-1">
         <ChatHeader />
         <ChatMessages
           chatRoom={chatRoom}
-          isLoading={false}
-          messages={chatRoom.chat_room_messages}
+          isLoading={isLoadingRoom}
+          messages={messages}
           isChatEnded={false}
           isOwner={true}
         />
-        <ChatInput onSend={handleSendMessage} isDisabled={false} />
       </View>
+      <ChatInput onSend={handleSendMessage} isDisabled={false} />
     </KeyboardAvoidingView>
   );
 };

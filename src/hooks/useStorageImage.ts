@@ -1,6 +1,5 @@
 import { useSupabase } from '@/hooks/useSupabase';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 type Props = {
   imagePath: string | null;
@@ -15,7 +14,11 @@ export const useStorageImage = ({
 }: Props) => {
   const { supabase } = useSupabase();
 
-  const { data: imageUrl, refetch, isLoading } = useQuery({
+  const {
+    data: imageUrl,
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: ['storageImage', storageName, imagePath],
     queryFn: async () => {
       if (!imagePath) return null;
@@ -27,14 +30,9 @@ export const useStorageImage = ({
     enabled: !!imagePath,
   });
 
-  useEffect(() => {
-    if (imageUrl && onSuccess) {
-      onSuccess();
-    }
-  }, [imageUrl, onSuccess]);
-
   return {
     imageUrl,
     refetch,
-    isLoading };
+    isLoading,
+  };
 };

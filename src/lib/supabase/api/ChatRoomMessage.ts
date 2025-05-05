@@ -83,7 +83,7 @@ export class ChatRoomMessageApi {
         owner_id: senderId,
         image_path: imagePath,
       })
-      .select('created_at')
+      .select('*')
       .single();
 
     if (error || !data || !data.created_at) {

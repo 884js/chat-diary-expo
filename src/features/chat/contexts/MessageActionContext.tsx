@@ -33,7 +33,7 @@ export const MessageActionProvider = ({
   children,
 }: { children: React.ReactNode }) => {
   const { currentUser } = useCurrentUser();
-  const { refetchRoom } = useCurrentUserRoom();
+  const { refetch } = useCurrentUserRoom();
   const { api } = useSupabase();
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);
   const [messageId, setMessageId] = useState<string | null>(null);
@@ -63,14 +63,14 @@ export const MessageActionProvider = ({
     });
 
     handleResetMode();
-    await refetchRoom();
+    await refetch();
   };
 
   const handleDeleteMessage = async ({ messageId }: { messageId: string }) => {
     if (!messageId) return;
 
     await api.chatRoomMessage.deleteMessage({ messageId: messageId });
-    await refetchRoom();
+    await refetch();
   };
 
   const handleReplyMessage = async ({
@@ -94,7 +94,7 @@ export const MessageActionProvider = ({
     });
 
     handleResetMode();
-    await refetchRoom();
+    await refetch();
   };
 
   return (

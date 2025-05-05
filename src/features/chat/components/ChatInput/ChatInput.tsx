@@ -1,24 +1,24 @@
-import { View } from "@/components/Themed";
-import { Feather } from "@expo/vector-icons";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { View } from '@/components/Themed';
+import { Feather } from '@expo/vector-icons';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
   TextInput,
   TouchableOpacity,
-} from "react-native";
-import { useMessageAction } from "../../contexts/MessageActionContext";
-import { AttachMenu } from "./AttachMenu";
-import { ErrorMessage } from "./ErrorMessage";
-import { ImagePreview } from "./ImagePreview";
-import { ReplyPreview } from "./ReplyPreview";
+} from 'react-native';
+import { useMessageAction } from '../../contexts/MessageActionContext';
+import { AttachMenu } from './AttachMenu';
+import { ErrorMessage } from './ErrorMessage';
+import { ImagePreview } from './ImagePreview';
+import { ReplyPreview } from './ReplyPreview';
 
 // 画像タイプ定義
 export const ALLOWED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
 ];
 
 interface ChatInputProps {
@@ -34,7 +34,7 @@ interface ChatInputProps {
 
 export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   const { selectedMessage, mode } = useMessageAction();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   // 入力コンポーネントの参照
   const textInputRef = useRef<TextInput>(null);
@@ -48,11 +48,11 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   useEffect(() => {
     if (selectedMessage) {
       switch (mode) {
-        case "edit":
+        case 'edit':
           setMessage(selectedMessage);
           break;
-        case "reply":
-          setMessage("");
+        case 'reply':
+          setMessage('');
           break;
       }
     }
@@ -84,7 +84,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     setShowAttachMenu(false);
 
     // ダミーイメージを設定
-    const dummyImage = "https://picsum.photos/400/300";
+    const dummyImage = 'https://picsum.photos/400/300';
     setSelectedImage(dummyImage);
     setImagePreviewUrl(dummyImage);
   };
@@ -96,7 +96,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     setShowAttachMenu(false);
 
     // ダミーイメージを設定
-    const dummyImage = "https://picsum.photos/400/300";
+    const dummyImage = 'https://picsum.photos/400/300';
     setSelectedImage(dummyImage);
     setImagePreviewUrl(dummyImage);
   };
@@ -106,6 +106,10 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     if (isButtonDisabled) return;
 
     try {
+      setMessage("");
+      setSelectedImage(null);
+      setImagePreviewUrl(null);
+
       if (selectedImage) {
         setIsUploading(true);
         // ここで実際には画像アップロード処理が必要
@@ -113,13 +117,9 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
       } else {
         await onSend({ imagePath: undefined, message });
       }
-
-      setMessage("");
-      setSelectedImage(null);
-      setImagePreviewUrl(null);
       Keyboard.dismiss();
     } catch (error) {
-      setUploadError("画像のアップロードに失敗しました");
+      setUploadError('画像のアップロードに失敗しました');
     } finally {
       setIsUploading(false);
     }
@@ -128,14 +128,14 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   // プレースホルダーテキスト
   const placeholder = useMemo(() => {
     if (isDisabled) {
-      return "チャット送信はできません";
+      return 'チャット送信はできません';
     }
 
     if (isUploading) {
-      return "画像をアップロード中...";
+      return '画像をアップロード中...';
     }
 
-    return "メッセージを入力...";
+    return 'メッセージを入力...';
   }, [isDisabled, isUploading]);
 
   return (
@@ -149,7 +149,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
       )}
 
       {/* 返信プレビュー */}
-      {mode === "reply" && selectedMessage && (
+      {mode === 'reply' && selectedMessage && (
         <ReplyPreview content={selectedMessage} />
       )}
 
@@ -164,7 +164,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           <Feather
             name="paperclip"
             size={22}
-            color={isDisabled || isUploading ? "#9ca3af" : "#4b5563"}
+            color={isDisabled || isUploading ? '#9ca3af' : '#4b5563'}
           />
         </TouchableOpacity>
 
@@ -185,7 +185,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           onPress={handleSend}
           disabled={isButtonDisabled}
           className={`rounded-full w-10 h-10 items-center justify-center ${
-            isButtonDisabled ? "bg-slate-300" : "bg-indigo-500"
+            isButtonDisabled ? 'bg-slate-300' : 'bg-indigo-500'
           }`}
           accessibilityLabel="メッセージを送信"
         >

@@ -1,6 +1,6 @@
-import { Feather } from "@expo/vector-icons";
-import { View, Text, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function MessageContextMenuScreen() {
   const router = useRouter();
@@ -42,7 +42,10 @@ export default function MessageContextMenuScreen() {
           />
           <Text className="text-base text-red-600">削除</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-100" onPress={handleClose}>
+        <TouchableOpacity
+          className="flex-row items-center py-4 border-b border-gray-100"
+          onPress={handleClose}
+        >
           <Text className="text-base text-gray-600">キャンセル</Text>
         </TouchableOpacity>
       </View>

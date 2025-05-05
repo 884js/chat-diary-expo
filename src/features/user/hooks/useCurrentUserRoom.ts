@@ -9,6 +9,7 @@ export const useCurrentUserRoom = () => {
   const {
     data: chatRoom,
     isLoading,
+    isRefetching,
     refetch,
   } = useQuery({
     queryKey: ['room', currentUser?.id],
@@ -50,6 +51,7 @@ export const useCurrentUserRoom = () => {
   return {
     chatRoom,
     isLoadingRoom: isLoading,
-    refetchRoom: refetch,
+    isRefetchingRoom: isRefetching,
+    refetch,
   };
 };

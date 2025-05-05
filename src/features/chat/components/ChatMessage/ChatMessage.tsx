@@ -1,12 +1,11 @@
 import { Text, View } from '@/components/Themed';
 import { useStorageImage } from '@/hooks/useStorageImage';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
-import { MessageContextMenu } from './MessageContextMenu';
 import { ReactionPicker } from './ReactionPicker';
-import { useRouter } from 'expo-router';
-
+import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 // リアクション型定義
 type Reaction = {
   emoji: string;
@@ -18,7 +17,7 @@ export interface MessageProps {
   id: string;
   content: string;
   sender: 'user' | 'ai';
-  replyTo: any | null;
+  replyTo: ChatRoomMessage | null;
   owner: {
     id: string;
     display_name: string;
@@ -28,7 +27,6 @@ export interface MessageProps {
   timestamp: string;
   imagePath?: string | null;
   isOwner: boolean;
-  onScrollToBottom: () => void;
 }
 
 export function ChatMessage({
@@ -50,13 +48,11 @@ export function ChatMessage({
   // アバター画像のURL
   const avatarUrl = owner.avatar_url;
   const displayName = owner.display_name;
-  const { imageUrl: storageImageUrl, isLoading } = useStorageImage({
-    imagePath,
-    storageName: "chats",
-  });
-
-  // メニュー表示状態を管理
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { imageUrl: storageImageUrl, isLoading: isLoadingImage } =
+    useStorageImage({
+      imagePath,
+      storageName: 'chats',
+    });
 
   // スタンプ選択ピッカーの表示状態
   const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false);
@@ -72,31 +68,22 @@ export function ChatMessage({
 
   // コンテキストメニューを開く
   const handleLongPress = () => {
-    // setIsMenuOpen(true);r
     router.navigate('/(chat)/message-context-menu');
-  };
-
-  // コンテキストメニューを閉じる
-  const closeMenu = () => {
-    setIsMenuOpen(false);
   };
 
   const handleDelete = async () => {
     // 実際の削除処理（省略）
     handleDeleteMessage({ messageId: id });
-    setIsMenuOpen(false);
   };
 
   const handleEdit = () => {
     // 実際の編集処理（省略）
     handleEditMessage({ messageId: id, message: content });
-    setIsMenuOpen(false);
   };
 
   const handleReply = () => {
     // 実際の返信処理（省略）
     handleReplyMessage({ parentMessageId: id, message: content });
-    setIsMenuOpen(false);
   };
 
   // リアクション追加/削除処理
@@ -146,7 +133,7 @@ export function ChatMessage({
   return (
     <View
       className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
-        messageId === id ? "bg-gray-100" : ""
+        messageId === id ? 'bg-gray-100' : ''
       }`}
     >
       {/* プロフィール画像 */}
@@ -183,7 +170,7 @@ export function ChatMessage({
             {content && <Text>{content}</Text>}
 
             {/* 画像があれば表示する */}
-            {isLoading ? (
+            {isLoadingImage ? (
               <View className="h-[200px] justify-center items-center mt-2">
                 <ActivityIndicator size="small" color="#888" />
               </View>
@@ -191,7 +178,7 @@ export function ChatMessage({
               <View className="mt-2">
                 <Image
                   source={{ uri: storageImageUrl }}
-                  style={{ width: "100%", height: 200, borderRadius: 12 }}
+                  style={{ width: '100%', height: 200, borderRadius: 12 }}
                   resizeMode="cover"
                 />
               </View>
@@ -223,15 +210,6 @@ export function ChatMessage({
           </View>
         </TouchableOpacity>
       </View>
-
-      {/* コンテキストメニュー */}
-      <MessageContextMenu
-        isVisible={isMenuOpen}
-        onEdit={handleEdit}
-        onReply={handleReply}
-        onDelete={handleDelete}
-        onClose={closeMenu}
-      />
 
       {/* リアクションピッカーモーダル */}
       <ReactionPicker

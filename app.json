@@ -17,6 +17,7 @@
       "bundleIdentifier": "com.anonymous.chat-diary-expo-v2"
     },
     "android": {
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

@@ -14,6 +14,10 @@ export type ChatRoom = {
   };
 };
 
+export type ChatRoomWithMessages = ChatRoom & {
+  chat_room_messages: ChatRoomMessage[];
+};
+
 export class ChatRoomApi {
   constructor(private supabase: SupabaseClient<Database>) {}
 
@@ -39,6 +43,25 @@ export class ChatRoomApi {
     }
   }
 
+  async getChatRoomMessages({ userId }: { userId: string }) {
+    // メッセージを古い順に取得
+    const { data: messages, error: messagesError } = await this.supabase
+      .from('room_messages')
+      .select(
+        'id, owner_id, content, sender, created_at, image_path, reply_to:reply_to_message_id (id, content, sender)',
+      )
+      .eq('owner_id', userId)
+      .order('created_at', { ascending: true })
+      .overrideTypes<Array<ChatRoomMessage>, { merge: false }>();
+
+    if (messagesError) {
+      console.error('Message fetch error:', messagesError);
+      throw messagesError;
+    }
+
+    return messages;
+  }
+
   // IDでチャットルームのデータを取得
   async getChatRoomById({ id }: { id: string }) {
     const { data: chatRoom, error: roomError } = await this.supabase
@@ -53,26 +76,7 @@ export class ChatRoomApi {
       throw roomError;
     }
 
-    // メッセージを古い順に取得
-    const { data: messages, error: messagesError } = await this.supabase
-      .from('room_messages')
-      .select(
-        'id, owner_id, content, sender, created_at, image_path, reply_to:reply_to_message_id (id, content, sender)',
-      )
-      .eq('owner_id', chatRoom.user_id)
-      .order('created_at', { ascending: true })
-      .overrideTypes<Array<ChatRoomMessage>, { merge: false }>();
-
-    if (messagesError) {
-      console.error('Message fetch error:', messagesError);
-      throw messagesError;
-    }
-
-    // 統合して返す
-    return {
-      ...chatRoom,
-      chat_room_messages: messages ?? [],
-    };
+    return chatRoom;
   }
 
   // ユーザーのデフォルトチャットルームを取得

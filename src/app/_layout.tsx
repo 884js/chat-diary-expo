@@ -11,15 +11,23 @@ import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { SafeAreaView } from "@/components/Themed";
+import { View } from '@/components/Themed';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
-import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
+import {
+  ReanimatedLogLevel,
+  configureReanimatedLogger,
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export {
-  ErrorBoundary,
-} from 'expo-router';
+export { ErrorBoundary } from 'expo-router';
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Reanimated runs in strict mode by default
+});
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -56,13 +64,27 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const router = useRouter();
 
+  const insets = useSafeAreaInsets();
+
+  const top = typeof insets.top === 'number' ? insets.top : 0;
+  const bottom = typeof insets.bottom === 'number' ? insets.bottom : 0;
+  const left = typeof insets.left === 'number' ? insets.left : 0;
+  const right = typeof insets.right === 'number' ? insets.right : 0;
+
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <ReactQueryProvider>
-        <SafeAreaView className="flex-1">
+        <View
+          style={{
+            paddingTop: top,
+            paddingBottom: bottom,
+            paddingLeft: left,
+            paddingRight: right,
+            flex: 1,
+          }}
+        >
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
             <Stack.Screen
               name="(chat)/message-context-menu"
               options={{
@@ -70,13 +92,12 @@ function RootLayoutNav() {
                   flex: 1,
                 },
                 headerShown: false,
-                presentation: "formSheet",
-                gestureDirection: "vertical",
-                animation: "slide_from_bottom",
-                sheetGrabberVisible: false,
+                presentation: 'formSheet',
+                gestureDirection: 'vertical',
                 sheetInitialDetentIndex: 0,
-                sheetAllowedDetents: [0.3, 1.0],
-                headerTitle: "Title",
+                sheetAllowedDetents: [0.3],
+                animationDuration: 100,
+                // headerTitle: "Title",
                 headerRight: (navigation) => (
                   <TouchableOpacity
                     onPress={() => router.back()}
@@ -85,11 +106,10 @@ function RootLayoutNav() {
                     <Ionicons name="close" size={24} />
                   </TouchableOpacity>
                 ),
-                gestureEnabled: false,
               }}
             />
           </Stack>
-        </SafeAreaView>
+        </View>
       </ReactQueryProvider>
     </ThemeProvider>
   );
