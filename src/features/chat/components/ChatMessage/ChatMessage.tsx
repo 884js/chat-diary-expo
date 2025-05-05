@@ -3,9 +3,10 @@ import { useStorageImage } from '@/hooks/useStorageImage';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { ReactionPicker } from './ReactionPicker';
+import { Image } from '@/components/Image';
 // リアクション型定義
 type Reaction = {
   emoji: string;
@@ -113,14 +114,14 @@ export function ChatMessage({
   return (
     <View
       className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
-        messageId === id ? 'bg-gray-100' : ''
+        messageId === id ? "bg-gray-100" : ""
       }`}
     >
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
         {avatarUrl ? (
           <Image
-            source={{ uri: avatarUrl }}
+            source={avatarUrl}
             className="w-full h-full rounded-md"
           />
         ) : (
@@ -151,17 +152,9 @@ export function ChatMessage({
             {content && <Text>{content}</Text>}
 
             {/* 画像があれば表示する */}
-            {isLoadingImage ? (
-              <View className="h-[200px] justify-center items-center mt-2">
-                <ActivityIndicator size="small" color="#888" />
-              </View>
-            ) : storageImageUrl ? (
+            {storageImageUrl ? (
               <View className="mt-2">
-                <Image
-                  source={{ uri: storageImageUrl }}
-                  style={{ width: '100%', height: 200, borderRadius: 12 }}
-                  resizeMode="cover"
-                />
+                <Image source={storageImageUrl} style={{ width: 100, height: 100 }} />
               </View>
             ) : null}
 

@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.chat-diary-expo-v2"
+      "bundleIdentifier": "com.anonymous.chat-diary"
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
