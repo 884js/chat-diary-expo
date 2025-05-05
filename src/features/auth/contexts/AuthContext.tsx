@@ -17,7 +17,7 @@ interface AuthContextProps {
   isLoading: boolean;
   isLoggedIn: boolean;
   signInWithX: () => Promise<{ error: Error | null }>;
-  signOut: () => Promise<{ error: Error | null }>;
+  signOut: () => Promise<{ error: Error | null } | undefined>;
   signInWithGoogle: () => Promise<void>;
   isAuthLoading: boolean;
 }
