@@ -113,7 +113,7 @@ export function ChatMessage({
   return (
     <View
       className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
-        messageId === id ? "bg-gray-100" : ""
+        messageId === id ? 'bg-gray-100' : ''
       }`}
     >
       {/* プロフィール画像 */}
@@ -159,7 +159,7 @@ export function ChatMessage({
               <View className="mt-2">
                 <Image
                   source={{ uri: storageImageUrl }}
-                  style={{ width: "100%", height: 200, borderRadius: 12 }}
+                  style={{ width: '100%', height: 200, borderRadius: 12 }}
                   resizeMode="cover"
                 />
               </View>

@@ -12,6 +12,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { View } from '@/components/Themed';
+import { AuthProvider } from '@/features/auth/contexts/AuthContext';
 import { MessageActionProvider } from '@/features/chat/contexts/MessageActionContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
@@ -22,7 +23,6 @@ import {
   configureReanimatedLogger,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AuthProvider } from '@/features/auth/contexts/AuthContext';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -79,7 +79,7 @@ function RootLayoutNav() {
   const right = typeof insets.right === 'number' ? insets.right : 0;
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <MessageActionProvider>
         <View
           style={{
@@ -99,8 +99,8 @@ function RootLayoutNav() {
                   flex: 1,
                 },
                 headerShown: false,
-                presentation: "formSheet",
-                gestureDirection: "vertical",
+                presentation: 'formSheet',
+                gestureDirection: 'vertical',
                 sheetInitialDetentIndex: 0,
                 sheetAllowedDetents: [0.3],
                 animationDuration: 100,
@@ -118,7 +118,7 @@ function RootLayoutNav() {
               name="auth/login"
               options={{
                 headerShown: false,
-                presentation: "transparentModal",
+                presentation: 'transparentModal',
                 gestureEnabled: true,
               }}
             />

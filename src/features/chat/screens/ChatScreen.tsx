@@ -1,18 +1,15 @@
+import { Loader } from '@/components/Loader';
 import { View } from '@/components/Themed';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
-import {
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
-import { ChatMessageList } from "../components/ChatMessageList/ChatMessageList";
+import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
-import { Loader } from "@/components/Loader";
 
 export const ChatScreen = () => {
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom();
@@ -70,7 +67,7 @@ export const ChatScreen = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1 }}
     >
       <View className="flex-1">

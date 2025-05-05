@@ -2,13 +2,13 @@ import { supabase } from '@/lib/supabase/client';
 
 import type { Session, User } from '@supabase/supabase-js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import * as AuthSession from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from 'expo-auth-session';
+import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import * as WebBrowser from 'expo-web-browser';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { AppState, Platform } from 'react-native';
-import * as SecureStore from "expo-secure-store";
-import { useRouter } from 'expo-router';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -34,14 +34,13 @@ const AuthContext = createContext<AuthContextProps>({
   isAuthLoading: false,
 });
 
-AppState.addEventListener("change", (state) => {
-  if (state === "active") {
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
     supabase.auth.startAutoRefresh();
   } else {
     supabase.auth.stopAutoRefresh();
   }
 });
-
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
@@ -62,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // 認証状態の変更を監視
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    useEffect(() => {
+  useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, newSession) => {
@@ -87,20 +86,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const fetchSession = async () => {
       const { data, error } = await supabase.auth.getSession();
       if (error) {
-        console.error("セッション取得失敗:", error.message);
+        console.error('セッション取得失敗:', error.message);
         return;
       }
       setSession(data.session);
-      queryClient.setQueryData(["auth", "user"], data.session?.user ?? null);
+      queryClient.setQueryData(['auth', 'user'], data.session?.user ?? null);
     };
 
     fetchSession();
   }, []);
 
   const signInWithX = async () => {
-    if (Platform.OS === "web") {
+    if (Platform.OS === 'web') {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: "twitter",
+        provider: 'twitter',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
@@ -111,12 +110,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const redirectUri = AuthSession.makeRedirectUri({
-      scheme: "chat-diary",
+      scheme: 'chat-diary',
       preferLocalhost: true,
     });
 
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "twitter",
+      provider: 'twitter',
       options: {
         redirectTo: redirectUri,
         skipBrowserRedirect: true,
@@ -129,12 +128,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const getGoogleOAuthUrl = async (): Promise<string | null> => {
     const redirectUri = AuthSession.makeRedirectUri({
-      scheme: "chat-diary",
+      scheme: 'chat-diary',
       preferLocalhost: true,
     });
 
     const result = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
       options: {
         redirectTo: redirectUri,
       },
@@ -150,11 +149,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const result = await WebBrowser.openAuthSessionAsync(
         url,
-        "chat-diary://google-auth",
-        { showInRecents: true }
+        'chat-diary://google-auth',
+        { showInRecents: true },
       );
 
-      if (result.type === "success") {
+      if (result.type === 'success') {
         const data = extractParamsFromUrl(result.url);
         if (!data.access_token || !data.refresh_token) return;
 
@@ -164,10 +163,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         await SecureStore.setItemAsync(
-          "google-access-token",
-          JSON.stringify(data.provider_token)
+          'google-access-token',
+          JSON.stringify(data.provider_token),
         );
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
       }
     } catch (error) {
       console.error(error);
@@ -193,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         return { error: new Error(error.message) };
       }
-      window.location.href = '/';
+      router.replace('/');
       return { error: null };
     } catch (err) {
       return {
@@ -226,12 +225,12 @@ export function useAuth() {
 }
 
 const extractParamsFromUrl = (url: string) => {
-  const params = new URLSearchParams(url.split("#")[1]);
+  const params = new URLSearchParams(url.split('#')[1]);
   return {
-    access_token: params.get("access_token"),
-    refresh_token: params.get("refresh_token"),
-    expires_in: Number.parseInt(params.get("expires_in") || "0"),
-    token_type: params.get("token_type"),
-    provider_token: params.get("provider_token"),
+    access_token: params.get('access_token'),
+    refresh_token: params.get('refresh_token'),
+    expires_in: Number.parseInt(params.get('expires_in') || '0'),
+    token_type: params.get('token_type'),
+    provider_token: params.get('provider_token'),
   };
 };

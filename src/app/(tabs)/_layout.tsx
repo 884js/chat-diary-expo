@@ -1,10 +1,10 @@
+import { Loader } from '@/components/Loader';
 import Colors from '@/constants/Colors';
 import { useAuth } from '@/features/auth/contexts/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Feather } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
 import type React from 'react';
-import { Loader } from '@/components/Loader';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof Feather>['name'];
@@ -74,7 +74,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: '設定',
-          headerShown: false,
+          headerShown: true,
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="settings" color={color} />
           ),

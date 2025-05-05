@@ -1,7 +1,7 @@
-import { FontAwesome6 } from "@expo/vector-icons";
-import { TouchableOpacity, View } from "react-native";
-import { Text } from "@/components/Themed";
-import { useAuth } from "@/features/auth/contexts/AuthContext";
+import { Text } from '@/components/Themed';
+import { useAuth } from '@/features/auth/contexts/AuthContext';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
   const { signInWithX, signInWithGoogle, isAuthLoading } = useAuth();
@@ -18,7 +18,7 @@ export default function LoginScreen() {
           color="#FFFFFF"
           style={{ marginRight: 12 }}
         />
-        <Text style={{ color: "#FFFFFF", fontWeight: "600", fontSize: 16 }}>
+        <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>
           Xでログイン
         </Text>
       </TouchableOpacity>
@@ -34,7 +34,7 @@ export default function LoginScreen() {
           color="#FFFFFF"
           style={{ marginRight: 12 }}
         />
-        <Text style={{ color: "#FFFFFF", fontWeight: "600", fontSize: 16 }}>
+        <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>
           Googleでログイン
         </Text>
       </TouchableOpacity>

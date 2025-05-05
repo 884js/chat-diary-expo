@@ -1,4 +1,4 @@
-import { View, Text } from "@/components/Themed";
+import { Text, View } from '@/components/Themed';
 
 export const DateDivider = ({ date }: { date: string }) => (
   <View className="flex-row items-center my-4">

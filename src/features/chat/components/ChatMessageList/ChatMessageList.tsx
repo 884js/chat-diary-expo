@@ -47,10 +47,10 @@ export const ChatMessageList = ({ chatRoom, messages, isOwner }: Props) => {
 
         if (isOwner) {
           // オーナー視点: senderがreceiverかsystemなら自分から送信（反転した形で処理）
-          isFromReceiver = msg.sender !== "user" && msg.sender !== "ai";
+          isFromReceiver = msg.sender !== 'user' && msg.sender !== 'ai';
         } else {
           // 送信者視点: senderがreceiverかsystemなら相手から送信（そのまま処理）
-          isFromReceiver = msg.sender === "user" || msg.sender === "ai";
+          isFromReceiver = msg.sender === 'user' || msg.sender === 'ai';
         }
 
         return (
@@ -58,7 +58,7 @@ export const ChatMessageList = ({ chatRoom, messages, isOwner }: Props) => {
             {/* 日付区切り線 */}
             {showDateDivider && messageDate && (
               <DateDivider
-                date={formatDate(messageDate, "yyyy年M月d日(eee)")}
+                date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
               />
             )}
 
@@ -71,7 +71,7 @@ export const ChatMessageList = ({ chatRoom, messages, isOwner }: Props) => {
               replyTo={msg.reply_to}
               isFromReceiver={isFromReceiver}
               isOwner={isOwner}
-              timestamp={formatDate(msg.created_at || "", "HH:mm")}
+              timestamp={formatDate(msg.created_at || '', 'HH:mm')}
               imagePath={msg.image_path}
             />
           </View>

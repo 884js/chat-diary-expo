@@ -6,10 +6,7 @@ type Props = {
   storageName: 'users' | 'chats';
 };
 
-export const useStorageImage = ({
-  imagePath,
-  storageName,
-}: Props) => {
+export const useStorageImage = ({ imagePath, storageName }: Props) => {
   const { supabase } = useSupabase();
 
   const {
