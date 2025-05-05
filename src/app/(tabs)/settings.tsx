@@ -1,5 +1,6 @@
 import { Text, View } from '@/components/Themed';
 import { useAuth } from '@/features/auth/contexts/AuthContext';
+import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
@@ -11,7 +12,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
+  const { currentUser } = useCurrentUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignOut = async () => {
@@ -53,10 +55,10 @@ export default function SettingsScreen() {
             </View>
             <View className="flex-1">
               <Text className="font-medium">
-                {user?.email || 'メールアドレスなし'}
+                {currentUser?.email || "メールアドレスなし"}
               </Text>
               <Text className="text-sm text-gray-500">
-                @{user?.user_metadata?.user_name || 'ユーザー名なし'}
+                @{currentUser?.user_metadata?.user_name || "ユーザー名なし"}
               </Text>
             </View>
           </View>

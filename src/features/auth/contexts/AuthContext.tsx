@@ -17,7 +17,7 @@ interface AuthContextProps {
   isLoading: boolean;
   isLoggedIn: boolean;
   signInWithX: () => Promise<{ error: Error | null }>;
-  signOut: () => Promise<{ error: Error | null } | undefined>;
+  signOut: () => Promise<{ error: Error | null }>;
   signInWithGoogle: () => Promise<void>;
   isAuthLoading: boolean;
 }
@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } = await supabase.auth.getUser();
       return user || null;
     },
+    enabled: !!session,
   });
 
   // 認証状態の変更を監視
@@ -203,7 +204,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: null };
     } catch (err) {
       console.error(err);
-      router.navigate("/auth/login");
+      return { error: new Error(err instanceof Error ? err.message : "不明なエラーが発生しました") };
     }
   };
 

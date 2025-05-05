@@ -1,11 +1,10 @@
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useSupabase } from '@/hooks/useSupabase';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 export const useSendMessage = () => {
   const { api } = useSupabase();
   const { currentUser } = useCurrentUser();
-  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: ({
@@ -20,7 +19,7 @@ export const useSendMessage = () => {
       return api.chatRoomMessage.sendMessage({
         content: content,
         sender: senderType,
-        senderId: currentUser?.id,
+        senderId: currentUser?.id ?? "",
         imagePath: imagePath,
       });
     },

@@ -10,14 +10,12 @@ import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
-import { useAuth } from '@/features/auth/contexts/AuthContext';
 
 export const ChatScreen = () => {
   const { sendMessage } = useSendMessage();
-  const { session } = useAuth();
   const { currentUser } = useCurrentUser();
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
-    userId: session?.user?.id ?? "",
+    userId: currentUser?.id ?? "",
   });
   const { messages, refetchMessages } = useRoomUserMessages({
     userId: chatRoom?.user_id,
