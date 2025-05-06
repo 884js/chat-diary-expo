@@ -88,7 +88,6 @@ export default function MessageContextMenuScreen() {
           />
           <Text className="text-base text-gray-600">編集</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           className="flex-row items-center py-4 border-b border-gray-100"
           onPress={handleReply}
@@ -101,7 +100,6 @@ export default function MessageContextMenuScreen() {
           />
           <Text className="text-base text-gray-600">返信</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           className="flex-row items-center py-4 border-b border-gray-100"
           onPress={handleDelete}
