@@ -55,10 +55,10 @@ export default function SettingsScreen() {
             </View>
             <View className="flex-1">
               <Text className="font-medium">
-                {currentUser?.email || "メールアドレスなし"}
+                {currentUser?.email || 'メールアドレスなし'}
               </Text>
               <Text className="text-sm text-gray-500">
-                @{currentUser?.user_metadata?.user_name || "ユーザー名なし"}
+                @{currentUser?.user_metadata?.user_name || 'ユーザー名なし'}
               </Text>
             </View>
           </View>

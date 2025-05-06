@@ -17,9 +17,7 @@ export const useCurrentUserRoom = ({ userId }: Props) => {
     queryFn: async () => {
       if (!userId) return null;
 
-      const defaultChatRoom = await api.chatRoom.getDefaultChatRoom(
-        userId,
-      );
+      const defaultChatRoom = await api.chatRoom.getDefaultChatRoom(userId);
 
       if (!defaultChatRoom) {
         // デフォルトのチャットルームを作成する

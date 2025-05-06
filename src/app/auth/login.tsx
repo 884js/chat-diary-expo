@@ -18,7 +18,7 @@ export default function LoginScreen() {
           color="#FFFFFF"
           style={{ marginRight: 12 }}
         />
-        <Text style={{ color: "#FFFFFF", fontWeight: "600", fontSize: 16 }}>
+        <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>
           Xでログイン
         </Text>
       </TouchableOpacity>

@@ -1,3 +1,4 @@
+import { Image } from '@/components/Image';
 import { Text, View } from '@/components/Themed';
 import { useStorageImage } from '@/hooks/useStorageImage';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
@@ -6,7 +7,6 @@ import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { ReactionPicker } from './ReactionPicker';
-import { Image } from '@/components/Image';
 // リアクション型定義
 type Reaction = {
   emoji: string;
@@ -114,16 +114,13 @@ export function ChatMessage({
   return (
     <View
       className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
-        messageId === id ? "bg-gray-100" : ""
+        messageId === id ? 'bg-gray-100' : ''
       }`}
     >
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
         {avatarUrl ? (
-          <Image
-            source={avatarUrl}
-            style={{ width: 40, height: 40 }}
-          />
+          <Image source={avatarUrl} style={{ width: 40, height: 40 }} />
         ) : (
           <View className="w-full h-full items-center justify-center bg-gray-300">
             <Text className="text-gray-500 text-sm font-medium">
@@ -154,7 +151,10 @@ export function ChatMessage({
             {/* 画像があれば表示する */}
             {storageImageUrl ? (
               <View className="mt-2">
-                <Image source={storageImageUrl} style={{ width: 100, height: 100 }} />
+                <Image
+                  source={storageImageUrl}
+                  style={{ width: 100, height: 100 }}
+                />
               </View>
             ) : null}
 

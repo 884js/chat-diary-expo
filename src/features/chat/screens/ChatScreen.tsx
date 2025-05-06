@@ -15,7 +15,7 @@ export const ChatScreen = () => {
   const { sendMessage } = useSendMessage();
   const { currentUser } = useCurrentUser();
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
-    userId: currentUser?.id ?? "",
+    userId: currentUser?.id ?? '',
   });
   const { messages, refetchMessages } = useRoomUserMessages({
     userId: chatRoom?.user_id,
@@ -64,11 +64,12 @@ export const ChatScreen = () => {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1 }}
-    >
-      <View className="flex-1">
+    <View className="flex-1">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={60}
+      >
         <ChatHeader />
         <ChatMessageList
           chatRoom={chatRoom}
@@ -77,8 +78,8 @@ export const ChatScreen = () => {
           isChatEnded={false}
           isOwner={true}
         />
-      </View>
-      <ChatInput onSend={handleSendMessage} isDisabled={false} />
-    </KeyboardAvoidingView>
+        <ChatInput onSend={handleSendMessage} isDisabled={false} />
+      </KeyboardAvoidingView>
+    </View>
   );
 };

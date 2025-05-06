@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const restoreSession = async () => {
-      const sessionStr = await SecureStore.getItemAsync("google-access-token");
+      const sessionStr = await SecureStore.getItemAsync('google-access-token');
       if (sessionStr) {
         const session = JSON.parse(sessionStr);
         const { error, data } = await supabase.auth.setSession({
@@ -85,10 +85,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         setSession(data.session);
 
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
 
         if (error) {
-          await SecureStore.deleteItemAsync("google-access-token");
+          await SecureStore.deleteItemAsync('google-access-token');
         }
       }
     };
@@ -127,11 +127,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const getGoogleOAuthUrl = async (): Promise<string | null> => {
     const redirectUri = AuthSession.makeRedirectUri({
-      scheme: "chat-diary",
+      scheme: 'chat-diary',
     });
 
     const result = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
       options: {
         redirectTo: redirectUri,
       },
@@ -157,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = getQueryParams(result.url);
         if (!data.access_token || !data.refresh_token) return;
 
-        const session =await setOAuthSession({
+        const session = await setOAuthSession({
           access_token: data.access_token,
           refresh_token: data.refresh_token,
         });
@@ -198,13 +198,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         return { error: new Error(error.message) };
       }
-      await SecureStore.deleteItemAsync("google-access-token");
+      await SecureStore.deleteItemAsync('google-access-token');
       setSession(null);
       router.navigate('/auth/login');
       return { error: null };
     } catch (err) {
       console.error(err);
-      return { error: new Error(err instanceof Error ? err.message : "不明なエラーが発生しました") };
+      return {
+        error: new Error(
+          err instanceof Error ? err.message : '不明なエラーが発生しました',
+        ),
+      };
     }
   };
 
@@ -232,12 +236,12 @@ export function useAuth() {
 
 const getQueryParams = (url: string) => {
   const queryParams: Record<string, string> = {};
-  const [, queryString] = url.split("#");
+  const [, queryString] = url.split('#');
   if (queryString) {
-    const pairs = queryString.split("&");
+    const pairs = queryString.split('&');
     for (const pair of pairs) {
-      const [key, value] = pair.split("=");
-      queryParams[key] = decodeURIComponent(value || "");
+      const [key, value] = pair.split('=');
+      queryParams[key] = decodeURIComponent(value || '');
     }
   }
 

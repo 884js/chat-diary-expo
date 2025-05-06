@@ -19,7 +19,7 @@ export const useSendMessage = () => {
       return api.chatRoomMessage.sendMessage({
         content: content,
         sender: senderType,
-        senderId: currentUser?.id ?? "",
+        senderId: currentUser?.id ?? '',
         imagePath: imagePath,
       });
     },
