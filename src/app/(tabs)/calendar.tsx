@@ -8,23 +8,31 @@ import { CalendarHeader } from '@/features/calendar/components/CalendarHeader';
 import { EmptyCalendar } from '@/features/calendar/components/EmptyCalendar';
 import { useCalendarDays } from '@/features/calendar/hooks/useCalendar';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { TZDate } from '@date-fns/tz';
 import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
-
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 // メインのカレンダー画面
 export default function CalendarScreen() {
-  const now = new Date();
-  const today = formatDate(new Date(), 'yyyy-MM-dd'); // 例: '2025-05-07'
+  const TIME_ZONE = "Asia/Tokyo";
+  const now = toZonedTime(new Date(), TIME_ZONE);
+  const japanTime = now.getTime() + 9 * 60 * 60 * 1000;
+  const today = new Date(japanTime);
   const [currentDate, setCurrentDate] = useState(today);
   const [expandedMessageIds, setExpandedMessageIds] = useState<string[]>([]);
   const [expandedDays, setExpandedDays] = useState<string[]>([]);
   const { currentUser } = useCurrentUser();
 
   // 月の開始日と終了日の取得
-  const startAt = startOfMonth(
-    new TZDate(currentDate, 'Asia/Tokyo'),
-  ).toISOString();
-  const endAt = endOfMonth(new TZDate(currentDate, 'Asia/Tokyo')).toISOString();
+  const startAt = formatInTimeZone(
+    startOfMonth(currentDate),
+    TIME_ZONE,
+  "yyyy-MM-dd"
+);
+  const endAt = formatInTimeZone(
+    endOfMonth(currentDate),
+    TIME_ZONE,
+    "yyyy-MM-dd"
+  );
+
   const { calendarDays, isLoading, isError, refetch } = useCalendarDays({
     userId: currentUser?.id ?? '',
     startAt,
@@ -32,19 +40,13 @@ export default function CalendarScreen() {
   });
 
   const handlePreviousMonth = () => {
-    const prev = subMonths(
-      new TZDate(currentDate, 'Asia/Tokyo').toISOString(),
-      1,
-    );
-    setCurrentDate(formatDate(prev, 'yyyy-MM-dd'));
+    const prev = subMonths(currentDate, 1);
+    setCurrentDate(prev);
   };
 
   const handleNextMonth = () => {
-    const next = addMonths(
-      new TZDate(currentDate, 'Asia/Tokyo').toISOString(),
-      1,
-    );
-    setCurrentDate(formatDate(next, 'yyyy-MM-dd'));
+    const next = addMonths(currentDate, 1);
+    setCurrentDate(next);
   };
 
   const toggleExpandMessage = (messageId: string) => {
