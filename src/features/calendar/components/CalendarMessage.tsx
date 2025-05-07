@@ -1,7 +1,7 @@
-import { format, parseISO } from 'date-fns';
-import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
+import { format, parseISO } from 'date-fns';
+import { TouchableOpacity, View } from 'react-native';
 
 type CalendarMessageProps = {
   message: {
@@ -27,7 +27,9 @@ export const CalendarMessage = ({
   return (
     <View className="mb-3">
       <View className="mb-1">
-        <Text className="text-gray-500 text-xs font-medium mb-1">{messageTime}</Text>
+        <Text className="text-gray-500 text-xs font-medium mb-1">
+          {messageTime}
+        </Text>
         <Text
           className={`text-gray-700 leading-5 ${isExpanded ? '' : 'line-clamp-3'}`}
           numberOfLines={isExpanded ? undefined : 3}
@@ -44,10 +46,10 @@ export const CalendarMessage = ({
           <Text className="text-xs text-indigo-500 mr-1">
             {isExpanded ? '閉じる' : '続きを読む'}
           </Text>
-          <Feather 
-            name={isExpanded ? "chevron-up" : "chevron-down"} 
-            size={14} 
-            color="#6366f1" 
+          <Feather
+            name={isExpanded ? 'chevron-up' : 'chevron-down'}
+            size={14}
+            color="#6366f1"
           />
         </TouchableOpacity>
       )}

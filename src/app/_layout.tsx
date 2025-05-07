@@ -103,7 +103,7 @@ function RootLayoutNav() {
                 gestureDirection: 'vertical',
                 sheetInitialDetentIndex: 0,
                 sheetAllowedDetents: [0.3],
-                animationDuration: 100,
+                animationDuration: 40,
                 headerRight: (navigation) => (
                   <TouchableOpacity
                     onPress={() => router.back()}

@@ -1,9 +1,9 @@
+import { Text } from '@/components/Themed';
+import { Feather } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { Text } from '@/components/Themed';
 
 type DayCardProps = {
   day: {
@@ -56,7 +56,9 @@ export const DayCard = ({
   return (
     <View className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm mb-4">
       <View className="flex-row justify-between items-center p-3 bg-gray-50 border-b border-gray-100">
-        <Text className="text-base font-medium text-gray-700">{formattedDate}</Text>
+        <Text className="text-base font-medium text-gray-700">
+          {formattedDate}
+        </Text>
         <TouchableOpacity
           className="py-1.5 px-3 rounded-full bg-white border border-gray-200 active:bg-gray-100"
           onPress={handleSummarize}
@@ -66,8 +68,8 @@ export const DayCard = ({
             {isGeneratingSummary
               ? '実行中...'
               : hasHighlights
-              ? '再実行'
-              : 'まとめる'}
+                ? '再実行'
+                : 'まとめる'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -75,7 +77,9 @@ export const DayCard = ({
       <View className="p-4">
         {hasHighlights && (
           <View className="mb-5">
-            <Text className="text-sm font-medium text-indigo-600 mb-2.5">この日のできごと</Text>
+            <Text className="text-sm font-medium text-indigo-600 mb-2.5">
+              この日のできごと
+            </Text>
 
             {aiGeneratedHighlights.good.length > 0 && (
               <View className="p-3 mb-2.5 bg-green-50 rounded-lg border border-green-100">
@@ -83,10 +87,15 @@ export const DayCard = ({
                   <View className="w-5 h-5 rounded-full bg-green-500 items-center justify-center mr-1.5">
                     <Feather name="check" size={12} color="#ffffff" />
                   </View>
-                  <Text className="text-sm font-medium text-green-700">良かったこと</Text>
+                  <Text className="text-sm font-medium text-green-700">
+                    良かったこと
+                  </Text>
                 </View>
                 {aiGeneratedHighlights.good.map((item, index) => (
-                  <View key={`good-${item.substring(0, 10)}-${index}`} className="ml-3 mb-1.5">
+                  <View
+                    key={`good-${item.substring(0, 10)}-${index}`}
+                    className="ml-3 mb-1.5"
+                  >
                     <Text className="text-sm text-gray-700">• {item}</Text>
                   </View>
                 ))}
@@ -99,10 +108,15 @@ export const DayCard = ({
                   <View className="w-5 h-5 rounded-full bg-blue-500 items-center justify-center mr-1.5">
                     <Feather name="star" size={12} color="#ffffff" />
                   </View>
-                  <Text className="text-sm font-medium text-blue-700">新しいこと</Text>
+                  <Text className="text-sm font-medium text-blue-700">
+                    新しいこと
+                  </Text>
                 </View>
                 {aiGeneratedHighlights.new.map((item, index) => (
-                  <View key={`new-${item.substring(0, 10)}-${index}`} className="ml-3 mb-1.5">
+                  <View
+                    key={`new-${item.substring(0, 10)}-${index}`}
+                    className="ml-3 mb-1.5"
+                  >
                     <Text className="text-sm text-gray-700">• {item}</Text>
                   </View>
                 ))}

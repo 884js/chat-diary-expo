@@ -1,50 +1,57 @@
-import { addMonths } from '@/lib/date-fns';
-import { useState } from 'react';
 import { View } from '@/components/Themed';
+import { addMonths, formatDate } from '@/lib/date-fns';
+import { useState } from 'react';
 
-import { CalendarHeader } from '@/features/calendar/components/CalendarHeader';
+import { Loader } from '@/components/Loader';
 import { CalendarGrid } from '@/features/calendar/components/CalendarGrid';
+import { CalendarHeader } from '@/features/calendar/components/CalendarHeader';
 import { EmptyCalendar } from '@/features/calendar/components/EmptyCalendar';
 import { useCalendarDays } from '@/features/calendar/hooks/useCalendar';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { Loader } from '@/components/Loader';
-import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
 import { TZDate } from '@date-fns/tz';
+import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
 
 // メインのカレンダー画面
 export default function CalendarScreen() {
-  const [currentDate, setCurrentDate] = useState(new TZDate());
+  const now = new Date();
+  const today = formatDate(new Date(), 'yyyy-MM-dd'); // 例: '2025-05-07'
+  const [currentDate, setCurrentDate] = useState(today);
   const [expandedMessageIds, setExpandedMessageIds] = useState<string[]>([]);
-  const [expandedDays, setExpandedDays] = useState<string[]>([])
+  const [expandedDays, setExpandedDays] = useState<string[]>([]);
   const { currentUser } = useCurrentUser();
 
   // 月の開始日と終了日の取得
-  const startAt = startOfMonth(currentDate).toISOString();
-  const endAt = endOfMonth(currentDate).toISOString();
-  const {
-    calendarDays,
-    isLoading,
-    isError,
-    refetch
-  } = useCalendarDays({
+  const startAt = startOfMonth(
+    new TZDate(currentDate, 'Asia/Tokyo'),
+  ).toISOString();
+  const endAt = endOfMonth(new TZDate(currentDate, 'Asia/Tokyo')).toISOString();
+  const { calendarDays, isLoading, isError, refetch } = useCalendarDays({
     userId: currentUser?.id ?? '',
     startAt,
-    endAt
+    endAt,
   });
 
   const handlePreviousMonth = () => {
-    setCurrentDate((prev) => subMonths(prev, 1));
+    const prev = subMonths(
+      new TZDate(currentDate, 'Asia/Tokyo').toISOString(),
+      1,
+    );
+    setCurrentDate(formatDate(prev, 'yyyy-MM-dd'));
   };
 
   const handleNextMonth = () => {
-    setCurrentDate((prev) => addMonths(prev, 1));
+    const next = addMonths(
+      new TZDate(currentDate, 'Asia/Tokyo').toISOString(),
+      1,
+    );
+    setCurrentDate(formatDate(next, 'yyyy-MM-dd'));
   };
 
   const toggleExpandMessage = (messageId: string) => {
     setExpandedMessageIds((prev) =>
       prev.includes(messageId)
         ? prev.filter((id) => id !== messageId)
-        : [...prev, messageId]
+        : [...prev, messageId],
     );
   };
 
@@ -52,7 +59,7 @@ export default function CalendarScreen() {
     setExpandedDays((prev) =>
       prev.includes(dateKey)
         ? prev.filter((date) => date !== dateKey)
-        : [...prev, dateKey]
+        : [...prev, dateKey],
     );
   };
 
@@ -74,7 +81,7 @@ export default function CalendarScreen() {
           onNextMonth={handleNextMonth}
         />
       </View>
-      
+
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
           <Loader />

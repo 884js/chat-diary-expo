@@ -25,7 +25,7 @@ export const CalendarGrid = ({
   onToggleExpandDay,
   onSummarize,
 }: CalendarGridProps) => {
-  const renderItem = ({ item }: { item: typeof calendarDays[0] }) => {
+  const renderItem = ({ item }: { item: (typeof calendarDays)[0] }) => {
     const dateKey = item.date;
     const isExpandedDay = expandedDays.includes(dateKey);
 

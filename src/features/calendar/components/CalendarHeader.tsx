@@ -1,8 +1,8 @@
+import { Text } from '@/components/Themed';
+import { AntDesign } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { TouchableOpacity, View } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { Text } from '@/components/Themed';
 
 type CalendarHeaderProps = {
   currentDate: Date;
@@ -26,9 +26,11 @@ export const CalendarHeader = ({
         <AntDesign name="arrowleft" size={18} color="#6366f1" />
         <Text className="text-indigo-500 font-medium ml-1 mr-1">前月</Text>
       </TouchableOpacity>
-      
-      <Text className="text-xl font-semibold text-gray-800">{currentYearMonth}</Text>
-      
+
+      <Text className="text-xl font-semibold text-gray-800">
+        {currentYearMonth}
+      </Text>
+
       <TouchableOpacity
         onPress={onNextMonth}
         className="flex-row items-center p-2 rounded-full bg-gray-50"

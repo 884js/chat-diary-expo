@@ -1,6 +1,6 @@
-import { View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import { Text } from '@/components/Themed';
+import { Feather } from '@expo/vector-icons';
+import { View } from 'react-native';
 
 export const EmptyCalendar = () => {
   return (
@@ -8,7 +8,9 @@ export const EmptyCalendar = () => {
       <View className="bg-indigo-50 p-5 rounded-full mb-6">
         <Feather name="calendar" size={64} color="#818cf8" />
       </View>
-      <Text className="text-xl font-semibold text-gray-800 mb-3">この月の投稿はありません</Text>
+      <Text className="text-xl font-semibold text-gray-800 mb-3">
+        この月の投稿はありません
+      </Text>
       <Text className="text-gray-500 text-center max-w-xs">
         別の月を選択するか、新しく書き始めましょう
       </Text>
