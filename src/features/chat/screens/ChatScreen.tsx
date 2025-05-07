@@ -66,9 +66,9 @@ export const ChatScreen = () => {
   return (
     <View className="flex-1">
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={60}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flexGrow: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
       >
         <ChatHeader />
         <ChatMessageList
