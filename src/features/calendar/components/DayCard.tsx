@@ -77,9 +77,11 @@ export const DayCard = ({
       <View className="p-4">
         {hasHighlights && (
           <View className="mb-5">
-            <Text className="text-sm font-medium text-indigo-600 mb-2.5">
-              この日のできごと
-            </Text>
+            <View className="flex-row items-center mb-2">
+              <Text className="text-sm font-medium text-indigo-600">
+                この日のできごと
+              </Text>
+            </View>
 
             {aiGeneratedHighlights.good.length > 0 && (
               <View className="p-3 mb-2.5 bg-green-50 rounded-lg border border-green-100">
