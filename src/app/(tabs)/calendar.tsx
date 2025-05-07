@@ -9,10 +9,11 @@ import { useCalendarDays } from '@/features/calendar/hooks/useCalendar';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { Loader } from '@/components/Loader';
 import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
+import { TZDate } from '@date-fns/tz';
 
 // メインのカレンダー画面
 export default function CalendarScreen() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new TZDate());
   const [expandedMessageIds, setExpandedMessageIds] = useState<string[]>([]);
   const [expandedDays, setExpandedDays] = useState<string[]>([])
   const { currentUser } = useCurrentUser();
@@ -65,14 +66,19 @@ export default function CalendarScreen() {
   };
 
   return (
-    <View className="flex-1">
-      <CalendarHeader
-        currentDate={currentDate}
-        onPreviousMonth={handlePreviousMonth}
-        onNextMonth={handleNextMonth}
-      />
+    <View className="flex-1 bg-gray-50">
+      <View className="shadow-sm z-10">
+        <CalendarHeader
+          currentDate={currentDate}
+          onPreviousMonth={handlePreviousMonth}
+          onNextMonth={handleNextMonth}
+        />
+      </View>
+      
       {isLoading ? (
-        <Loader />
+        <View className="flex-1 justify-center items-center">
+          <Loader />
+        </View>
       ) : calendarDays.length > 0 ? (
         <CalendarGrid
           calendarDays={calendarDays}
@@ -83,7 +89,9 @@ export default function CalendarScreen() {
           onSummarize={handleSummarize}
         />
       ) : (
-        <EmptyCalendar />
+        <View className="flex-1 p-4">
+          <EmptyCalendar />
+        </View>
       )}
     </View>
   );

@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@/components/Themed';
+import { Feather } from '@expo/vector-icons';
 
 type CalendarMessageProps = {
   message: {
@@ -24,11 +25,11 @@ export const CalendarMessage = ({
   const content = message.content || '（無題）';
 
   return (
-    <View style={styles.messageContainer}>
-      <View style={styles.messageContent}>
-        <Text style={styles.messageTime}>{messageTime}</Text>
+    <View className="mb-3">
+      <View className="mb-1">
+        <Text className="text-gray-500 text-xs font-medium mb-1">{messageTime}</Text>
         <Text
-          style={styles.messageText}
+          className={`text-gray-700 leading-5 ${isExpanded ? '' : 'line-clamp-3'}`}
           numberOfLines={isExpanded ? undefined : 3}
         >
           {content}
@@ -38,61 +39,27 @@ export const CalendarMessage = ({
       {content.length > 100 && (
         <TouchableOpacity
           onPress={() => onToggleExpand(message.id)}
-          style={styles.messageButton}
+          className="mt-1.5 flex-row items-center"
         >
-          <Text style={styles.messageButtonText}>
+          <Text className="text-xs text-indigo-500 mr-1">
             {isExpanded ? '閉じる' : '続きを読む'}
           </Text>
+          <Feather 
+            name={isExpanded ? "chevron-up" : "chevron-down"} 
+            size={14} 
+            color="#6366f1" 
+          />
         </TouchableOpacity>
       )}
 
       {message.image_path && (
-        <View style={styles.messageImageContainer}>
-          <Text style={styles.messageImageText}>画像あり</Text>
+        <View className="flex-row items-center mt-1.5">
+          <Feather name="image" size={14} color="#6366f1" />
+          <Text className="text-xs text-indigo-500 ml-1">画像あり</Text>
         </View>
       )}
 
-      {!isLast && <View style={styles.messageDivider} />}
+      {!isLast && <View className="h-px w-full bg-gray-100 my-3" />}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  messageContainer: {
-    marginBottom: 8,
-  },
-  messageContent: {
-    marginBottom: 4,
-  },
-  messageTime: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 2,
-  },
-  messageText: {
-    fontSize: 14,
-    color: '#334155',
-    lineHeight: 20,
-  },
-  messageButton: {
-    marginTop: 4,
-  },
-  messageButtonText: {
-    fontSize: 12,
-    color: '#6366f1',
-  },
-  messageImageContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  messageImageText: {
-    fontSize: 12,
-    color: '#6366f1',
-  },
-  messageDivider: {
-    height: 1,
-    backgroundColor: '#f1f5f9',
-    marginVertical: 8,
-  },
-});

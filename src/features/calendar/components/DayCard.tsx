@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Text } from '@/components/Themed';
 
@@ -54,15 +54,15 @@ export const DayCard = ({
     aiGeneratedHighlights.new.length > 0;
 
   return (
-    <View style={styles.dayCardContainer}>
-      <View style={styles.dayCardHeader}>
-        <Text style={styles.dayCardTitle}>{formattedDate}</Text>
+    <View className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm mb-4">
+      <View className="flex-row justify-between items-center p-3 bg-gray-50 border-b border-gray-100">
+        <Text className="text-base font-medium text-gray-700">{formattedDate}</Text>
         <TouchableOpacity
-          style={styles.dayCardButton}
+          className="py-1.5 px-3 rounded-full bg-white border border-gray-200 active:bg-gray-100"
           onPress={handleSummarize}
           disabled={isGeneratingSummary}
         >
-          <Text style={styles.dayCardButtonText}>
+          <Text className="text-xs text-gray-600">
             {isGeneratingSummary
               ? '実行中...'
               : hasHighlights
@@ -72,34 +72,38 @@ export const DayCard = ({
         </TouchableOpacity>
       </View>
 
-      <View style={styles.dayCardContent}>
+      <View className="p-4">
         {hasHighlights && (
-          <View style={styles.highlightsContainer}>
-            <Text style={styles.highlightsTitle}>この日のできごと</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-indigo-600 mb-2.5">この日のできごと</Text>
 
             {aiGeneratedHighlights.good.length > 0 && (
-              <View style={styles.goodHighlights}>
-                <View style={styles.highlightHeader}>
-                  <Feather name="check" size={14} color="#16a34a" />
-                  <Text style={styles.goodHighlightsTitle}>良かったこと</Text>
+              <View className="p-3 mb-2.5 bg-green-50 rounded-lg border border-green-100">
+                <View className="flex-row items-center mb-2">
+                  <View className="w-5 h-5 rounded-full bg-green-500 items-center justify-center mr-1.5">
+                    <Feather name="check" size={12} color="#ffffff" />
+                  </View>
+                  <Text className="text-sm font-medium text-green-700">良かったこと</Text>
                 </View>
                 {aiGeneratedHighlights.good.map((item, index) => (
-                  <View key={`good-${item.substring(0, 10)}-${index}`} style={styles.highlightItem}>
-                    <Text style={styles.highlightItemText}>• {item}</Text>
+                  <View key={`good-${item.substring(0, 10)}-${index}`} className="ml-3 mb-1.5">
+                    <Text className="text-sm text-gray-700">• {item}</Text>
                   </View>
                 ))}
               </View>
             )}
 
             {aiGeneratedHighlights.new.length > 0 && (
-              <View style={styles.newHighlights}>
-                <View style={styles.highlightHeader}>
-                  <Feather name="star" size={14} color="#2563eb" />
-                  <Text style={styles.newHighlightsTitle}>新しいこと</Text>
+              <View className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <View className="flex-row items-center mb-2">
+                  <View className="w-5 h-5 rounded-full bg-blue-500 items-center justify-center mr-1.5">
+                    <Feather name="star" size={12} color="#ffffff" />
+                  </View>
+                  <Text className="text-sm font-medium text-blue-700">新しいこと</Text>
                 </View>
                 {aiGeneratedHighlights.new.map((item, index) => (
-                  <View key={`new-${item.substring(0, 10)}-${index}`} style={styles.highlightItem}>
-                    <Text style={styles.highlightItemText}>• {item}</Text>
+                  <View key={`new-${item.substring(0, 10)}-${index}`} className="ml-3 mb-1.5">
+                    <Text className="text-sm text-gray-700">• {item}</Text>
                   </View>
                 ))}
               </View>
@@ -110,106 +114,3 @@ export const DayCard = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  dayCardContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    overflow: 'hidden',
-  },
-  dayCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#f8fafc',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  dayCardTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#475569',
-  },
-  dayCardButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
-  },
-  dayCardButtonText: {
-    fontSize: 12,
-    color: '#64748b',
-  },
-  dayCardContent: {
-    padding: 16,
-  },
-  highlightsContainer: {
-    marginBottom: 16,
-  },
-  highlightsTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#4f46e5',
-    marginBottom: 8,
-  },
-  goodHighlights: {
-    padding: 12,
-    backgroundColor: '#f0fdf4',
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#d1fae5',
-    marginBottom: 8,
-  },
-  highlightHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  goodHighlightsTitle: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#16a34a',
-    marginLeft: 4,
-  },
-  newHighlights: {
-    padding: 12,
-    backgroundColor: '#eff6ff',
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#dbeafe',
-  },
-  newHighlightsTitle: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#2563eb',
-    marginLeft: 4,
-  },
-  highlightItem: {
-    marginLeft: 8,
-    marginBottom: 4,
-  },
-  highlightItemText: {
-    fontSize: 13,
-    color: '#334155',
-    lineHeight: 20,
-  },
-  messagesContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-    paddingBottom: 12,
-    marginBottom: 12,
-  },
-  showMoreButton: {
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  showMoreButtonText: {
-    fontSize: 12,
-    color: '#6366f1',
-  },
-});

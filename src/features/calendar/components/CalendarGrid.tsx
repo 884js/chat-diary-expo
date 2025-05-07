@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { DayCard } from './DayCard';
 
 type CalendarGridProps = {
@@ -46,14 +46,9 @@ export const CalendarGrid = ({
       data={calendarDays}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      contentContainerStyle={styles.calendarGridContent}
-      ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+      className="p-4"
+      ItemSeparatorComponent={() => <View className="h-3" />}
+      showsVerticalScrollIndicator={false}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  calendarGridContent: {
-    padding: 16,
-  },
-});

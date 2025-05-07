@@ -11,7 +11,6 @@ export class CalendarApi {
   async getCalendarDays(userId: string, startAt: string, endAt: string) {
     // 月初と月末の日付から年月を抽出
     const startDate = new Date(startAt);
-    const yearMonth = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`;
 
     const { data, error } = await this.supabase
       .from('calendar_days')

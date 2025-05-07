@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Text } from '@/components/Themed';
 
@@ -18,53 +18,24 @@ export const CalendarHeader = ({
   const currentYearMonth = format(currentDate, 'yyyy年M月', { locale: ja });
 
   return (
-    <View style={styles.headerContainer}>
+    <View className="flex-row justify-between items-center px-4 py-5 bg-white shadow-sm border-b border-gray-100">
       <TouchableOpacity
         onPress={onPreviousMonth}
-        style={styles.headerButton}
+        className="flex-row items-center p-2 rounded-full bg-gray-50"
       >
-        <AntDesign name="arrowleft" size={16} color="#666" />
-        <Text style={styles.headerButtonText}>前月</Text>
+        <AntDesign name="arrowleft" size={18} color="#6366f1" />
+        <Text className="text-indigo-500 font-medium ml-1 mr-1">前月</Text>
       </TouchableOpacity>
       
-      <Text style={styles.headerTitle}>{currentYearMonth}</Text>
+      <Text className="text-xl font-semibold text-gray-800">{currentYearMonth}</Text>
       
       <TouchableOpacity
         onPress={onNextMonth}
-        style={styles.headerButton}
+        className="flex-row items-center p-2 rounded-full bg-gray-50"
       >
-        <Text style={styles.headerButtonText}>次月</Text>
-        <AntDesign name="arrowright" size={16} color="#666" />
+        <Text className="text-indigo-500 font-medium ml-1 mr-1">次月</Text>
+        <AntDesign name="arrowright" size={18} color="#6366f1" />
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    marginBottom: 8,
-    backgroundColor: '#ffffff',
-  },
-  headerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  headerButtonText: {
-    fontSize: 14,
-    color: '#4b5563',
-    marginHorizontal: 4,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-  }
-});
