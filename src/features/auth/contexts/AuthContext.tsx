@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const restoreSession = async () => {
-      const sessionStr = await SecureStore.getItemAsync('google-access-token');
+      const sessionStr = await SecureStore.getItemAsync("google-access-token");
       if (sessionStr) {
         const session = JSON.parse(sessionStr);
         const { error, data } = await supabase.auth.setSession({
@@ -85,11 +85,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         setSession(data.session);
 
-        router.replace('/(tabs)');
+        router.replace("/(tabs)");
 
         if (error) {
-          await SecureStore.deleteItemAsync('google-access-token');
+          await SecureStore.deleteItemAsync("google-access-token");
         }
+      } else {
+        router.replace("/auth/login");
       }
     };
     restoreSession();

@@ -1,8 +1,7 @@
 import Colors from '@/constants/Colors';
-import { useAuth } from '@/features/auth/contexts/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Feather } from '@expo/vector-icons';
-import { Redirect, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import type React from 'react';
 
 function TabBarIcon(props: {
@@ -16,11 +15,6 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { session } = useAuth();
-
-  if (!session) {
-    return <Redirect href="/auth/login" />;
-  }
 
   return (
     <Tabs
