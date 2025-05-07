@@ -12,7 +12,7 @@ import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
 
 export const ChatScreen = () => {
-  const { sendMessage } = useSendMessage();
+  const { sendMessage, variables, isPending } = useSendMessage();
   const { currentUser } = useCurrentUser();
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
     userId: currentUser?.id ?? '',
@@ -56,7 +56,6 @@ export const ChatScreen = () => {
       content: trimmedMessage,
       imagePath,
     });
-    refetchMessages();
   };
 
   if (!chatRoom) {
@@ -66,9 +65,9 @@ export const ChatScreen = () => {
   return (
     <View className="flex-1 px-2">
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flexGrow: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
       >
         <ChatHeader />
         <ChatMessageList
@@ -77,6 +76,8 @@ export const ChatScreen = () => {
           messages={messages}
           isChatEnded={false}
           isOwner={true}
+          isPending={isPending ?? false}
+          sendingMessage={variables}
         />
         <ChatInput onSend={handleSendMessage} isDisabled={false} />
       </KeyboardAvoidingView>
