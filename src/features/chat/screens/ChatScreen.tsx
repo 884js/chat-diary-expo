@@ -1,15 +1,18 @@
 import { Loader } from '@/components/Loader';
-import { View } from '@/components/Themed';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
-import { KeyboardAvoidingView, Platform } from 'react-native';
 import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
+import {
+  KeyboardAvoidingView,
+} from "react-native-keyboard-controller";
+import { Platform } from 'react-native';
+import { View } from '@/components/Themed';
 
 export const ChatScreen = () => {
   const { sendMessage, variables, isPending } = useSendMessage();
@@ -63,12 +66,12 @@ export const ChatScreen = () => {
   }
 
   return (
-    <View className="flex-1 px-2">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flexGrow: 1 }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
-      >
+    <KeyboardAvoidingView
+      style={{ flexGrow: 1 }}
+      behavior={"padding"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 25}
+    >
+      <View className="flex-1">
         <ChatHeader />
         <ChatMessageList
           chatRoom={chatRoom}
@@ -80,7 +83,7 @@ export const ChatScreen = () => {
           sendingMessage={variables}
         />
         <ChatInput onSend={handleSendMessage} isDisabled={false} />
-      </KeyboardAvoidingView>
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
