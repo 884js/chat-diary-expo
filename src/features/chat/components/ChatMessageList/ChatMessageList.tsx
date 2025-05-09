@@ -20,7 +20,7 @@ type Props = {
   sendingMessage:
     | {
         content: string;
-        senderType: "user" | "ai";
+        senderType: 'user' | 'ai';
         imagePath: string | undefined;
       }
     | undefined;
@@ -61,10 +61,10 @@ export const ChatMessageList = ({
 
         if (isOwner) {
           // オーナー視点: senderがreceiverかsystemなら自分から送信（反転した形で処理）
-          isFromReceiver = msg.sender !== "user" && msg.sender !== "ai";
+          isFromReceiver = msg.sender !== 'user' && msg.sender !== 'ai';
         } else {
           // 送信者視点: senderがreceiverかsystemなら相手から送信（そのまま処理）
-          isFromReceiver = msg.sender === "user" || msg.sender === "ai";
+          isFromReceiver = msg.sender === 'user' || msg.sender === 'ai';
         }
 
         return (
@@ -72,7 +72,7 @@ export const ChatMessageList = ({
             {/* 日付区切り線 */}
             {showDateDivider && messageDate && (
               <DateDivider
-                date={formatDate(messageDate, "yyyy年M月d日(eee)")}
+                date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
               />
             )}
 
@@ -85,7 +85,7 @@ export const ChatMessageList = ({
               replyTo={msg.reply_to}
               isFromReceiver={isFromReceiver}
               isOwner={isOwner}
-              timestamp={formatDate(msg.created_at || "", "HH:mm")}
+              timestamp={formatDate(msg.created_at || '', 'HH:mm')}
               imagePath={msg.image_path}
             />
           </View>
@@ -94,15 +94,15 @@ export const ChatMessageList = ({
       <View key={sendingMessage?.content} className="flex-1 opacity-50">
         {isPending && (
           <ChatMessage
-            id={""}
-            content={sendingMessage?.content ?? ""}
+            id={''}
+            content={sendingMessage?.content ?? ''}
             owner={chatRoom.owner}
-            sender={"user"}
+            sender={'user'}
             replyTo={null}
             isFromReceiver={true}
             isOwner={isOwner}
-            timestamp={formatDate(new Date().toISOString(), "HH:mm")}
-            imagePath={sendingMessage?.imagePath ?? ""}
+            timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
+            imagePath={sendingMessage?.imagePath ?? ''}
           />
         )}
       </View>

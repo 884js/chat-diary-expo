@@ -7,7 +7,11 @@ export const useSendMessage = () => {
   const { currentUser } = useCurrentUser();
   const queryClient = useQueryClient();
 
-  const { mutateAsync: sendMessage, isPending, variables, } = useMutation({
+  const {
+    mutateAsync: sendMessage,
+    isPending,
+    variables,
+  } = useMutation({
     mutationFn: ({
       senderType,
       content,
@@ -24,12 +28,15 @@ export const useSendMessage = () => {
         imagePath: imagePath,
       });
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['messages', currentUser?.id] }),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: ['messages', currentUser?.id],
+      }),
   });
 
   return {
     sendMessage,
     isPending: isPending,
     variables,
-  }
+  };
 };

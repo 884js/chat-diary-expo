@@ -18,12 +18,12 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import {
   ReanimatedLogLevel,
   configureReanimatedLogger,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { KeyboardProvider } from "react-native-keyboard-controller";
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -81,7 +81,7 @@ function RootLayoutNav() {
 
   return (
     <KeyboardProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <MessageActionProvider>
           <View
             style={{
@@ -101,8 +101,8 @@ function RootLayoutNav() {
                     flex: 1,
                   },
                   headerShown: false,
-                  presentation: "formSheet",
-                  gestureDirection: "vertical",
+                  presentation: 'formSheet',
+                  gestureDirection: 'vertical',
                   sheetInitialDetentIndex: 0,
                   sheetAllowedDetents: [0.3],
                   animationDuration: 40,
@@ -120,7 +120,7 @@ function RootLayoutNav() {
                 name="auth/login"
                 options={{
                   headerShown: false,
-                  presentation: "transparentModal",
+                  presentation: 'transparentModal',
                   gestureEnabled: true,
                 }}
               />
