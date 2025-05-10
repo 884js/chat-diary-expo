@@ -9,7 +9,6 @@ import {
   generateMarkedDates,
 } from '@/features/calendar/components/Calendar';
 import { DayDetail } from '@/features/calendar/components/DayDetail';
-import { EmptyCalendar } from '@/features/calendar/components/EmptyCalendar';
 import { useCalendarDays } from '@/features/calendar/hooks/useCalendar';
 import { useSummarize } from '@/features/calendar/hooks/useSummarize';
 import { useUpdateCalendarSummary } from '@/features/calendar/hooks/useUpdateCalendarSummary';
@@ -174,13 +173,6 @@ export default function CalendarScreen() {
               <Text className="font-['MPlus1-Medium'] text-gray-500 text-center">
                 この日の要約はまだありません
               </Text>
-            </View>
-          )}
-
-          {/* データが存在しない場合 */}
-          {calendarDays.length === 0 && (
-            <View className="flex-1 p-4">
-              <EmptyCalendar />
             </View>
           )}
         </View>
