@@ -140,7 +140,7 @@ export default function CalendarScreen() {
   }, [selectedDate, todayMessages, selectedDayData]);
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1">
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
           <Loader />

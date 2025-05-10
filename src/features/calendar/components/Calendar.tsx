@@ -107,7 +107,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const month = headerDate.getMonth() + 1;
 
     return (
-      <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-100">
+      <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-100 w-full mx-auto rounded-full mt-2">
         <TouchableOpacity
           className="p-2 rounded-full bg-slate-50"
           onPress={() => props.addMonth?.(-1)}
