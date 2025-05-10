@@ -16,9 +16,23 @@ type Props = {
   }[];
   isChatEnded: boolean;
   isOwner: boolean;
+  isPending: boolean;
+  sendingMessage:
+    | {
+        content: string;
+        senderType: 'user' | 'ai';
+        imagePath: string | undefined;
+      }
+    | undefined;
 };
 
-export const ChatMessageList = ({ chatRoom, messages, isOwner }: Props) => {
+export const ChatMessageList = ({
+  chatRoom,
+  messages,
+  isOwner,
+  isPending,
+  sendingMessage,
+}: Props) => {
   const scrollViewRef = React.useRef<ScrollView>(null);
 
   // メッセージが変更されたら一番下にスクロール
@@ -77,6 +91,21 @@ export const ChatMessageList = ({ chatRoom, messages, isOwner }: Props) => {
           </View>
         );
       })}
+      <View key={sendingMessage?.content} className="flex-1 opacity-50">
+        {isPending && (
+          <ChatMessage
+            id={''}
+            content={sendingMessage?.content ?? ''}
+            owner={chatRoom.owner}
+            sender={'user'}
+            replyTo={null}
+            isFromReceiver={true}
+            isOwner={isOwner}
+            timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
+            imagePath={sendingMessage?.imagePath ?? ''}
+          />
+        )}
+      </View>
     </ScrollView>
   );
 };

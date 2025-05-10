@@ -16,7 +16,7 @@ export default function MessageContextMenuScreen() {
   });
 
   const handleClose = () => {
-    router.back();
+    router.dismissAll();
   };
 
   const handleEdit = () => {

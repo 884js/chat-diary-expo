@@ -1,4 +1,3 @@
-import { TZDate } from '@date-fns/tz';
 import { differenceInDays, format, formatDistance } from 'date-fns';
 import { ja } from 'date-fns/locale';
 export { isSameDay, parseISO, addDays, addMonths } from 'date-fns';
@@ -137,8 +136,4 @@ export const formatChatDateTime = (date: string | Date): string => {
 
   // それ以外
   return format(dateObj, 'M月d日 HH:mm', { locale: ja });
-};
-
-export const dateWithTZ = (date: Date, tz = 'Asia/Tokyo') => {
-  return new TZDate(date, tz);
 };

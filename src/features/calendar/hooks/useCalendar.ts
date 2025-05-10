@@ -36,8 +36,6 @@ export function useCalendarDays({ userId, startAt, endAt }: Props) {
     queryKey: ['calendarDays', userId, startAt, endAt],
     queryFn: async () => {
       if (!userId || !startAt || !endAt) return [];
-      console.log('startAt', startAt);
-      console.log('endAt', endAt);
       const data = await api.calendar.getCalendarDays(userId, startAt, endAt);
 
       if (error) {

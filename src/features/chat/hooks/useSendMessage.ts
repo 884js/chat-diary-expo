@@ -1,12 +1,17 @@
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useSupabase } from '@/hooks/useSupabase';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useSendMessage = () => {
   const { api } = useSupabase();
   const { currentUser } = useCurrentUser();
+  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const {
+    mutateAsync: sendMessage,
+    isPending,
+    variables,
+  } = useMutation({
     mutationFn: ({
       senderType,
       content,
@@ -23,9 +28,15 @@ export const useSendMessage = () => {
         imagePath: imagePath,
       });
     },
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: ['messages', currentUser?.id],
+      }),
   });
 
   return {
-    sendMessage: mutation.mutateAsync,
+    sendMessage,
+    isPending: isPending,
+    variables,
   };
 };

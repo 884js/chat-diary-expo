@@ -4,7 +4,7 @@ import { useStorageImage } from '@/hooks/useStorageImage';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { ReactionPicker } from './ReactionPicker';
 // リアクション型定義
@@ -111,11 +111,12 @@ export function ChatMessage({
     }
   };
 
+  const isSelected = messageId === id;
+  const backgroundClassName = isSelected ? '!bg-gray-100' : '';
+
   return (
     <View
-      className={`flex-row mb-2 transition-all px-2 py-1 w-full ${
-        messageId === id ? 'bg-gray-100' : ''
-      }`}
+      className={`flex-row mb-2 transition-all py-1 w-full ${backgroundClassName} p-2 rounded-md`}
     >
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
@@ -133,16 +134,23 @@ export function ChatMessage({
       {/* メッセージコンテンツ */}
       <View className="flex-1 min-w-0 relative">
         {/* メッセージ内容部分 */}
-        <TouchableOpacity
-          activeOpacity={0.8}
+        <Pressable
           onLongPress={handleLongPress}
-          delayLongPress={300}
+          delayLongPress={200}
+          style={({ pressed }) => [
+            {
+              borderRadius: 8,
+              padding: 6,
+              backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
+            },
+          ]}
         >
-          <View className="flex-1 text-gray-500">
+          <View className={`flex-1 ${backgroundClassName}`}>
             {replyTo && (
-              <View>
-                <Text className="text-xs text-gray-500">{replyTo.content}</Text>
-                <View className="border-b border-gray-200 pt-2 rounded-md" />
+              <View className="mb-2 pb-2 border-b border-gray-200">
+                <Text className="text-xs !text-gray-500">
+                  {replyTo.content}
+                </Text>
               </View>
             )}
 
@@ -178,11 +186,11 @@ export function ChatMessage({
             </View> */}
 
             {/* タイムスタンプ */}
-            <View className="flex-row justify-end">
+            <View className={`flex-row justify-end ${backgroundClassName}`}>
               <Text className="text-xs text-gray-500 mt-1">{timestamp}</Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* リアクションピッカーモーダル */}

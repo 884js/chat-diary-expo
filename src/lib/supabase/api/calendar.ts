@@ -9,10 +9,6 @@ export class CalendarApi {
    * カレンダー用に、その月の投稿日情報を取得
    */
   async getCalendarDays(userId: string, startAt: string, endAt: string) {
-    // 月初と月末の日付から年月を抽出
-    const startDate = new Date(startAt);
-    const yearMonth = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`;
-
     const { data, error } = await this.supabase
       .from('calendar_days')
       .select('*')
@@ -20,8 +16,6 @@ export class CalendarApi {
       .eq('has_posts', true)
       .gte('date', startAt)
       .lte('date', endAt)
-      // 追加：日付の先頭が当月のものだけに絞り込む (例: 2023-05-*)
-      // .like('date', `${yearMonth}-%`)
       .order('date', { ascending: true });
 
     if (error) {
