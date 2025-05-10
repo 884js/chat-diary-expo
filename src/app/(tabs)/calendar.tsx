@@ -1,4 +1,4 @@
-import { Text, View } from '@/components/Themed';
+import { ScrollView, Text, View } from '@/components/Themed';
 import { endOfMonth, isSameDay, startOfMonth } from 'date-fns';
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 import { useEffect, useState } from 'react';
@@ -16,15 +16,7 @@ import { useUpdateCalendarSummary } from '@/features/calendar/hooks/useUpdateCal
 import { useChatRoomMessages } from '@/features/chat/hooks/useChatRoomMessages';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { formatDate } from '@/lib/date-fns';
-import { ScrollView } from 'react-native';
 import type { DateData } from 'react-native-calendars';
-
-interface MessageItem {
-  id: string;
-  content: string;
-  createdAt: string;
-  isExpanded?: boolean;
-}
 
 // メインのカレンダー画面
 export default function CalendarScreen() {
@@ -165,7 +157,7 @@ export default function CalendarScreen() {
           />
           {/* 選択中の日付の詳細表示 */}
           {selectedDayData && (
-            <ScrollView className="bg-white rounded-xl mx-2 flex-1">
+            <ScrollView className="rounded-xl mx-2 flex-1">
               <DayDetail
                 key={selectedDayData.date}
                 date={selectedDayData.date}
