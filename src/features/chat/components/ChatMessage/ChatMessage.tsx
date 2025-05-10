@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
+import { ChatImage } from './ChatImage';
 import { ReactionPicker } from './ReactionPicker';
 // リアクション型定義
 type Reaction = {
@@ -156,13 +157,9 @@ export function ChatMessage({
 
             {content && <Text>{content}</Text>}
 
-            {/* 画像があれば表示する */}
             {storageImageUrl ? (
-              <View className="mt-2">
-                <Image
-                  source={storageImageUrl}
-                  style={{ width: 100, height: 100 }}
-                />
+              <View className="mt-2 w-full">
+                <ChatImage imageUrl={storageImageUrl} fullWidth={true} />
               </View>
             ) : null}
 
