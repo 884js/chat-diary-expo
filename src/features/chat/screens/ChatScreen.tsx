@@ -4,8 +4,9 @@ import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
-import { Platform } from 'react-native';
+import { useSupabase } from '@/hooks/useSupabase';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
@@ -13,6 +14,7 @@ import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
 
 export const ChatScreen = () => {
+  const { api } = useSupabase();
   const { sendMessage, variables, isPending } = useSendMessage();
   const { currentUser } = useCurrentUser();
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
@@ -23,6 +25,7 @@ export const ChatScreen = () => {
   });
   const isOwner = chatRoom ? chatRoom.id === chatRoom?.user_id : false;
   const { mode, handleSaveEdit, handleSendReplyMessage } = useMessageAction();
+  const insets = useSafeAreaInsets();
 
   useRefreshOnFocus(refetchMessages);
 
@@ -30,9 +33,11 @@ export const ChatScreen = () => {
   const handleSendMessage = async ({
     imagePath,
     message,
+    imageUri,
   }: {
-    imagePath: string | undefined;
+    imagePath?: string;
     message: string;
+    imageUri?: string;
   }) => {
     if (!chatRoom?.id || !currentUser?.id) return;
 
@@ -52,36 +57,62 @@ export const ChatScreen = () => {
       return;
     }
 
-    await sendMessage({
-      senderType,
-      content: trimmedMessage,
-      imagePath,
-    });
+    try {
+      let uploadedImagePath = imagePath;
+
+      // 画像がある場合はアップロード処理
+      if (imageUri) {
+        const result = await api.chatRoomMessage.uploadChatImage({
+          file: { uri: imageUri, type: 'image/jpeg' },
+          userId: currentUser.id,
+        });
+        uploadedImagePath = result.path;
+      }
+
+      // メッセージ送信
+      await sendMessage({
+        senderType,
+        content: trimmedMessage,
+        imagePath: uploadedImagePath,
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   if (!chatRoom) {
     return <Loader />;
   }
 
+  const top = typeof insets.top === 'number' ? insets.top : 0;
+  const bottom = typeof insets.bottom === 'number' ? insets.bottom : 0;
+  const left = typeof insets.left === 'number' ? insets.left : 0;
+  const right = typeof insets.right === 'number' ? insets.right : 0;
+
   return (
-    <KeyboardAvoidingView
-      style={{ flexGrow: 1 }}
-      behavior={'padding'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 25}
+    <View
+      style={{
+        flex: 1,
+        paddingTop: top,
+        paddingLeft: left,
+        paddingRight: right,
+      }}
     >
-      <View className="flex-1">
-        <ChatHeader />
-        <ChatMessageList
-          chatRoom={chatRoom}
-          isLoading={isLoadingRoom}
-          messages={messages}
-          isChatEnded={false}
-          isOwner={true}
-          isPending={isPending ?? false}
-          sendingMessage={variables}
-        />
-        <ChatInput onSend={handleSendMessage} isDisabled={false} />
-      </View>
-    </KeyboardAvoidingView>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={'padding'}>
+        <View className="flex-1">
+          <ChatHeader />
+          <ChatMessageList
+            chatRoom={chatRoom}
+            isLoading={isLoadingRoom}
+            messages={messages}
+            isChatEnded={false}
+            isOwner={true}
+            isPending={isPending ?? false}
+            sendingMessage={variables}
+          />
+          <ChatInput onSend={handleSendMessage} isDisabled={false} />
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 };

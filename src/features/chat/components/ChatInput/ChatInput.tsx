@@ -1,8 +1,11 @@
 import { View } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Keyboard,
   TextInput,
   TouchableOpacity,
@@ -25,9 +28,11 @@ interface ChatInputProps {
   onSend: ({
     imagePath,
     message,
+    imageUri,
   }: {
-    imagePath: string | undefined;
+    imagePath?: string;
     message: string;
+    imageUri?: string;
   }) => Promise<void>;
   isDisabled: boolean;
 }
@@ -39,7 +44,8 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   // 入力コンポーネントの参照
   const textInputRef = useRef<TextInput>(null);
   // 画像関連の状態
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] =
+    useState<ImagePicker.ImagePickerAsset | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -58,6 +64,33 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     }
   }, [selectedMessage, mode]);
 
+  // カメラ・ギャラリーへのアクセス許可を要求
+  const verifyPermissions = async (mediaType: 'camera' | 'library') => {
+    if (mediaType === 'camera') {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'アクセス許可が必要です',
+          'アプリがカメラにアクセスするには許可が必要です',
+          [{ text: 'OK' }],
+        );
+        return false;
+      }
+    } else {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'アクセス許可が必要です',
+          'アプリが写真ライブラリにアクセスするには許可が必要です',
+          [{ text: 'OK' }],
+        );
+        return false;
+      }
+    }
+    return true;
+  };
+
   // 送信ボタンの無効状態判定
   const isButtonDisabled =
     (!message.trim() && !selectedImage) || isDisabled || isUploading;
@@ -65,9 +98,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   // 添付メニューの状態を切り替える
   const toggleAttachMenu = () => {
     // キーボードが表示されている場合は閉じる
-    // if (isKeyboardVisible) {
-    //   Keyboard.dismiss();
-    // }
+    Keyboard.dismiss();
     setShowAttachMenu(!showAttachMenu);
   };
 
@@ -79,26 +110,80 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
 
   // 画像選択処理
   const handleImageSelect = async () => {
-    // ここでは実際の画像選択処理は省略
-    // 実際の実装ではExpo Image Pickerなどを使用してください
-    setShowAttachMenu(false);
+    const hasPermission = await verifyPermissions('library');
+    if (!hasPermission) return;
 
-    // ダミーイメージを設定
-    const dummyImage = 'https://picsum.photos/400/300';
-    setSelectedImage(dummyImage);
-    setImagePreviewUrl(dummyImage);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const { uri } = result.assets[0];
+        const manipulator = ImageManipulator.manipulate(uri);
+
+        manipulator.resize({
+          width: 500,
+        });
+
+        const renderImage = await manipulator.renderAsync();
+
+        const resizeImage = await renderImage.saveAsync({
+          format: SaveFormat.JPEG,
+          compress: 0.8,
+          base64: true,
+        });
+
+        setSelectedImage(resizeImage);
+        setImagePreviewUrl(resizeImage.uri);
+      } else {
+        alert('画像が選択されていません');
+      }
+    } catch (error) {
+      console.error('Image selection error:', error);
+      setUploadError('画像の選択に失敗しました');
+    } finally {
+      setShowAttachMenu(false);
+    }
   };
 
   // カメラ起動処理
   const handleCameraSelect = async () => {
-    // ここでは実際のカメラ処理は省略
-    // 実際の実装ではExpo Camera/Image Pickerを使用してください
-    setShowAttachMenu(false);
+    const hasPermission = await verifyPermissions('camera');
+    if (!hasPermission) return;
 
-    // ダミーイメージを設定
-    const dummyImage = 'https://picsum.photos/400/300';
-    setSelectedImage(dummyImage);
-    setImagePreviewUrl(dummyImage);
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const { uri } = result.assets[0];
+        const manipulator = ImageManipulator.manipulate(uri);
+        manipulator.resize({
+          width: 500,
+        });
+
+        const renderImage = await manipulator.renderAsync();
+
+        const resizeImage = await renderImage.saveAsync({
+          format: SaveFormat.JPEG,
+          compress: 0.8,
+          base64: true,
+        });
+        setSelectedImage(resizeImage);
+        setImagePreviewUrl(resizeImage.uri);
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      setUploadError('カメラの起動に失敗しました');
+    } finally {
+      setShowAttachMenu(false);
+    }
   };
 
   // メッセージ送信処理
@@ -106,20 +191,31 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     if (isButtonDisabled) return;
 
     try {
+      setIsUploading(true);
+      if (selectedImage) {
+        // 画像とメッセージを送信
+        await onSend({
+          imageUri: selectedImage.uri,
+          message,
+          imagePath: undefined, // サーバー側で設定される
+        });
+      } else {
+        // メッセージのみ送信
+        await onSend({
+          imagePath: undefined,
+          message,
+          imageUri: undefined,
+        });
+      }
+
+      // 送信後は状態をリセット
       setMessage('');
       setSelectedImage(null);
       setImagePreviewUrl(null);
-
-      if (selectedImage) {
-        setIsUploading(true);
-        // ここで実際には画像アップロード処理が必要
-        await onSend({ imagePath: selectedImage, message });
-      } else {
-        await onSend({ imagePath: undefined, message });
-      }
       Keyboard.dismiss();
     } catch (error) {
-      setUploadError('画像のアップロードに失敗しました');
+      console.error('Message send error:', error);
+      setUploadError('メッセージの送信に失敗しました');
     } finally {
       setIsUploading(false);
     }

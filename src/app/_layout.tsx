@@ -11,7 +11,6 @@ import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { View } from '@/components/Themed';
 import { AuthProvider } from '@/features/auth/contexts/AuthContext';
 import { MessageActionProvider } from '@/features/chat/contexts/MessageActionContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -83,49 +82,39 @@ function RootLayoutNav() {
     <KeyboardProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <MessageActionProvider>
-          <View
-            style={{
-              paddingTop: top,
-              paddingBottom: bottom,
-              paddingLeft: left,
-              paddingRight: right,
-              flex: 1,
-            }}
-          >
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(chat)/message-context-menu"
-                options={{
-                  contentStyle: {
-                    flex: 1,
-                  },
-                  headerShown: false,
-                  presentation: 'formSheet',
-                  gestureDirection: 'vertical',
-                  sheetInitialDetentIndex: 0,
-                  sheetAllowedDetents: [0.3],
-                  animationDuration: 40,
-                  headerRight: (navigation) => (
-                    <TouchableOpacity
-                      onPress={() => router.back()}
-                      style={{ padding: 8 }}
-                    >
-                      <Ionicons name="close" size={24} />
-                    </TouchableOpacity>
-                  ),
-                }}
-              />
-              <Stack.Screen
-                name="auth/login"
-                options={{
-                  headerShown: false,
-                  presentation: 'transparentModal',
-                  gestureEnabled: true,
-                }}
-              />
-            </Stack>
-          </View>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(chat)/message-context-menu"
+              options={{
+                contentStyle: {
+                  flex: 1,
+                },
+                headerShown: false,
+                presentation: 'formSheet',
+                gestureDirection: 'vertical',
+                sheetInitialDetentIndex: 0,
+                sheetAllowedDetents: [0.3],
+                animationDuration: 40,
+                headerRight: (navigation) => (
+                  <TouchableOpacity
+                    onPress={() => router.back()}
+                    style={{ padding: 8 }}
+                  >
+                    <Ionicons name="close" size={24} />
+                  </TouchableOpacity>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="auth/login"
+              options={{
+                headerShown: false,
+                presentation: 'transparentModal',
+                gestureEnabled: true,
+              }}
+            />
+          </Stack>
         </MessageActionProvider>
       </ThemeProvider>
     </KeyboardProvider>

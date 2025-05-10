@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import * as FileSystem from 'expo-file-system';
 import type { Database } from '../databaseTypes';
 import { CalendarApi } from './calendar';
 
@@ -117,21 +118,27 @@ export class ChatRoomMessageApi {
     file,
     userId,
   }: {
-    file: File;
+    file: { uri: string; type?: string; name?: string };
     userId: string;
   }) {
     try {
-      // ファイル名を生成（ユニークなIDを使用）
-      const fileExt = file.name.split('.').pop();
+      const fileUri = file.uri;
+      const base64 = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const arrayBuffer = base64ToArrayBuffer(base64);
+      const fileExt = fileUri.split('.').pop() || 'jpg';
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
       const filePath = `/${userId}/${fileName}.${fileExt}`;
+
+      const contentType = file.type || 'image/jpeg';
 
       // ファイルをアップロード
       const { data, error } = await this.supabase.storage
         .from('chats')
-        .upload(filePath, file, {
+        .upload(filePath, arrayBuffer, {
           upsert: true,
-          contentType: file.type,
+          contentType,
         });
 
       if (error) {
@@ -139,14 +146,13 @@ export class ChatRoomMessageApi {
         throw error;
       }
 
-      // アップロードされたファイルのURLを生成
-      const { data: urlData } = await this.supabase.storage
+      const { data: urlData } = this.supabase.storage
         .from('chats')
-        .createSignedUrl(filePath, 60 * 10); // 10分間有効
+        .getPublicUrl(filePath);
 
       return {
         path: filePath,
-        url: urlData?.signedUrl || null,
+        url: urlData?.publicUrl || null,
       };
     } catch (error) {
       console.error('Error uploading chat image:', error);
@@ -211,3 +217,12 @@ export class ChatRoomMessageApi {
     };
   }
 }
+
+const base64ToArrayBuffer = (base64: string) => {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+};

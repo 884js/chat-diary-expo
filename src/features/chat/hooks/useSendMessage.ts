@@ -12,20 +12,20 @@ export const useSendMessage = () => {
     isPending,
     variables,
   } = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       senderType,
       content,
       imagePath,
     }: {
       senderType: 'user' | 'ai';
       content: string;
-      imagePath: string | undefined;
+      imagePath?: string;
     }) => {
       return api.chatRoomMessage.sendMessage({
         content: content,
         sender: senderType,
         senderId: currentUser?.id ?? '',
-        imagePath: imagePath,
+        imagePath,
       });
     },
     onSettled: () =>
@@ -36,7 +36,7 @@ export const useSendMessage = () => {
 
   return {
     sendMessage,
-    isPending: isPending,
+    isPending,
     variables,
   };
 };

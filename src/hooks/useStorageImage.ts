@@ -17,6 +17,7 @@ export const useStorageImage = ({ imagePath, storageName }: Props) => {
     queryKey: ['storageImage', storageName, imagePath],
     queryFn: async () => {
       if (!imagePath) return null;
+
       const { data } = supabase.storage
         .from(storageName)
         .getPublicUrl(imagePath);

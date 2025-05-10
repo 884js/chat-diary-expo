@@ -1,6 +1,6 @@
+import { Text, View } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
 import type React from 'react';
-import { Text, View } from '@/components/Themed';
 interface HighlightItem {
   good?: string[];
   new?: string[];

@@ -1,8 +1,8 @@
+import { Text, View } from '@/components/Themed';
 import { Ionicons } from '@expo/vector-icons';
 import { formatInTimeZone } from 'date-fns-tz';
 import type React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Text, View } from '@/components/Themed';
 import { Calendar, type DateData, LocaleConfig } from 'react-native-calendars';
 import type { CalendarHeaderProps } from 'react-native-calendars/src/calendar/header';
 import type { Theme } from 'react-native-calendars/src/types';

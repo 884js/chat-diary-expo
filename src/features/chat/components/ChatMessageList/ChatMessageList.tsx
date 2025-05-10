@@ -21,7 +21,7 @@ type Props = {
     | {
         content: string;
         senderType: 'user' | 'ai';
-        imagePath: string | undefined;
+        imagePath?: string | undefined;
       }
     | undefined;
 };
