@@ -1,7 +1,7 @@
 import { Text, View } from '@/components/Themed';
-import { endOfMonth, startOfMonth } from 'date-fns';
+import { endOfMonth, isSameDay, startOfMonth } from 'date-fns';
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Loader } from '@/components/Loader';
 import {
@@ -11,7 +11,12 @@ import {
 import { DayDetail } from '@/features/calendar/components/DayDetail';
 import { EmptyCalendar } from '@/features/calendar/components/EmptyCalendar';
 import { useCalendarDays } from '@/features/calendar/hooks/useCalendar';
+import { useSummarize } from '@/features/calendar/hooks/useSummarize';
+import { useUpdateCalendarSummary } from '@/features/calendar/hooks/useUpdateCalendarSummary';
+import { useChatRoomMessages } from '@/features/chat/hooks/useChatRoomMessages';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
+import { formatDate } from '@/lib/date-fns';
+import { ScrollView } from 'react-native';
 import type { DateData } from 'react-native-calendars';
 
 interface MessageItem {
@@ -23,15 +28,18 @@ interface MessageItem {
 
 // メインのカレンダー画面
 export default function CalendarScreen() {
+  const { summarize, isPending: isSummarizing } = useSummarize();
+  const { updateCalendarSummary } = useUpdateCalendarSummary();
+
   const TIME_ZONE = 'Asia/Tokyo';
   const now = toZonedTime(new Date(), TIME_ZONE);
   const japanTime = now.getTime() + 9 * 60 * 60 * 1000;
   const today = new Date(japanTime);
-  const [currentDate, setCurrentDate] = useState(today);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const { currentUser } = useCurrentUser();
 
+  const [currentDate, setCurrentDate] = useState(today);
   // 月の開始日と終了日の取得
+  const formattedNow = formatDate(now, 'yyyy-MM-dd');
+
   const startAt = formatInTimeZone(
     startOfMonth(currentDate),
     TIME_ZONE,
@@ -43,6 +51,30 @@ export default function CalendarScreen() {
     'yyyy-MM-dd',
   );
 
+  const [selectedDate, setSelectedDate] = useState<string>(
+    formatDate(new Date(now), 'yyyy-MM-dd'),
+  );
+  const { currentUser } = useCurrentUser();
+
+  const { chatRoomMessages, isLoading: isMessagesLoading } =
+    useChatRoomMessages({
+      userId: currentUser?.id || '',
+      startAt,
+      endAt,
+    });
+
+  const todayMessages = chatRoomMessages.filter((m) => {
+    const messageDate = formatDate(new Date(m.created_at), 'yyyy-MM-dd');
+    return isSameDay(messageDate, selectedDate);
+  });
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    // 今日の日付をYYYY-MM-DD形式で取得
+    const todayFormatted = formatDate(new Date(now), 'yyyy-MM-dd');
+    setSelectedDate(todayFormatted);
+  }, []);
+
   const { calendarDays, isLoading, isError, refetch } = useCalendarDays({
     userId: currentUser?.id ?? '',
     startAt,
@@ -50,10 +82,21 @@ export default function CalendarScreen() {
   });
 
   const handleSummarize = async (dateKey: string) => {
-    // 実装時は実際のAI生成処理を呼び出す
-    console.log(`Summarizing ${dateKey}`);
-    // ダミーの遅延
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const messagesText = todayMessages
+      .map((m) => m.content?.trim())
+      .filter((c) => c && c.length > 0)
+      .join('\n');
+
+    const result = await summarize({
+      messagesText,
+    });
+
+    await updateCalendarSummary({
+      userId: currentUser?.id || '',
+      dateKey,
+      json: result,
+    });
+
     // 完了後に再取得
     refetch();
   };
@@ -86,6 +129,24 @@ export default function CalendarScreen() {
     ? calendarDays.find((day) => day.date === selectedDate)
     : null;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    // MEMO: 今日の日付を選択した場合は要約を作成しない
+    if (selectedDate === formattedNow) {
+      return;
+    }
+
+    // 要約が存在する場合は要約を作成しない
+    if (selectedDayData?.summary_status !== 'none') {
+      return;
+    }
+
+    // メッセージが存在する場合は要約を作成
+    if (todayMessages.length > 0) {
+      handleSummarize(selectedDate);
+    }
+  }, [selectedDate, todayMessages, selectedDayData]);
+
   return (
     <View className="flex-1 bg-gray-50">
       {isLoading ? (
@@ -104,20 +165,22 @@ export default function CalendarScreen() {
           />
           {/* 選択中の日付の詳細表示 */}
           {selectedDayData && (
-            <DayDetail
-              key={selectedDayData.date}
-              date={selectedDayData.date}
-              highlights={selectedDayData.ai_generated_highlights}
-              summaryStatus={selectedDayData.summary_status}
-              onSummarize={() => handleSummarize(selectedDayData.date)}
-            />
+            <ScrollView className="bg-white rounded-xl mx-2 flex-1">
+              <DayDetail
+                key={selectedDayData.date}
+                date={selectedDayData.date}
+                highlights={selectedDayData.ai_generated_highlights}
+                summaryStatus={selectedDayData.summary_status}
+                onSummarize={() => handleSummarize(selectedDayData.date)}
+              />
+            </ScrollView>
           )}
 
           {/* 日付が選択されていない場合 */}
-          {!selectedDayData && calendarDays.length > 0 && (
+          {!selectedDayData && (
             <View className="p-4 flex-1 justify-center items-center">
               <Text className="font-['MPlus1-Medium'] text-gray-500 text-center">
-                日付を選択してください
+                この日の要約はまだありません
               </Text>
             </View>
           )}

@@ -4,7 +4,6 @@ import type { Session, User } from '@supabase/supabase-js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as AuthSession from 'expo-auth-session';
 import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -76,20 +75,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const restoreSession = async () => {
-      const sessionStr = await SecureStore.getItemAsync('google-access-token');
-      if (sessionStr) {
-        const session = JSON.parse(sessionStr);
-        const { error, data } = await supabase.auth.setSession({
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-        });
-        setSession(data.session);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
+      if (session) {
+        setSession(session);
         router.replace('/(tabs)');
-
-        if (error) {
-          await SecureStore.deleteItemAsync('google-access-token');
-        }
       } else {
         router.replace('/auth/login');
       }
@@ -166,11 +158,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         setSession(session.session);
 
-        await SecureStore.setItemAsync(
-          'google-access-token',
-          JSON.stringify(data),
-        );
-
         setIsAuthLoading(false);
         router.replace('/(tabs)');
       }
@@ -200,7 +187,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         return { error: new Error(error.message) };
       }
-      await SecureStore.deleteItemAsync('google-access-token');
       setSession(null);
       router.navigate('/auth/login');
       return { error: null };

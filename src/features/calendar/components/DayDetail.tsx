@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import type React from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 interface HighlightItem {
   good?: string[];
   new?: string[];
@@ -34,7 +34,7 @@ export const DayDetail: React.FC<DayDetailProps> = ({
   };
 
   return (
-    <ScrollView className="bg-white rounded-xl overflow-hidden mx-2 flex-1">
+    <View className="flex-1">
       {/* ヘッダー部分 */}
       <View className="bg-gradient-to-r from-indigo-500 to-indigo-600 p-2">
         <Text className="font-['MPlus1-Medium'] text-lg">
@@ -45,7 +45,7 @@ export const DayDetail: React.FC<DayDetailProps> = ({
       <View className="p-1">
         {/* ハイライト表示 */}
         {highlights &&
-          (summaryStatus === "auto" || summaryStatus === "manual") ? (
+        (summaryStatus === 'auto' || summaryStatus === 'manual') ? (
           <View className="overflow-hidden mb-3">
             <View className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-2 py-1">
               <Text className="font-['MPlus1-Medium'] text-sm">
@@ -120,25 +120,7 @@ export const DayDetail: React.FC<DayDetailProps> = ({
             </Text>
           </View>
         )}
-
-        <TouchableOpacity
-          className="bg-indigo-500 rounded-lg py-3 px-4 flex-row justify-center items-center mt-2"
-          onPress={onSummarize}
-          disabled={isSummarizing}
-          activeOpacity={0.7}
-        >
-          <Text className="font-['MPlus1-Medium'] text-sm text-white mr-2">
-            {isSummarizing
-              ? "要約作成中..."
-              : summaryStatus === "none"
-              ? "この日を要約する"
-              : "要約を更新する"}
-          </Text>
-          {!isSummarizing && (
-            <Feather name="edit-3" size={16} color="#ffffff" />
-          )}
-        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };

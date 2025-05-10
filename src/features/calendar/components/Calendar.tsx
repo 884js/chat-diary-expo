@@ -3,8 +3,8 @@ import { formatInTimeZone } from 'date-fns-tz';
 import type React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Calendar, type DateData, LocaleConfig } from 'react-native-calendars';
-import type { Theme } from 'react-native-calendars/src/types';
 import type { CalendarHeaderProps } from 'react-native-calendars/src/calendar/header';
+import type { Theme } from 'react-native-calendars/src/types';
 
 // 日本語ロケール設定
 LocaleConfig.locales.ja = {
@@ -90,9 +90,6 @@ interface CalendarViewProps {
   onMonthChange: (month: DateData) => void;
 }
 
-/**
- * カスタマイズされたカレンダービューコンポーネント
- */
 export const CalendarView: React.FC<CalendarViewProps> = ({
   currentDate,
   markedDates = {},
@@ -103,7 +100,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const TIME_ZONE = 'Asia/Tokyo';
   const formattedDate = formatInTimeZone(currentDate, TIME_ZONE, 'yyyy-MM-dd');
 
-  // カスタムヘッダーコンポーネント
   const CustomHeader = (props: CalendarHeaderProps) => {
     const headerDate = new Date(props.current || '');
     const year = headerDate.getFullYear();
@@ -138,16 +134,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <View className="bg-white rounded-xl overflow-hidden shadow-sm m-2">
       <Calendar
+        // key={formattedDate}
         current={formattedDate}
+        initialDate={formattedDate}
         onDayPress={onDayPress}
         onMonthChange={onMonthChange}
-        monthFormat={"yyyy MM"}
+        monthFormat={'yyyy/MM'}
         hideExtraDays={false}
         showSixWeeks
-        firstDay={0} // 日曜始まり
+        firstDay={1}
         hideDayNames={false}
-        showWeekNumbers={false}
-        disableMonthChange={false}
         markedDates={markedDates}
         enableSwipeMonths
         theme={calendarTheme}
