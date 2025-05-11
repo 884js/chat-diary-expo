@@ -1,16 +1,102 @@
-import { formatDate } from '@/lib/date-fns';
-import { Text, View } from 'react-native';
+import { View, Text } from 'react-native';
+import { CalendarProvider, WeekCalendar } from 'react-native-calendars';
+import { format } from 'date-fns';
+import { useState, useEffect } from 'react';
+
+// MarkedDatesの型定義
+type MarkedDateItem = {
+  selected?: boolean;
+  marked?: boolean;
+  selectedColor?: string;
+};
+
+type MarkedDates = {
+  [date: string]: MarkedDateItem;
+};
 
 export function ChatHeader() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(format(selectedDate, 'yyyy年M月'));
+  const [markedDates, setMarkedDates] = useState<MarkedDates>({
+    [format(selectedDate, 'yyyy-MM-dd')]: {
+      selected: true,
+      marked: true,
+      selectedColor: '#3498db',
+    },
+  });
+
+  // 選択された日付が変わったときに年月表示を更新
+  useEffect(() => {
+    setCurrentMonth(format(selectedDate, 'yyyy年M月'));
+  }, [selectedDate]);
+
   return (
-    <View className="bg-white shadow-sm py-3 px-2 z-10">
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-1">
-          <Text className="text-slate-800">
-            📅 今日：{formatDate(new Date(), 'yyyy年M月dd日')}
-          </Text>
-        </View>
+    <View style={{ maxHeight: 110, flex: 1 }}>
+      {/* 年月表示 */}
+      <View style={{ 
+        paddingHorizontal: 12, 
+        paddingVertical: 6, 
+        backgroundColor: 'white',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0'
+      }}>
+        <Text style={{ 
+          fontSize: 16, 
+          fontWeight: '600', 
+          color: '#1e293b',
+          textAlign: 'center'
+        }}>
+          {currentMonth}
+        </Text>
       </View>
+
+      <CalendarProvider
+        date={format(selectedDate, "yyyy-MM-dd")}
+        onDateChanged={(date) => {
+          const newDate = new Date(date);
+          setSelectedDate(newDate);
+          setCurrentMonth(format(newDate, 'yyyy年M月'));
+        }}
+        theme={{
+          calendarBackground: "#ffffff",
+          textSectionTitleColor: "#64748b",
+          selectedDayBackgroundColor: "#3498db",
+          selectedDayTextColor: "#ffffff",
+          todayTextColor: "#3498db",
+          dayTextColor: "#1e293b",
+          dotColor: "#3498db",
+          selectedDotColor: "#ffffff",
+          arrowColor: "#3498db",
+          monthTextColor: "#1e293b",
+          textDayFontSize: 14,
+          textMonthFontSize: 16,
+          textDayHeaderFontSize: 14,
+        }}
+      >
+        <WeekCalendar
+          current={format(selectedDate, "yyyy-MM-dd")}
+          horizontal
+          showScrollIndicator={false}
+          markedDates={markedDates}
+          onDayPress={(day) => {
+            const newSelectedDate = new Date(day.timestamp);
+            setSelectedDate(newSelectedDate);
+
+            // 選択した日付をマークする
+            setMarkedDates({
+              [day.dateString]: {
+                selected: true,
+                marked: true,
+                selectedColor: "#3498db",
+              },
+            });
+          }}
+          hideArrows={false}
+          allowShadow={false}
+          hideDayNames={false}
+          firstDay={1} // 月曜始まり
+        />
+      </CalendarProvider>
     </View>
   );
 }

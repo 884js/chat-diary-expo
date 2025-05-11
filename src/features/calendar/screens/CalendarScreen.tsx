@@ -135,7 +135,7 @@ export const CalendarScreen = () => {
     if (todayMessages.length > 0) {
       handleSummarize(selectedDate);
     }
-  }, [selectedDate, todayMessages, selectedDayData]);
+  }, [selectedDate]);
 
   return (
     <View className="flex-1">
