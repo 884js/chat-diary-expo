@@ -1,5 +1,6 @@
 import { Loader } from '@/components/Loader';
 import { View } from '@/components/Themed';
+import type { View as ViewType } from "react-native";
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
@@ -11,6 +12,8 @@ import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useSendMessage } from '../hooks/useSendMessage';
+import { useChatScrollToDate } from "../hooks/useChatScrollToDate";
+import { format } from 'date-fns';
 
 export const ChatScreen = () => {
   const { api } = useSupabase();
@@ -19,6 +22,7 @@ export const ChatScreen = () => {
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
     userId: currentUser?.id ?? '',
   });
+  const { listItemRefs, scrollRef, handleScrollToDate } = useChatScrollToDate();
   const { messages, refetchMessages } = useRoomUserMessages({
     userId: chatRoom?.user_id,
   });
@@ -82,14 +86,27 @@ export const ChatScreen = () => {
     return <Loader />;
   }
 
+  const messagesWithRefs = messages.map((message) => ({
+    ...message,
+    ref: (node: ViewType) => {
+      const key = format(message.date || "", "yyyy-MM-dd");
+      if (node) {
+        listItemRefs.current[key] = node;
+      } else {
+        delete listItemRefs.current[key];
+      }
+    },
+  }));
+
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"}>
       <View className="flex-1">
-        <ChatHeader />
+        <ChatHeader onScrollToDate={handleScrollToDate} />
         <ChatMessageList
+          scrollViewRef={scrollRef}
           chatRoom={chatRoom}
           isLoading={isLoadingRoom}
-          messages={messages}
+          messages={messagesWithRefs}
           isChatEnded={false}
           isOwner={true}
           isPending={isPending ?? false}

@@ -3,54 +3,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { formatInTimeZone } from 'date-fns-tz';
 import type React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Calendar, type DateData, LocaleConfig } from 'react-native-calendars';
+import "@/lib/react-native-calendars/locale";
+import { Calendar, type DateData } from 'react-native-calendars';
 import type { CalendarHeaderProps } from 'react-native-calendars/src/calendar/header';
 import type { Theme } from 'react-native-calendars/src/types';
-
-// 日本語ロケール設定
-LocaleConfig.locales.ja = {
-  monthNames: [
-    '1月',
-    '2月',
-    '3月',
-    '4月',
-    '5月',
-    '6月',
-    '7月',
-    '8月',
-    '9月',
-    '10月',
-    '11月',
-    '12月',
-  ],
-  monthNamesShort: [
-    '1月',
-    '2月',
-    '3月',
-    '4月',
-    '5月',
-    '6月',
-    '7月',
-    '8月',
-    '9月',
-    '10月',
-    '11月',
-    '12月',
-  ],
-  dayNames: [
-    '日曜日',
-    '月曜日',
-    '火曜日',
-    '水曜日',
-    '木曜日',
-    '金曜日',
-    '土曜日',
-  ],
-  dayNamesShort: ['日', '月', '火', '水', '木', '金', '土'],
-  today: '今日',
-};
-
-LocaleConfig.defaultLocale = 'ja';
 
 // カレンダーのテーマ設定
 const calendarTheme: Theme = {
