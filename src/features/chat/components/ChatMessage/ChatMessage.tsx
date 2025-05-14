@@ -2,7 +2,8 @@ import { Image } from '@/components/Image';
 import { Text, View } from '@/components/Themed';
 import { useStorageImage } from '@/hooks/useStorageImage';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
-import { Pressable } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Easing, Pressable } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { ChatImage } from './ChatImage';
 
@@ -31,6 +32,10 @@ export function ChatMessage({
   replyTo,
 }: MessageProps) {
   const { messageId, bottomSheetModalRef, handleOpenMenu } = useMessageAction();
+  
+  // アニメーション用の値
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const bgColorAnim = useRef(new Animated.Value(0)).current;
 
   // アバター画像のURL
   const avatarUrl = owner.avatar_url;
@@ -42,11 +47,62 @@ export function ChatMessage({
     });
 
   const isSelected = messageId === id;
-  const backgroundClassName = isSelected ? '!bg-gray-100' : '';
+  
+  // タップ時のアニメーション
+  const startPressAnimation = () => {
+    // アニメーションをリセット
+    Animated.parallel([
+      Animated.timing(scaleAnim, {
+        toValue: 0.98,
+        duration: 150,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(bgColorAnim, {
+        toValue: 1,
+        duration: 150,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: false,
+      })
+    ]).start();
+  };
+  
+  // タップ解除時のアニメーション
+  const startReleaseAnimation = () => {
+    Animated.parallel([
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.out(Easing.elastic(1.2)),
+        useNativeDriver: true,
+      }),
+      Animated.timing(bgColorAnim, {
+        toValue: 0,
+        duration: 200,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: false,
+      })
+    ]).start();
+  };
+
+  // プレス状態の処理
+  const handlePressIn = () => {
+    startPressAnimation();
+  };
+
+  const handlePressOut = () => {
+    startReleaseAnimation();
+  };
+
+  // 背景色の補間
+  const interpolatedBgColor = bgColorAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgba(240, 240, 240, 0)', 'rgba(210, 210, 210, 0.5)']
+  });
 
   return (
     <View
-      className={`flex-row mb-2 transition-all py-1 w-full ${backgroundClassName} p-2 rounded-md`}
+      className="flex-row mb-2 py-1 w-full p-2 rounded-md"
     >
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
@@ -64,40 +120,59 @@ export function ChatMessage({
       {/* メッセージコンテンツ */}
       <View className="flex-1 min-w-0 relative">
         {/* メッセージ内容部分 */}
-        <Pressable
-          onLongPress={() => handleOpenMenu(id)}
-          delayLongPress={200}
-          style={({ pressed }) => [
-            {
+        <Animated.View
+          style={{
+            transform: [{ scale: scaleAnim }],
+            borderRadius: 8,
+          }}
+        >
+          <Pressable
+            onLongPress={() => handleOpenMenu(id)}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            delayLongPress={100}
+            style={({ pressed }) => ({
               borderRadius: 8,
               padding: 6,
-              backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
-            },
-          ]}
-        >
-          <View className={`flex-1 ${backgroundClassName}`}>
-            {replyTo && (
-              <View className="mb-2 pb-2 border-b border-gray-200">
-                <Text className="text-xs !text-gray-500">
-                  {replyTo.content}
-                </Text>
+              overflow: 'hidden',
+            })}
+          >
+            <Animated.View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: interpolatedBgColor,
+                borderRadius: 8,
+              }}
+            />
+            
+            <View className={`flex-1 ${isSelected ? 'bg-gray-100' : ''}`}>
+              {replyTo && (
+                <View className="mb-2 pb-2 border-b border-gray-200">
+                  <Text className="text-xs !text-gray-500">
+                    {replyTo.content}
+                  </Text>
+                </View>
+              )}
+
+              {content && <Text>{content}</Text>}
+
+              {storageImageUrl ? (
+                <View className="mt-2 w-full">
+                  <ChatImage imageUrl={storageImageUrl} fullWidth={true} />
+                </View>
+              ) : null}
+
+              {/* タイムスタンプ */}
+              <View className="flex-row justify-end">
+                <Text className="text-xs text-gray-500 mt-1">{timestamp}</Text>
               </View>
-            )}
-
-            {content && <Text>{content}</Text>}
-
-            {storageImageUrl ? (
-              <View className="mt-2 w-full">
-                <ChatImage imageUrl={storageImageUrl} fullWidth={true} />
-              </View>
-            ) : null}
-
-            {/* タイムスタンプ */}
-            <View className={`flex-row justify-end ${backgroundClassName}`}>
-              <Text className="text-xs text-gray-500 mt-1">{timestamp}</Text>
             </View>
-          </View>
-        </Pressable>
+          </Pressable>
+        </Animated.View>
       </View>
     </View>
   );

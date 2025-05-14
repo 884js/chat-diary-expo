@@ -226,14 +226,14 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   // プレースホルダーテキスト
   const placeholder = useMemo(() => {
     if (isDisabled) {
-      return 'チャット送信はできません';
+      return '';
     }
 
     if (isUploading) {
       return '画像をアップロード中...';
     }
 
-    return 'メッセージを入力...';
+    return 'なにか良いことあった？';
   }, [isDisabled, isUploading]);
 
   return (
