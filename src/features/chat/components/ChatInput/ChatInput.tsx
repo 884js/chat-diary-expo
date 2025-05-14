@@ -1,12 +1,11 @@
 import { View } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
-import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
-import * as ImagePicker from 'expo-image-picker';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Keyboard,
+  Text,
   TextInput,
   TouchableOpacity,
 } from 'react-native';
@@ -15,13 +14,44 @@ import { AttachMenu } from './AttachMenu';
 import { ErrorMessage } from './ErrorMessage';
 import { ImagePreview } from './ImagePreview';
 import { ReplyPreview } from './ReplyPreview';
+import { useChatImage } from '../../hooks/useChatImage';
 
-// 画像タイプ定義
-export const ALLOWED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
+// 感情アイコンの定義
+type EmotionIconName =
+  | 'emoticon-outline'
+  | 'emoticon-happy-outline'
+  | 'emoticon-sad-outline'
+  | 'emoticon-angry-outline'
+  | 'emoticon-confused-outline';
+
+type Emotion = {
+  id: string;
+  name: string;
+  icon: EmotionIconName;
+  color: string;
+};
+
+const emotions: Emotion[] = [
+  { id: 'normal', name: '普通', icon: 'emoticon-outline', color: '#60a5fa' },
+  {
+    id: 'happy',
+    name: '嬉しい',
+    icon: 'emoticon-happy-outline',
+    color: '#34d399',
+  },
+  { id: 'sad', name: '悲しい', icon: 'emoticon-sad-outline', color: '#a78bfa' },
+  {
+    id: 'angry',
+    name: '怒り',
+    icon: 'emoticon-angry-outline',
+    color: '#f87171',
+  },
+  {
+    id: 'confused',
+    name: '微妙',
+    icon: 'emoticon-confused-outline',
+    color: '#fbbf24',
+  },
 ];
 
 interface ChatInputProps {
@@ -29,10 +59,12 @@ interface ChatInputProps {
     imagePath,
     message,
     imageUri,
+    emotion,
   }: {
     imagePath?: string;
     message: string;
     imageUri?: string;
+    emotion?: string;
   }) => Promise<void>;
   isDisabled: boolean;
 }
@@ -40,15 +72,11 @@ interface ChatInputProps {
 export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   const { selectedMessage, mode } = useMessageAction();
   const [message, setMessage] = useState('');
-  const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
+  const { showAttachMenu, selectedImage, imagePreviewUrl, isUploading, uploadError, handleImageSelect, handleCameraSelect, handleCancelImage, toggleAttachMenu, resetImage } = useChatImage();
+
   // 入力コンポーネントの参照
   const textInputRef = useRef<TextInput>(null);
-  // 画像関連の状態
-  const [selectedImage, setSelectedImage] =
-    useState<ImagePicker.ImagePickerAsset | null>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // 選択されたメッセージがある場合
   useEffect(() => {
@@ -64,145 +92,25 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     }
   }, [selectedMessage, mode]);
 
-  // カメラ・ギャラリーへのアクセス許可を要求
-  const verifyPermissions = async (mediaType: 'camera' | 'library') => {
-    if (mediaType === 'camera') {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'アクセス許可が必要です',
-          'アプリがカメラにアクセスするには許可が必要です',
-          [{ text: 'OK' }],
-        );
-        return false;
-      }
-    } else {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'アクセス許可が必要です',
-          'アプリが写真ライブラリにアクセスするには許可が必要です',
-          [{ text: 'OK' }],
-        );
-        return false;
-      }
-    }
-    return true;
-  };
-
   // 送信ボタンの無効状態判定
   const isButtonDisabled =
     (!message.trim() && !selectedImage) || isDisabled || isUploading;
 
-  // 添付メニューの状態を切り替える
-  const toggleAttachMenu = () => {
-    // キーボードが表示されている場合は閉じる
-    Keyboard.dismiss();
-    setShowAttachMenu(!showAttachMenu);
-  };
-
-  // 画像プレビューをキャンセル
-  const handleCancelImage = () => {
-    setSelectedImage(null);
-    setImagePreviewUrl(null);
-  };
-
-  // 画像選択処理
-  const handleImageSelect = async () => {
-    const hasPermission = await verifyPermissions('library');
-    if (!hasPermission) return;
-
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        quality: 1,
-        aspect: [4, 3],
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const { uri } = result.assets[0];
-        const manipulator = ImageManipulator.manipulate(uri);
-
-        manipulator.resize({
-          width: 1080,
-        });
-
-        const renderImage = await manipulator.renderAsync();
-
-        const resizeImage = await renderImage.saveAsync({
-          format: SaveFormat.JPEG,
-          compress: 0.8,
-          base64: true,
-        });
-
-        setSelectedImage(resizeImage);
-        setImagePreviewUrl(resizeImage.uri);
-      } else {
-        alert('画像が選択されていません');
-      }
-    } catch (error) {
-      console.error('Image selection error:', error);
-      setUploadError('画像の選択に失敗しました');
-    } finally {
-      setShowAttachMenu(false);
-    }
-  };
-
-  // カメラ起動処理
-  const handleCameraSelect = async () => {
-    const hasPermission = await verifyPermissions('camera');
-    if (!hasPermission) return;
-
-    try {
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        quality: 1,
-        aspect: [4, 3],
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const { uri } = result.assets[0];
-        const manipulator = ImageManipulator.manipulate(uri);
-        manipulator.resize({
-          width: 1080,
-        });
-
-        const renderImage = await manipulator.renderAsync();
-
-        const resizeImage = await renderImage.saveAsync({
-          format: SaveFormat.JPEG,
-          compress: 0.8,
-          base64: true,
-        });
-
-        setSelectedImage(resizeImage);
-        setImagePreviewUrl(resizeImage.uri);
-      }
-    } catch (error) {
-      console.error('Camera error:', error);
-      setUploadError('カメラの起動に失敗しました');
-    } finally {
-      setShowAttachMenu(false);
-    }
-  };
-
   // メッセージ送信処理
   const handleSend = async () => {
     if (isButtonDisabled) return;
-    setMessage('');
-    setSelectedImage(null);
-    setImagePreviewUrl(null);
+
+    setMessage("");
+    resetImage();
 
     try {
       if (selectedImage) {
-        setIsUploading(true);
         // 画像とメッセージを送信
         await onSend({
           imageUri: selectedImage.uri,
           message,
           imagePath: undefined, // サーバー側で設定される
+          emotion: selectedEmotion?.id,
         });
       } else {
         // メッセージのみ送信
@@ -210,16 +118,22 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           imagePath: undefined,
           message,
           imageUri: undefined,
+          emotion: selectedEmotion?.id,
         });
       }
 
       Keyboard.dismiss();
     } catch (error) {
       console.error('Message send error:', error);
-      setUploadError('メッセージの送信に失敗しました');
-    } finally {
-      setIsUploading(false);
     }
+  };
+
+  const handleSelectEmotion = (emotion: Emotion) => {
+    setSelectedEmotion(emotion);
+  };
+
+  const handleClearEmotion = () => {
+    setSelectedEmotion(null);
   };
 
   // プレースホルダーテキスト
@@ -232,13 +146,11 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
       return '画像をアップロード中...';
     }
 
-    return '最近どう？';
+    return '今、何考えてる？';
   }, [isDisabled, isUploading]);
 
   return (
-    <View
-      className="bg-white p-3 w-full border-t border-gray-200"
-    >
+    <View className="bg-white p-3 w-full border-t border-gray-200">
       {/* エラーメッセージ */}
       {uploadError && <ErrorMessage message={uploadError} />}
 
@@ -248,26 +160,65 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
       )}
 
       {/* 返信プレビュー */}
-      {mode === 'reply' && selectedMessage && (
+      {mode === "reply" && selectedMessage && (
         <ReplyPreview content={selectedMessage} />
       )}
+
+      {/* 感情選択バー */}
+      <View className="flex-row items-center">
+        <Text className="text-gray-500 text-sm mx-2">気分</Text>
+        <View className="flex-row space-x-3">
+          {emotions.map((emotion) => (
+            <TouchableOpacity
+              key={emotion.id}
+              onPress={() => handleSelectEmotion(emotion)}
+              className={`items-center justify-center p-2 rounded-full ${
+                selectedEmotion?.id === emotion.id ? "bg-gray-100" : ""
+              }`}
+            >
+              <MaterialCommunityIcons
+                name={emotion.icon}
+                size={28}
+                color={emotion.color}
+              />
+            </TouchableOpacity>
+          ))}
+          {selectedEmotion && (
+            <TouchableOpacity
+              onPress={handleClearEmotion}
+              className="items-center justify-center p-2"
+            >
+              <Feather name="x" size={18} color="#9ca3af" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
 
       <View className="flex-row items-center">
         {/* 添付ボタン */}
         <TouchableOpacity
           onPress={toggleAttachMenu}
           disabled={isDisabled || isUploading}
-          className="px-2 py-2 mr-1"
+          className="px-2 py-2"
         >
           <Feather
             name="plus"
             size={24}
-            color={isDisabled || isUploading ? '#ccc' : '#6b7280'}
+            color={isDisabled || isUploading ? "#ccc" : "#6b7280"}
           />
         </TouchableOpacity>
 
         {/* テキスト入力エリア */}
         <View className="flex-1 bg-gray-100 overflow-hidden flex-row items-center">
+          {selectedEmotion && (
+            <View className="ml-2">
+              <MaterialCommunityIcons
+                name={selectedEmotion.icon}
+                size={24}
+                color={selectedEmotion.color}
+              />
+            </View>
+          )}
           <TextInput
             ref={textInputRef}
             className="flex-1 px-4 py-2 min-h-[40px] text-base"
