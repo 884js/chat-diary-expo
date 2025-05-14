@@ -115,9 +115,10 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
+        mediaTypes: ["images"],
         allowsEditing: true,
-        quality: 0.8,
+        quality: 1,
+        aspect: [4, 3],
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -125,7 +126,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
         const manipulator = ImageManipulator.manipulate(uri);
 
         manipulator.resize({
-          width: 500,
+          width: 1080,
         });
 
         const renderImage = await manipulator.renderAsync();
@@ -157,15 +158,15 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     try {
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
+        quality: 1,
         aspect: [4, 3],
-        quality: 0.8,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const { uri } = result.assets[0];
         const manipulator = ImageManipulator.manipulate(uri);
         manipulator.resize({
-          width: 500,
+          width: 1080,
         });
 
         const renderImage = await manipulator.renderAsync();
@@ -175,6 +176,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           compress: 0.8,
           base64: true,
         });
+
         setSelectedImage(resizeImage);
         setImagePreviewUrl(resizeImage.uri);
       }
