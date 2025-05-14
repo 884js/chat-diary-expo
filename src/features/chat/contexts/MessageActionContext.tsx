@@ -1,8 +1,14 @@
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
+import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
 import { useSupabase } from '@/hooks/useSupabase';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 
 const MessageActionContext = createContext<{
   mode: 'edit' | 'reply' | null;
@@ -35,7 +41,7 @@ export const MessageActionProvider = ({
 }: { children: React.ReactNode }) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { currentUser } = useCurrentUser();
-  const { refetch } = useCurrentUserRoom({
+  const { refetchMessages } = useRoomUserMessages({
     userId: currentUser?.id ?? '',
   });
   const { api } = useSupabase();
@@ -72,14 +78,14 @@ export const MessageActionProvider = ({
     });
 
     handleResetMode();
-    await refetch();
+    await refetchMessages();
   };
 
   const handleDeleteMessage = async ({ messageId }: { messageId: string }) => {
     if (!messageId) return;
 
     await api.chatRoomMessage.deleteMessage({ messageId: messageId });
-    await refetch();
+    await refetchMessages();
   };
 
   const handleReplyMessage = async ({
@@ -103,7 +109,7 @@ export const MessageActionProvider = ({
     });
 
     handleResetMode();
-    await refetch();
+    await refetchMessages();
   };
 
   return (

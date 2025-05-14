@@ -191,10 +191,13 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   // メッセージ送信処理
   const handleSend = async () => {
     if (isButtonDisabled) return;
+    setMessage('');
+    setSelectedImage(null);
+    setImagePreviewUrl(null);
 
     try {
-      setIsUploading(true);
       if (selectedImage) {
+        setIsUploading(true);
         // 画像とメッセージを送信
         await onSend({
           imageUri: selectedImage.uri,
@@ -210,10 +213,6 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
         });
       }
 
-      // 送信後は状態をリセット
-      setMessage('');
-      setSelectedImage(null);
-      setImagePreviewUrl(null);
       Keyboard.dismiss();
     } catch (error) {
       console.error('Message send error:', error);
@@ -233,11 +232,13 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
       return '画像をアップロード中...';
     }
 
-    return 'なにか良いことあった？';
+    return '最近どう？';
   }, [isDisabled, isUploading]);
 
   return (
-    <View className="bg-white p-3 w-full">
+    <View
+      className="bg-white p-3 w-full border-t border-gray-200"
+    >
       {/* エラーメッセージ */}
       {uploadError && <ErrorMessage message={uploadError} />}
 
@@ -251,59 +252,61 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
         <ReplyPreview content={selectedMessage} />
       )}
 
-      {/* 入力エリア */}
       <View className="flex-row items-center">
         {/* 添付ボタン */}
         <TouchableOpacity
           onPress={toggleAttachMenu}
           disabled={isDisabled || isUploading}
-          className="p-2 mr-2"
+          className="px-2 py-2 mr-1"
         >
           <Feather
-            name="paperclip"
-            size={22}
-            color={isDisabled || isUploading ? '#9ca3af' : '#4b5563'}
+            name="plus"
+            size={24}
+            color={isDisabled || isUploading ? '#ccc' : '#6b7280'}
           />
         </TouchableOpacity>
 
-        {/* テキスト入力 */}
-        <TextInput
-          ref={textInputRef}
-          value={message}
-          onChangeText={setMessage}
-          placeholder={placeholder}
-          placeholderTextColor="#9ca3af"
-          multiline
-          className="flex-1 bg-white rounded-lg py-2 px-3 mr-2 border border-slate-300 min-h-[40px] max-h-[150px]"
-          editable={!isDisabled && !isUploading}
-        />
+        {/* テキスト入力エリア */}
+        <View className="flex-1 bg-gray-100 overflow-hidden flex-row items-center">
+          <TextInput
+            ref={textInputRef}
+            className="flex-1 px-4 py-2 min-h-[40px] text-base"
+            placeholder={placeholder}
+            value={message}
+            onChangeText={setMessage}
+            multiline
+            editable={!isDisabled && !isUploading}
+          />
+        </View>
 
         {/* 送信ボタン */}
         <TouchableOpacity
           onPress={handleSend}
           disabled={isButtonDisabled}
-          className={`rounded-full w-10 h-10 items-center justify-center ${
-            isButtonDisabled ? 'bg-slate-300' : 'bg-indigo-500'
-          }`}
-          accessibilityLabel="メッセージを送信"
+          className="ml-2 p-2 rounded-full bg-blue-500 items-center justify-center disabled:opacity-50"
+          style={{
+            opacity: isButtonDisabled ? 0.5 : 1,
+          }}
         >
           {isUploading ? (
-            <ActivityIndicator size="small" color="#ffffff" />
+            <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Feather name="send" size={20} color="#ffffff" />
+            <Feather name="send" size={20} color="#fff" />
           )}
         </TouchableOpacity>
       </View>
 
       {/* 添付メニュー */}
-      <AttachMenu
-        isOpen={showAttachMenu}
-        isDisabled={isDisabled}
-        isUploading={isUploading}
-        toggleMenu={toggleAttachMenu}
-        onSelectImage={handleImageSelect}
-        onSelectCamera={handleCameraSelect}
-      />
+      {showAttachMenu && (
+        <AttachMenu
+          isOpen={showAttachMenu}
+          isDisabled={isDisabled}
+          isUploading={isUploading}
+          toggleMenu={toggleAttachMenu}
+          onSelectImage={handleImageSelect}
+          onSelectCamera={handleCameraSelect}
+        />
+      )}
     </View>
   );
 }

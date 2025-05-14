@@ -41,7 +41,7 @@ export const ChatImage = ({ imageUrl, alt = '', fullWidth = false }: Props) => {
       <View className="relative my-2 rounded-lg overflow-hidden bg-gray-50">
         <Image
           source={{ uri: imageUrl }}
-          className={`rounded-lg min-h-[100px] ${fullWidth ? 'w-full h-[200px]' : 'w-[200px] h-[200px]'}`}
+          className={`rounded-lg min-h-[200px] ${fullWidth ? 'w-full h-[200px]' : 'w-[200px] h-[200px]'}`}
           resizeMode="cover"
           onLoadEnd={handleLoadEnd}
         />

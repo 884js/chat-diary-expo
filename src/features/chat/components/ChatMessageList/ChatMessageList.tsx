@@ -45,11 +45,11 @@ export const ChatMessageList = ({
   return (
     <ScrollView
       ref={scrollViewRef}
-      className="flex-1"
+      className="flex-1 !bg-gray-100"
       contentContainerStyle={{ paddingVertical: 8 }}
       onContentSizeChange={() => {
         if (scrollViewRef) {
-          scrollViewRef.current?.scrollToEnd({ animated: true });
+          scrollViewRef.current?.scrollToEnd({ animated: false });
         }
       }}
     >
@@ -72,7 +72,7 @@ export const ChatMessageList = ({
           <View key={msg.id} className="flex-1">
             {/* 日付区切り線 */}
             {showDateDivider && messageDate && (
-              <View ref={item.ref}>
+              <View ref={item.ref} className="!bg-gray-100">
                 <DateDivider
                   date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
                 />

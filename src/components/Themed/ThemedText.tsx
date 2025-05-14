@@ -22,16 +22,17 @@ export function Text(props: TextProps) {
 
   return (
     <ParsedText
-      style={[{ fontFamily: 'MPlus1-Regular', color }, style]}
+      style={[{ fontFamily: "MPlus1-Regular", color }, style]}
       parse={[
         {
-          type: 'url',
-          style: { color: 'blue', textDecorationLine: 'underline' },
+          type: "url",
+          style: { textDecorationLine: "underline" },
+          className: "!text-link",
           onPress: handleUrlPress,
         },
         {
-          type: 'email',
-          style: { color: 'purple', textDecorationLine: 'underline' },
+          type: "email",
+          style: { color: "purple", textDecorationLine: "underline" },
           onPress: handleEmailPress,
         },
       ]}

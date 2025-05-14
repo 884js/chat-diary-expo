@@ -101,6 +101,7 @@ module.exports = {
         ring: '#4C6EF5', // indigo.500
         background: '#FAFAF9', // ivory.50
         foreground: '#333333', // カスタム濃いグレー
+        link: '#0f83fd',
 
         primary: {
           DEFAULT: '#4C6EF5', // indigo.500

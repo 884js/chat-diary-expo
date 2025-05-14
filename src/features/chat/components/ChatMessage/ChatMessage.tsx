@@ -31,8 +31,8 @@ export function ChatMessage({
   owner,
   replyTo,
 }: MessageProps) {
-  const { messageId, bottomSheetModalRef, handleOpenMenu } = useMessageAction();
-  
+  const { messageId, handleOpenMenu } = useMessageAction();
+
   // アニメーション用の値
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const bgColorAnim = useRef(new Animated.Value(0)).current;
@@ -47,7 +47,7 @@ export function ChatMessage({
     });
 
   const isSelected = messageId === id;
-  
+
   // タップ時のアニメーション
   const startPressAnimation = () => {
     // アニメーションをリセット
@@ -63,10 +63,10 @@ export function ChatMessage({
         duration: 150,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
-      })
+      }),
     ]).start();
   };
-  
+
   // タップ解除時のアニメーション
   const startReleaseAnimation = () => {
     Animated.parallel([
@@ -81,7 +81,7 @@ export function ChatMessage({
         duration: 200,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
-      })
+      }),
     ]).start();
   };
 
@@ -97,13 +97,11 @@ export function ChatMessage({
   // 背景色の補間
   const interpolatedBgColor = bgColorAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(240, 240, 240, 0)', 'rgba(210, 210, 210, 0.5)']
+    outputRange: ['rgba(255, 255, 255, 0)', 'rgba(230, 230, 230, 0.5)'],
   });
 
   return (
-    <View
-      className="flex-row mb-2 py-1 w-full p-2 rounded-md"
-    >
+    <View className="flex-row mb-2 py-1 w-full p-2 rounded-md !bg-gray-100">
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
         {avatarUrl ? (
@@ -118,7 +116,7 @@ export function ChatMessage({
       </View>
 
       {/* メッセージコンテンツ */}
-      <View className="flex-1 min-w-0 relative">
+      <View className="flex-1 min-w-0 relative p-2 rounded-lg">
         {/* メッセージ内容部分 */}
         <Animated.View
           style={{
@@ -130,10 +128,10 @@ export function ChatMessage({
             onLongPress={() => handleOpenMenu(id)}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
-            delayLongPress={100}
+            delayLongPress={150}
             style={({ pressed }) => ({
               borderRadius: 8,
-              padding: 6,
+              padding: 8,
               overflow: 'hidden',
             })}
           >
@@ -148,10 +146,14 @@ export function ChatMessage({
                 borderRadius: 8,
               }}
             />
-            
-            <View className={`flex-1 ${isSelected ? 'bg-gray-100' : ''}`}>
+
+            <View
+              className={`flex-1 bg-transparent ${
+                isSelected ? 'bg-gray-100' : ''
+              }`}
+            >
               {replyTo && (
-                <View className="mb-2 pb-2 border-b border-gray-200">
+                <View className="mb-2 pb-2 border-b border-gray-200 bg-transparent">
                   <Text className="text-xs !text-gray-500">
                     {replyTo.content}
                   </Text>
@@ -161,13 +163,13 @@ export function ChatMessage({
               {content && <Text>{content}</Text>}
 
               {storageImageUrl ? (
-                <View className="mt-2 w-full">
+                <View className="mt-2 w-full bg-transparent">
                   <ChatImage imageUrl={storageImageUrl} fullWidth={true} />
                 </View>
               ) : null}
 
               {/* タイムスタンプ */}
-              <View className="flex-row justify-end">
+              <View className="flex-row justify-end bg-transparent">
                 <Text className="text-xs text-gray-500 mt-1">{timestamp}</Text>
               </View>
             </View>

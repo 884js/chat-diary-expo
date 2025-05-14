@@ -101,7 +101,7 @@ export const ChatScreen = () => {
   return (
     <>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={'padding'}>
-        <View className="flex-1">
+        <View className="flex-1 bg-gray-100">
           <ChatHeader onScrollToDate={handleScrollToDate} />
           <ChatMessageList
             scrollViewRef={scrollRef}

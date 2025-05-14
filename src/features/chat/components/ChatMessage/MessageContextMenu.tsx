@@ -12,7 +12,13 @@ import { useMessageAction } from '../../contexts/MessageActionContext';
 import { useRoomMessageDetail } from '../../hooks/useRoomMessageDetail';
 
 export function MessageContextMenu() {
-  const { bottomSheetModalRef, messageId, handleEditMessage, handleReplyMessage, handleDeleteMessage } = useMessageAction();
+  const {
+    bottomSheetModalRef,
+    messageId,
+    handleEditMessage,
+    handleReplyMessage,
+    handleDeleteMessage,
+  } = useMessageAction();
 
   // スナップポイントを定義
   const snapPoints = useMemo(() => ['35%'], []);
@@ -27,7 +33,7 @@ export function MessageContextMenu() {
 
   const handleEdit = () => {
     if (!messageDetail?.id || !messageDetail?.content) {
-      console.error("messageDetail is undefined");
+      console.error('messageDetail is undefined');
       return;
     }
 
@@ -40,7 +46,7 @@ export function MessageContextMenu() {
 
   const handleReply = () => {
     if (!messageDetail?.id || !messageDetail?.content) {
-      console.error("messageDetail is undefined");
+      console.error('messageDetail is undefined');
       return;
     }
 
@@ -53,28 +59,27 @@ export function MessageContextMenu() {
 
   const handleDelete = () => {
     if (!messageDetail?.id) {
-      console.error("messageDetail is undefined");
+      console.error('messageDetail is undefined');
       return;
     }
 
     Alert.alert(
-      "メッセージを削除",
-      "このメッセージを本当に削除しますか？削除後は元に戻すことはできません。",
+      'メッセージを削除',
+      'このメッセージを本当に削除しますか？削除後は元に戻すことはできません。',
       [
         {
-          text: "キャンセル",
-          style: "cancel",
+          text: 'キャンセル',
+          style: 'cancel',
         },
         {
-          text: "削除する",
-          style: "destructive",
+          text: '削除する',
+          style: 'destructive',
           onPress: async () => {
-            console.log("削除する");
             await handleDeleteMessage({ messageId: messageDetail?.id });
             handleClose();
           },
         },
-      ]
+      ],
     );
   };
 
