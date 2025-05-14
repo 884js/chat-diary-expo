@@ -1,19 +1,19 @@
 import { Loader } from '@/components/Loader';
 import { View } from '@/components/Themed';
-import type { View as ViewType } from "react-native";
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { useSupabase } from '@/hooks/useSupabase';
+import { format } from 'date-fns';
+import type { View as ViewType } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
+import { useChatScrollToDate } from '../hooks/useChatScrollToDate';
 import { useSendMessage } from '../hooks/useSendMessage';
-import { useChatScrollToDate } from "../hooks/useChatScrollToDate";
-import { format } from 'date-fns';
 
 export const ChatScreen = () => {
   const { api } = useSupabase();
@@ -89,7 +89,7 @@ export const ChatScreen = () => {
   const messagesWithRefs = messages.map((message) => ({
     ...message,
     ref: (node: ViewType) => {
-      const key = format(message.date || "", "yyyy-MM-dd");
+      const key = format(message.date || '', 'yyyy-MM-dd');
       if (node) {
         listItemRefs.current[key] = node;
       } else {
@@ -99,21 +99,23 @@ export const ChatScreen = () => {
   }));
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"}>
-      <View className="flex-1">
-        <ChatHeader onScrollToDate={handleScrollToDate} />
-        <ChatMessageList
-          scrollViewRef={scrollRef}
-          chatRoom={chatRoom}
-          isLoading={isLoadingRoom}
-          messages={messagesWithRefs}
-          isChatEnded={false}
-          isOwner={true}
-          isPending={isPending ?? false}
-          sendingMessage={variables}
-        />
-        <ChatInput onSend={handleSendMessage} isDisabled={false} />
-      </View>
-    </KeyboardAvoidingView>
+    <>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={'padding'}>
+        <View className="flex-1">
+          <ChatHeader onScrollToDate={handleScrollToDate} />
+          <ChatMessageList
+            scrollViewRef={scrollRef}
+            chatRoom={chatRoom}
+            isLoading={isLoadingRoom}
+            messages={messagesWithRefs}
+            isChatEnded={false}
+            isOwner={true}
+            isPending={isPending ?? false}
+            sendingMessage={variables}
+          />
+          <ChatInput onSend={handleSendMessage} isDisabled={false} />
+        </View>
+      </KeyboardAvoidingView>
+    </>
   );
 };

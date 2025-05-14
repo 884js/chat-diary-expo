@@ -1,4 +1,5 @@
 import { View } from '@/components/Themed';
+import { MessageContextMenu } from '@/features/chat/components/ChatMessage/MessageContextMenu';
 import { ChatScreen } from '@/features/chat/screens/ChatScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,6 +19,7 @@ export default function Home() {
       }}
     >
       <ChatScreen />
+      <MessageContextMenu />
     </View>
   );
 }

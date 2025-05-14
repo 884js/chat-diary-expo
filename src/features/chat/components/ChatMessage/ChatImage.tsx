@@ -67,7 +67,10 @@ export const ChatImage = ({ imageUrl, alt = '', fullWidth = false }: Props) => {
         animationType="fade"
         onRequestClose={closeModal}
       >
-        <Pressable className="flex-1 bg-black/90 justify-center items-center" onPress={closeModal}>
+        <Pressable
+          className="flex-1 bg-black/90 justify-center items-center"
+          onPress={closeModal}
+        >
           <View className="relative w-full h-full items-center justify-center">
             {isLoading && (
               <View className="absolute z-10 items-center justify-center">

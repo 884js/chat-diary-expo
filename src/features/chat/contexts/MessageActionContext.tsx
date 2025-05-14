@@ -1,9 +1,8 @@
-'use client';
-
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useSupabase } from '@/hooks/useSupabase';
-import { createContext, useContext, useState } from 'react';
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 const MessageActionContext = createContext<{
   mode: 'edit' | 'reply' | null;
@@ -27,11 +26,14 @@ const MessageActionContext = createContext<{
     message: string;
   }) => Promise<void>;
   handleSendReplyMessage: ({ message }: { message: string }) => Promise<void>;
+  handleOpenMenu: (id: string) => void;
+  bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
 } | null>(null);
 
 export const MessageActionProvider = ({
   children,
 }: { children: React.ReactNode }) => {
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { currentUser } = useCurrentUser();
   const { refetch } = useCurrentUserRoom({
     userId: currentUser?.id ?? '',
@@ -40,6 +42,11 @@ export const MessageActionProvider = ({
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);
   const [messageId, setMessageId] = useState<string | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+
+  const handleOpenMenu = useCallback((id: string) => {
+    setMessageId(id);
+    bottomSheetModalRef.current?.present();
+  }, []);
 
   const handleEditMessage = ({
     messageId,
@@ -111,6 +118,8 @@ export const MessageActionProvider = ({
         handleDeleteMessage,
         handleReplyMessage,
         handleSendReplyMessage,
+        bottomSheetModalRef,
+        handleOpenMenu,
       }}
     >
       {children}

@@ -1,72 +1,72 @@
-import { ScrollView, Text, View } from "@/components/Themed";
-import { endOfMonth, isSameDay, startOfMonth } from "date-fns";
-import { formatInTimeZone, toZonedTime } from "date-fns-tz";
-import { useEffect, useState } from "react";
+import { ScrollView, Text, View } from '@/components/Themed';
+import { endOfMonth, isSameDay, startOfMonth } from 'date-fns';
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+import { useEffect, useState } from 'react';
 
-import { Loader } from "@/components/Loader";
+import { Loader } from '@/components/Loader';
 import {
   CalendarView,
   generateMarkedDates,
-} from "@/features/calendar/components/Calendar";
-import { DayDetail } from "@/features/calendar/components/DayDetail";
-import { useCalendarDays } from "@/features/calendar/hooks/useCalendar";
-import { useSummarize } from "@/features/calendar/hooks/useSummarize";
-import { useUpdateCalendarSummary } from "@/features/calendar/hooks/useUpdateCalendarSummary";
-import { useChatRoomMessages } from "@/features/chat/hooks/useChatRoomMessages";
-import { useCurrentUser } from "@/features/user/hooks/useCurrentUser";
-import { formatDate } from "@/lib/date-fns";
-import type { DateData } from "react-native-calendars";
+} from '@/features/calendar/components/Calendar';
+import { DayDetail } from '@/features/calendar/components/DayDetail';
+import { useCalendarDays } from '@/features/calendar/hooks/useCalendar';
+import { useSummarize } from '@/features/calendar/hooks/useSummarize';
+import { useUpdateCalendarSummary } from '@/features/calendar/hooks/useUpdateCalendarSummary';
+import { useChatRoomMessages } from '@/features/chat/hooks/useChatRoomMessages';
+import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
+import { formatDate } from '@/lib/date-fns';
+import type { DateData } from 'react-native-calendars';
 
 export const CalendarScreen = () => {
   const { summarize, isPending: isSummarizing } = useSummarize();
   const { updateCalendarSummary } = useUpdateCalendarSummary();
 
-  const TIME_ZONE = "Asia/Tokyo";
+  const TIME_ZONE = 'Asia/Tokyo';
   const now = toZonedTime(new Date(), TIME_ZONE);
   const japanTime = now.getTime() + 9 * 60 * 60 * 1000;
   const today = new Date(japanTime);
 
   const [currentDate, setCurrentDate] = useState(today);
   // 月の開始日と終了日の取得
-  const formattedNow = formatDate(now, "yyyy-MM-dd");
+  const formattedNow = formatDate(now, 'yyyy-MM-dd');
 
   const startAt = formatInTimeZone(
     startOfMonth(currentDate),
     TIME_ZONE,
-    "yyyy-MM-dd"
+    'yyyy-MM-dd',
   );
   const endAt = formatInTimeZone(
     endOfMonth(currentDate),
     TIME_ZONE,
-    "yyyy-MM-dd"
+    'yyyy-MM-dd',
   );
 
   const [selectedDate, setSelectedDate] = useState<string>(
-    formatDate(new Date(now), "yyyy-MM-dd")
+    formatDate(new Date(now), 'yyyy-MM-dd'),
   );
   const { currentUser } = useCurrentUser();
 
   const { chatRoomMessages, isLoading: isMessagesLoading } =
     useChatRoomMessages({
-      userId: currentUser?.id || "",
+      userId: currentUser?.id || '',
       startAt,
       endAt,
     });
 
   const todayMessages = chatRoomMessages.filter((m) => {
-    const messageDate = formatDate(new Date(m.created_at), "yyyy-MM-dd");
+    const messageDate = formatDate(new Date(m.created_at), 'yyyy-MM-dd');
     return isSameDay(messageDate, selectedDate);
   });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // 今日の日付をYYYY-MM-DD形式で取得
-    const todayFormatted = formatDate(new Date(now), "yyyy-MM-dd");
+    const todayFormatted = formatDate(new Date(now), 'yyyy-MM-dd');
     setSelectedDate(todayFormatted);
   }, []);
 
   const { calendarDays, isLoading, isError, refetch } = useCalendarDays({
-    userId: currentUser?.id ?? "",
+    userId: currentUser?.id ?? '',
     startAt,
     endAt,
   });
@@ -75,14 +75,14 @@ export const CalendarScreen = () => {
     const messagesText = todayMessages
       .map((m) => m.content?.trim())
       .filter((c) => c && c.length > 0)
-      .join("\n");
+      .join('\n');
 
     const result = await summarize({
       messagesText,
     });
 
     await updateCalendarSummary({
-      userId: currentUser?.id || "",
+      userId: currentUser?.id || '',
       dateKey,
       json: result,
     });
@@ -111,7 +111,7 @@ export const CalendarScreen = () => {
   // 表示用のデータ準備
   const markedDates = generateMarkedDates(
     getDatesWithMessages(),
-    selectedDate || undefined
+    selectedDate || undefined,
   );
 
   // 選択された日付のみを表示
@@ -127,7 +127,7 @@ export const CalendarScreen = () => {
     }
 
     // 要約が存在する場合は要約を作成しない
-    if (selectedDayData?.summary_status !== "none") {
+    if (selectedDayData?.summary_status !== 'none') {
       return;
     }
 

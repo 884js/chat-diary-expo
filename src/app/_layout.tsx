@@ -15,8 +15,8 @@ import { AuthProvider } from '@/features/auth/contexts/AuthContext';
 import { MessageActionProvider } from '@/features/chat/contexts/MessageActionContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
-import { Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import {
   ReanimatedLogLevel,
@@ -79,44 +79,28 @@ function RootLayoutNav() {
   const right = typeof insets.right === 'number' ? insets.right : 0;
 
   return (
-    <KeyboardProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <MessageActionProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="(chat)/message-context-menu"
-              options={{
-                contentStyle: {
-                  flex: 1,
-                },
-                headerShown: false,
-                presentation: 'formSheet',
-                gestureDirection: 'vertical',
-                sheetInitialDetentIndex: 0,
-                sheetAllowedDetents: [0.3],
-                animationDuration: 40,
-                headerRight: (navigation) => (
-                  <TouchableOpacity
-                    onPress={() => router.back()}
-                    style={{ padding: 8 }}
-                  >
-                    <Ionicons name="close" size={24} />
-                  </TouchableOpacity>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="auth/login"
-              options={{
-                headerShown: false,
-                presentation: 'transparentModal',
-                gestureEnabled: true,
-              }}
-            />
-          </Stack>
-        </MessageActionProvider>
-      </ThemeProvider>
-    </KeyboardProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <KeyboardProvider>
+          <ThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
+            <MessageActionProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="auth/login"
+                  options={{
+                    headerShown: false,
+                    presentation: 'transparentModal',
+                    gestureEnabled: true,
+                  }}
+                />
+              </Stack>
+            </MessageActionProvider>
+          </ThemeProvider>
+        </KeyboardProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }

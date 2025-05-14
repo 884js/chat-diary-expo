@@ -115,7 +115,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ['images'],
         allowsEditing: true,
         quality: 1,
         aspect: [4, 3],

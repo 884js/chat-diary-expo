@@ -1,149 +1,159 @@
+import { View } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
-import { useEffect, useRef } from 'react';
 import {
-  Animated,
-  Dimensions,
-  Easing,
-  Modal,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+  BottomSheetBackdrop,
+  type BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
+import { useCallback, useMemo } from 'react';
+import { Alert, Text, TouchableOpacity } from 'react-native';
+import { useMessageAction } from '../../contexts/MessageActionContext';
+import { useRoomMessageDetail } from '../../hooks/useRoomMessageDetail';
 
-type Props = {
-  isVisible: boolean;
-  onEdit: () => void;
-  onReply: () => void;
-  onDelete: () => void;
-  onClose: () => void;
-};
+export function MessageContextMenu() {
+  const { bottomSheetModalRef, messageId, handleEditMessage, handleReplyMessage, handleDeleteMessage } = useMessageAction();
 
-export function MessageContextMenu({
-  isVisible,
-  onEdit,
-  onReply,
-  onDelete,
-  onClose,
-}: Props) {
-  // アニメーション用の値
-  const slideAnim = useRef(new Animated.Value(0)).current;
+  // スナップポイントを定義
+  const snapPoints = useMemo(() => ['35%'], []);
 
-  // 表示・非表示に合わせてアニメーションを実行
-  useEffect(() => {
-    if (isVisible) {
-      // 表示時は下から上へスライド（滑らかなイージング）
-      Animated.timing(slideAnim, {
-        toValue: 1,
-        duration: 400,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }).start();
-    } else {
-      // 非表示時は上から下へスライド（やや早く）
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }).start();
+  const { messageDetail } = useRoomMessageDetail({
+    messageId: messageId as string,
+  });
+
+  const handleClose = () => {
+    bottomSheetModalRef.current?.dismiss();
+  };
+
+  const handleEdit = () => {
+    if (!messageDetail?.id || !messageDetail?.content) {
+      console.error("messageDetail is undefined");
+      return;
     }
-  }, [isVisible, slideAnim]);
 
-  // 画面の高さを取得（アニメーション計算用）
-  const { height } = Dimensions.get('window');
+    handleEditMessage({
+      messageId: messageDetail?.id,
+      message: messageDetail?.content,
+    });
+    handleClose();
+  };
 
-  // translateYの計算（0→1の値を高さに変換）
-  const translateY = slideAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [height, 0],
-    extrapolate: 'clamp',
-  });
+  const handleReply = () => {
+    if (!messageDetail?.id || !messageDetail?.content) {
+      console.error("messageDetail is undefined");
+      return;
+    }
 
-  // 透明度のアニメーション
-  const opacity = slideAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0, 0.7, 1],
-    extrapolate: 'clamp',
-  });
+    handleReplyMessage({
+      parentMessageId: messageDetail?.id,
+      message: messageDetail?.content,
+    });
+    handleClose();
+  };
+
+  const handleDelete = () => {
+    if (!messageDetail?.id) {
+      console.error("messageDetail is undefined");
+      return;
+    }
+
+    Alert.alert(
+      "メッセージを削除",
+      "このメッセージを本当に削除しますか？削除後は元に戻すことはできません。",
+      [
+        {
+          text: "キャンセル",
+          style: "cancel",
+        },
+        {
+          text: "削除する",
+          style: "destructive",
+          onPress: async () => {
+            console.log("削除する");
+            await handleDeleteMessage({ messageId: messageDetail?.id });
+            handleClose();
+          },
+        },
+      ]
+    );
+  };
+
+  // カスタムバックドロップコンポーネント
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.7}
+      />
+    ),
+    [],
+  );
 
   return (
-    <Modal
-      visible={isVisible}
-      transparent={true}
-      animationType="none"
-      onRequestClose={onClose}
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      index={0}
+      snapPoints={snapPoints}
+      backdropComponent={renderBackdrop}
+      handleIndicatorStyle={{ width: 40, backgroundColor: '#cbd5e1' }}
     >
-      <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
-        <Animated.View
-          className="bg-white rounded-t-3xl pb-8"
-          style={{
-            transform: [{ translateY }],
-            opacity,
-          }}
-        >
-          <View className="w-10 h-1.5 bg-gray-200 rounded-full self-center mt-3 mb-4" />
-
-          <View className="px-4">
-            <TouchableOpacity
-              onPress={() => {
-                onEdit();
-                onClose();
-              }}
-              className="flex-row items-center py-4 border-b border-gray-100"
-            >
-              <Feather
-                name="edit"
-                size={20}
-                className="mr-3 w-6"
-                color="#6b7280"
-              />
-              <Text className="text-base text-gray-600">編集</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                onReply();
-                onClose();
-              }}
-              className="flex-row items-center py-4 border-b border-gray-100"
-            >
-              <Feather
-                name="corner-up-right"
-                size={20}
-                className="mr-3 w-6"
-                color="#6b7280"
-              />
-              <Text className="text-base text-gray-600">返信</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                onDelete();
-                onClose();
-              }}
-              className="flex-row items-center py-4 border-b border-gray-100"
-            >
-              <Feather
-                name="trash"
-                size={20}
-                className="mr-3 w-6"
-                color="#e11d48"
-              />
-              <Text className="text-base text-red-600">削除</Text>
-            </TouchableOpacity>
-          </View>
+      <BottomSheetView className="flex-1 px-4 pt-2 pb-6">
+        <View className="bg-transparent">
+          <TouchableOpacity
+            onPress={() => {
+              handleEdit();
+              handleClose();
+            }}
+            className="flex-row items-center py-4 border-b border-gray-100 active:bg-gray-100"
+            activeOpacity={0.7}
+          >
+            <View className="w-10 h-10 rounded-full bg-blue-50 items-center justify-center mr-3">
+              <Feather name="edit" size={18} color="#3b82f6" />
+            </View>
+            <Text className="text-base font-medium text-gray-700">編集</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
-            className="mt-3 mx-4 py-3.5 bg-gray-50 rounded-lg items-center"
-            onPress={onClose}
+            onPress={() => {
+              handleReply();
+              handleClose();
+            }}
+            className="flex-row items-center py-4 border-b border-gray-100 active:bg-gray-100"
+            activeOpacity={0.7}
           >
-            <Text className="text-base font-medium text-gray-500">
-              キャンセル
-            </Text>
+            <View className="w-10 h-10 rounded-full bg-green-50 items-center justify-center mr-3">
+              <Feather name="corner-up-right" size={18} color="#22c55e" />
+            </View>
+            <Text className="text-base font-medium text-gray-700">返信</Text>
           </TouchableOpacity>
-        </Animated.View>
-      </Pressable>
-    </Modal>
+
+          <TouchableOpacity
+            onPress={() => {
+              handleDelete();
+              handleClose();
+            }}
+            className="flex-row items-center py-4 border-b border-gray-100 active:bg-gray-100"
+            activeOpacity={0.7}
+          >
+            <View className="w-10 h-10 rounded-full bg-red-50 items-center justify-center mr-3">
+              <Feather name="trash-2" size={18} color="#ef4444" />
+            </View>
+            <Text className="text-base font-medium text-red-500">削除</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          className="mt-6 py-3.5 bg-gray-200 rounded-xl items-center"
+          onPress={handleClose}
+          activeOpacity={0.7}
+        >
+          <Text className="text-base font-medium text-gray-700">
+            キャンセル
+          </Text>
+        </TouchableOpacity>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }

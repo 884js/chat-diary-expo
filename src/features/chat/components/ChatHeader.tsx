@@ -1,9 +1,13 @@
-import { View, Text } from 'react-native';
-import { CalendarProvider, ExpandableCalendar, WeekCalendar } from 'react-native-calendars';
+import { Text, View } from 'react-native';
+import {
+  CalendarProvider,
+  ExpandableCalendar,
+  WeekCalendar,
+} from 'react-native-calendars';
 import '@/lib/react-native-calendars/locale';
 
 import { format } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // MarkedDatesの型定義
 type MarkedDateItem = {
@@ -23,19 +27,19 @@ type Props = {
 export function ChatHeader({ onScrollToDate }: Props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(
-    format(selectedDate, "yyyy年M月")
+    format(selectedDate, 'yyyy年M月'),
   );
   const [markedDates, setMarkedDates] = useState<MarkedDates>({
-    [format(selectedDate, "yyyy-MM-dd")]: {
+    [format(selectedDate, 'yyyy-MM-dd')]: {
       selected: true,
       marked: true,
-      selectedColor: "#3498db",
+      selectedColor: '#3498db',
     },
   });
 
   // 選択された日付が変わったときに年月表示を更新
   useEffect(() => {
-    setCurrentMonth(format(selectedDate, "yyyy年M月"));
+    setCurrentMonth(format(selectedDate, 'yyyy年M月'));
   }, [selectedDate]);
 
   return (
@@ -45,17 +49,17 @@ export function ChatHeader({ onScrollToDate }: Props) {
         style={{
           paddingHorizontal: 12,
           paddingVertical: 6,
-          backgroundColor: "white",
+          backgroundColor: 'white',
           borderBottomWidth: 1,
-          borderBottomColor: "#f0f0f0",
+          borderBottomColor: '#f0f0f0',
         }}
       >
         <Text
           style={{
             fontSize: 16,
-            fontWeight: "600",
-            color: "#1e293b",
-            textAlign: "center",
+            fontWeight: '600',
+            color: '#1e293b',
+            textAlign: 'center',
           }}
         >
           {currentMonth}
@@ -63,28 +67,28 @@ export function ChatHeader({ onScrollToDate }: Props) {
       </View>
 
       <CalendarProvider
-        date={format(selectedDate, "yyyy-MM-dd")}
+        date={format(selectedDate, 'yyyy-MM-dd')}
         disableAutoDaySelection={[
           ExpandableCalendar.navigationTypes.WEEK_SCROLL,
         ]}
         theme={{
-          calendarBackground: "#ffffff",
-          textSectionTitleColor: "#64748b",
-          selectedDayBackgroundColor: "#3498db",
-          selectedDayTextColor: "#ffffff",
-          todayTextColor: "#3498db",
-          dayTextColor: "#1e293b",
-          dotColor: "#3498db",
-          selectedDotColor: "#ffffff",
-          arrowColor: "#3498db",
-          monthTextColor: "#1e293b",
+          calendarBackground: '#ffffff',
+          textSectionTitleColor: '#64748b',
+          selectedDayBackgroundColor: '#3498db',
+          selectedDayTextColor: '#ffffff',
+          todayTextColor: '#3498db',
+          dayTextColor: '#1e293b',
+          dotColor: '#3498db',
+          selectedDotColor: '#ffffff',
+          arrowColor: '#3498db',
+          monthTextColor: '#1e293b',
           textDayFontSize: 14,
           textMonthFontSize: 16,
           textDayHeaderFontSize: 14,
         }}
       >
         <WeekCalendar
-          current={format(selectedDate, "yyyy-MM-dd")}
+          current={format(selectedDate, 'yyyy-MM-dd')}
           markedDates={markedDates}
           onDayPress={(day) => {
             const newSelectedDate = new Date(day.timestamp);
@@ -94,7 +98,7 @@ export function ChatHeader({ onScrollToDate }: Props) {
               [day.dateString]: {
                 selected: true,
                 marked: true,
-                selectedColor: "#3498db",
+                selectedColor: '#3498db',
               },
             });
           }}

@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { formatInTimeZone } from 'date-fns-tz';
 import type React from 'react';
 import { TouchableOpacity } from 'react-native';
-import "@/lib/react-native-calendars/locale";
+import '@/lib/react-native-calendars/locale';
 import { Calendar, type DateData } from 'react-native-calendars';
 import type { CalendarHeaderProps } from 'react-native-calendars/src/calendar/header';
 import type { Theme } from 'react-native-calendars/src/types';
