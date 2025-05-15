@@ -1,6 +1,7 @@
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Emotion } from './useChatInputEmotion';
 
 export const useSendMessage = () => {
   const { api } = useSupabase();
@@ -16,16 +17,19 @@ export const useSendMessage = () => {
       senderType,
       content,
       imagePath,
+      emotion,
     }: {
       senderType: 'user' | 'ai';
       content: string;
       imagePath?: string;
+      emotion?: Emotion['slug'];
     }) => {
       return api.chatRoomMessage.sendMessage({
         content: content,
         sender: senderType,
         senderId: currentUser?.id ?? '',
         imagePath,
+        emotion,
       });
     },
     onSettled: () =>

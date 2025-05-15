@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { ChatMessage } from '../ChatMessage';
 import { DateDivider } from './DateDivider';
+import type { Emotion } from '../../hooks/useChatInputEmotion';
 
 type Props = {
   chatRoom: ChatRoom;
@@ -24,6 +25,7 @@ type Props = {
         content: string;
         senderType: 'user' | 'ai';
         imagePath?: string | undefined;
+        emotion?: Emotion['slug'];
       }
     | undefined;
 };
@@ -90,6 +92,7 @@ export const ChatMessageList = ({
               isOwner={isOwner}
               timestamp={formatDate(msg.created_at || '', 'HH:mm')}
               imagePath={msg.image_path}
+              emotion={msg.emotion}
             />
           </View>
         );
@@ -106,6 +109,7 @@ export const ChatMessageList = ({
             isOwner={isOwner}
             timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
             imagePath={sendingMessage?.imagePath ?? ''}
+            emotion={sendingMessage?.emotion ?? ''}
           />
         )}
       </View>

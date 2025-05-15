@@ -11,6 +11,7 @@ import {
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { useChatImage } from '../../hooks/useChatImage';
 import { useChatInputEmotion } from '../../hooks/useChatInputEmotion';
+import type { Emotion } from '../../hooks/useChatInputEmotion';
 import { AttachMenu } from './AttachMenu';
 import { ChatInputEmotion } from './ChatInputEmotion';
 import { ErrorMessage } from './ErrorMessage';
@@ -26,7 +27,7 @@ interface ChatInputProps {
     imagePath?: string;
     message: string;
     imageUri?: string;
-    emotion?: string;
+    emotion?: Emotion['slug'];
   }) => Promise<void>;
   isDisabled: boolean;
 }
@@ -84,7 +85,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           imageUri: selectedImage.uri,
           message,
           imagePath: undefined, // サーバー側で設定される
-          emotion: selectedEmotion?.id,
+          emotion: selectedEmotion?.slug,
         });
       } else {
         // メッセージのみ送信
@@ -92,7 +93,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           imagePath: undefined,
           message,
           imageUri: undefined,
-          emotion: selectedEmotion?.id,
+          emotion: selectedEmotion?.slug,
         });
       }
 
@@ -134,8 +135,8 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
       <ChatInputEmotion
         emotions={emotions}
         selectedEmotion={selectedEmotion}
-        handleSelectEmotion={handleSelectEmotion}
-        handleClearEmotion={handleClearEmotion}
+        onSelectEmotion={handleSelectEmotion}
+        onClearEmotion={handleClearEmotion}
       />
       <View className="flex-row items-center">
         {/* 添付ボタン */}

@@ -33,6 +33,10 @@ CREATE TABLE IF NOT EXISTS public.room_messages (
   sender TEXT CHECK (sender IN ('user', 'ai')),
   content TEXT,
   image_path TEXT DEFAULT '',
+  emotion TEXT CHECK (
+    emotion IS NULL OR
+    emotion IN ('normal', 'happy', 'sad', 'angry', 'confused')
+  ),
   reply_to_message_id UUID REFERENCES public.room_messages(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()

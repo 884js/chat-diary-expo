@@ -2,10 +2,12 @@ import { Image } from '@/components/Image';
 import { Text, View } from '@/components/Themed';
 import { useStorageImage } from '@/hooks/useStorageImage';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { Animated, Easing, Pressable } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { ChatImage } from './ChatImage';
+import { emotions } from '../../hooks/useChatInputEmotion';
 
 export interface MessageProps {
   id: string;
@@ -21,6 +23,7 @@ export interface MessageProps {
   timestamp: string;
   imagePath?: string | null;
   isOwner: boolean;
+  emotion?: string | null;
 }
 
 export function ChatMessage({
@@ -30,6 +33,7 @@ export function ChatMessage({
   imagePath = null,
   owner,
   replyTo,
+  emotion,
 }: MessageProps) {
   const { messageId, handleOpenMenu } = useMessageAction();
 
@@ -47,6 +51,9 @@ export function ChatMessage({
     });
 
   const isSelected = messageId === id;
+
+  // 該当するemotionを検索
+  const emotionData = emotion ? emotions.find(e => e.slug === emotion) : null;
 
   // タップ時のアニメーション
   const startPressAnimation = () => {
@@ -160,7 +167,18 @@ export function ChatMessage({
                 </View>
               )}
 
-              {content && <Text>{content}</Text>}
+              <View className="flex-row items-center">
+                {emotionData && (
+                  <View className="mr-2">
+                    <MaterialCommunityIcons
+                      name={emotionData.icon}
+                      size={20}
+                      color={emotionData.color}
+                    />
+                  </View>
+                )}
+                {content && <Text className="flex-1">{content}</Text>}
+              </View>
 
               {storageImageUrl ? (
                 <View className="mt-2 w-full bg-transparent">

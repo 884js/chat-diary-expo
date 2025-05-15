@@ -14,6 +14,7 @@ import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import { useChatScrollToDate } from '../hooks/useChatScrollToDate';
 import { useSendMessage } from '../hooks/useSendMessage';
+import type { Emotion } from '../hooks/useChatInputEmotion';
 
 export const ChatScreen = () => {
   const { api } = useSupabase();
@@ -36,10 +37,12 @@ export const ChatScreen = () => {
     imagePath,
     message,
     imageUri,
+    emotion,
   }: {
     imagePath?: string;
     message: string;
     imageUri?: string;
+    emotion?: Emotion['slug'];
   }) => {
     if (!chatRoom?.id || !currentUser?.id) return;
 
@@ -48,13 +51,13 @@ export const ChatScreen = () => {
     const senderType = isOwner ? 'user' : 'ai';
 
     if (mode === 'edit') {
-      await handleSaveEdit({ message: trimmedMessage });
+      await handleSaveEdit({ message: trimmedMessage, emotion: emotion });
       refetchMessages();
       return;
     }
 
     if (mode === 'reply') {
-      await handleSendReplyMessage({ message: trimmedMessage });
+      await handleSendReplyMessage({ message: trimmedMessage, emotion: emotion });
       refetchMessages();
       return;
     }
@@ -76,6 +79,7 @@ export const ChatScreen = () => {
         senderType,
         content: trimmedMessage,
         imagePath: uploadedImagePath,
+        emotion: emotion,
       });
     } catch (error) {
       console.error('Error sending message:', error);

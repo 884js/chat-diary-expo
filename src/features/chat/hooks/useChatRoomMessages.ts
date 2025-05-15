@@ -1,7 +1,7 @@
 import { useSupabase } from '@/hooks/useSupabase';
 import { useQuery } from '@tanstack/react-query';
+import type { Emotion } from './useChatInputEmotion';
 
-// RoomMessageの型定義
 export type RoomMessage = {
   id: string;
   owner_id: string;
@@ -11,6 +11,7 @@ export type RoomMessage = {
   reply_to_message_id: string | null;
   created_at: string;
   updated_at: string;
+  emotion: Emotion['slug'] | null;
 };
 
 type Props = {
@@ -61,14 +62,14 @@ export function useChatRoomMessages({ userId, startAt, endAt }: Props) {
             end_at: dateRange.end,
           },
         },
-      );
+      ).overrideTypes<RoomMessage[]>();
 
       if (error) {
         console.error('Error fetching room messages:', error);
         throw error;
       }
 
-      return data as RoomMessage[];
+      return data;
     },
     enabled: !!userId,
   });

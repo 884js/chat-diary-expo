@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import * as FileSystem from 'expo-file-system';
 import type { Database } from '../databaseTypes';
 import { CalendarApi } from './calendar';
+import type { Emotion } from '@/features/chat/hooks/useChatInputEmotion';
 
 export type ChatRoomMessage = {
   id: string;
@@ -9,6 +10,7 @@ export type ChatRoomMessage = {
   sender: 'user' | 'ai';
   content: string;
   image_path: string | null;
+  emotion: string | null;
   reply_to_message_id: string | null;
   created_at: string;
   updated_at: string;
@@ -85,12 +87,15 @@ export class ChatRoomMessageApi {
     sender,
     senderId,
     imagePath = null,
+    emotion,
   }: {
     content: string;
     sender: 'user' | 'ai';
     senderId: string;
     imagePath?: string | null;
+    emotion?: Emotion['slug'];
   }) {
+
     const { data, error } = await this.supabase
       .from('room_messages')
       .insert({
@@ -98,6 +103,7 @@ export class ChatRoomMessageApi {
         sender,
         owner_id: senderId,
         image_path: imagePath,
+        emotion,
       })
       .select('*')
       .single();
@@ -179,10 +185,11 @@ export class ChatRoomMessageApi {
   async editMessage({
     messageId,
     content,
-  }: { messageId: string; content: string }) {
+    emotion,
+  }: { messageId: string; content: string, emotion: Emotion['slug'] }) {
     const { error } = await this.supabase
       .from('room_messages')
-      .update({ content })
+      .update({ content, emotion })
       .eq('id', messageId);
 
     if (error) {
@@ -199,12 +206,14 @@ export class ChatRoomMessageApi {
     parentMessageId,
     content,
     senderId,
-  }: { parentMessageId: string; content: string; senderId: string }) {
+    emotion,
+  }: { parentMessageId: string; content: string; senderId: string, emotion: Emotion['slug'] }) {
     const { error } = await this.supabase.from('room_messages').insert({
       content,
       sender: 'user',
       owner_id: senderId,
       reply_to_message_id: parentMessageId,
+      emotion,
     });
 
     if (error) {

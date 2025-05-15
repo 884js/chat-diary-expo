@@ -54,6 +54,7 @@ export type Database = {
         Row: {
           content: string | null;
           created_at: string | null;
+          emotion: string | null;
           id: string;
           image_path: string | null;
           owner_id: string | null;
@@ -65,6 +66,7 @@ export type Database = {
         Insert: {
           content?: string | null;
           created_at?: string | null;
+          emotion?: string | null;
           id?: string;
           image_path?: string | null;
           owner_id?: string | null;
@@ -76,6 +78,7 @@ export type Database = {
         Update: {
           content?: string | null;
           created_at?: string | null;
+          emotion?: string | null;
           id?: string;
           image_path?: string | null;
           owner_id?: string | null;

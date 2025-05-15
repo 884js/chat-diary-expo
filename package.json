@@ -13,7 +13,10 @@
     "format": "biome format --write --unsafe",
     "fix": "biome check --write",
     "build:android:preview": "eas build --profile preview --platform android",
-    "build:android:development": "eas build --profile development --platform android"
+    "build:android:development": "eas build --profile development --platform android",
+    "migrate:reset": "supabase db reset --linked && npm run generate && npm run format",
+    "migrate:up": "supabase db push --linked",
+    "generate": "supabase gen types typescript --project-id wgupnbwuurvjrhyqoohq > ./src/lib/supabase/databaseTypes.ts"
   },
   "jest": {
     "preset": "jest-expo"

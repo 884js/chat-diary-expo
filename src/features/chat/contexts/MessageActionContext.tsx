@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import type { Emotion } from '../hooks/useChatInputEmotion';
 
 const MessageActionContext = createContext<{
   mode: 'edit' | 'reply' | null;
@@ -22,7 +23,7 @@ const MessageActionContext = createContext<{
     message: string;
   }) => void;
   handleResetMode: () => void;
-  handleSaveEdit: ({ message }: { message: string }) => Promise<void>;
+  handleSaveEdit: ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => Promise<void>;
   handleDeleteMessage: ({ messageId }: { messageId: string }) => Promise<void>;
   handleReplyMessage: ({
     parentMessageId,
@@ -31,7 +32,7 @@ const MessageActionContext = createContext<{
     parentMessageId: string;
     message: string;
   }) => Promise<void>;
-  handleSendReplyMessage: ({ message }: { message: string }) => Promise<void>;
+  handleSendReplyMessage: ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => Promise<void>;
   handleOpenMenu: (id: string) => void;
   bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
 } | null>(null);
@@ -69,12 +70,13 @@ export const MessageActionProvider = ({
     setSelectedMessage(null);
   };
 
-  const handleSaveEdit = async ({ message }: { message: string }) => {
+  const handleSaveEdit = async ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => {
     if (!messageId) return;
 
     await api.chatRoomMessage.editMessage({
       messageId: messageId,
       content: message,
+      emotion: emotion,
     });
 
     handleResetMode();
@@ -99,13 +101,14 @@ export const MessageActionProvider = ({
     setSelectedMessage(message);
   };
 
-  const handleSendReplyMessage = async ({ message }: { message: string }) => {
+  const handleSendReplyMessage = async ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => {
     if (!messageId || !currentUser?.id) return;
 
     await api.chatRoomMessage.replyMessage({
       parentMessageId: messageId,
       content: message,
       senderId: currentUser?.id,
+      emotion: emotion,
     });
 
     handleResetMode();
