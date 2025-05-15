@@ -12,9 +12,9 @@ import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
+import type { Emotion } from '../hooks/useChatInputEmotion';
 import { useChatScrollToDate } from '../hooks/useChatScrollToDate';
 import { useSendMessage } from '../hooks/useSendMessage';
-import type { Emotion } from '../hooks/useChatInputEmotion';
 
 export const ChatScreen = () => {
   const { api } = useSupabase();
@@ -57,7 +57,10 @@ export const ChatScreen = () => {
     }
 
     if (mode === 'reply') {
-      await handleSendReplyMessage({ message: trimmedMessage, emotion: emotion });
+      await handleSendReplyMessage({
+        message: trimmedMessage,
+        emotion: emotion,
+      });
       refetchMessages();
       return;
     }

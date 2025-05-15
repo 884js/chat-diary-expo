@@ -1,8 +1,8 @@
+import type { Emotion } from '@/features/chat/hooks/useChatInputEmotion';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import * as FileSystem from 'expo-file-system';
 import type { Database } from '../databaseTypes';
 import { CalendarApi } from './calendar';
-import type { Emotion } from '@/features/chat/hooks/useChatInputEmotion';
 
 export type ChatRoomMessage = {
   id: string;
@@ -95,7 +95,6 @@ export class ChatRoomMessageApi {
     imagePath?: string | null;
     emotion?: Emotion['slug'];
   }) {
-
     const { data, error } = await this.supabase
       .from('room_messages')
       .insert({
@@ -186,7 +185,7 @@ export class ChatRoomMessageApi {
     messageId,
     content,
     emotion,
-  }: { messageId: string; content: string, emotion: Emotion['slug'] }) {
+  }: { messageId: string; content: string; emotion: Emotion['slug'] }) {
     const { error } = await this.supabase
       .from('room_messages')
       .update({ content, emotion })
@@ -207,7 +206,12 @@ export class ChatRoomMessageApi {
     content,
     senderId,
     emotion,
-  }: { parentMessageId: string; content: string; senderId: string, emotion: Emotion['slug'] }) {
+  }: {
+    parentMessageId: string;
+    content: string;
+    senderId: string;
+    emotion: Emotion['slug'];
+  }) {
     const { error } = await this.supabase.from('room_messages').insert({
       content,
       sender: 'user',

@@ -23,7 +23,10 @@ const MessageActionContext = createContext<{
     message: string;
   }) => void;
   handleResetMode: () => void;
-  handleSaveEdit: ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => Promise<void>;
+  handleSaveEdit: ({
+    message,
+    emotion,
+  }: { message: string; emotion: Emotion['slug'] }) => Promise<void>;
   handleDeleteMessage: ({ messageId }: { messageId: string }) => Promise<void>;
   handleReplyMessage: ({
     parentMessageId,
@@ -32,7 +35,10 @@ const MessageActionContext = createContext<{
     parentMessageId: string;
     message: string;
   }) => Promise<void>;
-  handleSendReplyMessage: ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => Promise<void>;
+  handleSendReplyMessage: ({
+    message,
+    emotion,
+  }: { message: string; emotion: Emotion['slug'] }) => Promise<void>;
   handleOpenMenu: (id: string) => void;
   bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
 } | null>(null);
@@ -70,7 +76,10 @@ export const MessageActionProvider = ({
     setSelectedMessage(null);
   };
 
-  const handleSaveEdit = async ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => {
+  const handleSaveEdit = async ({
+    message,
+    emotion,
+  }: { message: string; emotion: Emotion['slug'] }) => {
     if (!messageId) return;
 
     await api.chatRoomMessage.editMessage({
@@ -101,7 +110,10 @@ export const MessageActionProvider = ({
     setSelectedMessage(message);
   };
 
-  const handleSendReplyMessage = async ({ message, emotion }: { message: string, emotion: Emotion['slug'] }) => {
+  const handleSendReplyMessage = async ({
+    message,
+    emotion,
+  }: { message: string; emotion: Emotion['slug'] }) => {
     if (!messageId || !currentUser?.id) return;
 
     await api.chatRoomMessage.replyMessage({

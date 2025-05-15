@@ -3,9 +3,9 @@ import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
+import type { Emotion } from '../../hooks/useChatInputEmotion';
 import { ChatMessage } from '../ChatMessage';
 import { DateDivider } from './DateDivider';
-import type { Emotion } from '../../hooks/useChatInputEmotion';
 
 type Props = {
   chatRoom: ChatRoom;

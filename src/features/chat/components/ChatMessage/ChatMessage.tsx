@@ -6,8 +6,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { Animated, Easing, Pressable } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
-import { ChatImage } from './ChatImage';
 import { emotions } from '../../hooks/useChatInputEmotion';
+import { ChatImage } from './ChatImage';
 
 export interface MessageProps {
   id: string;
@@ -53,7 +53,7 @@ export function ChatMessage({
   const isSelected = messageId === id;
 
   // 該当するemotionを検索
-  const emotionData = emotion ? emotions.find(e => e.slug === emotion) : null;
+  const emotionData = emotion ? emotions.find((e) => e.slug === emotion) : null;
 
   // タップ時のアニメーション
   const startPressAnimation = () => {
@@ -107,8 +107,17 @@ export function ChatMessage({
     outputRange: ['rgba(255, 255, 255, 0)', 'rgba(230, 230, 230, 0.5)'],
   });
 
+  // emotionに基づくボーダースタイル
+  const messageBorderStyle = emotionData
+    ? {
+        borderWidth: 1,
+        borderColor: emotionData.color,
+        borderRadius: 8,
+      }
+    : {};
+
   return (
-    <View className="flex-row mb-2 py-1 w-full p-2 rounded-md !bg-gray-100">
+    <View className="flex-row mb-2 py-1 w-full p-2 !bg-gray-100">
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
         {avatarUrl ? (
@@ -123,7 +132,10 @@ export function ChatMessage({
       </View>
 
       {/* メッセージコンテンツ */}
-      <View className="flex-1 min-w-0 relative p-2 rounded-lg">
+      <View
+        className="flex-1 min-w-0 relative p-2 rounded-lg"
+        style={messageBorderStyle}
+      >
         {/* メッセージ内容部分 */}
         <Animated.View
           style={{
@@ -168,15 +180,6 @@ export function ChatMessage({
               )}
 
               <View className="flex-row items-center">
-                {emotionData && (
-                  <View className="mr-2">
-                    <MaterialCommunityIcons
-                      name={emotionData.icon}
-                      size={20}
-                      color={emotionData.color}
-                    />
-                  </View>
-                )}
                 {content && <Text className="flex-1">{content}</Text>}
               </View>
 
@@ -186,9 +189,18 @@ export function ChatMessage({
                 </View>
               ) : null}
 
-              {/* タイムスタンプ */}
-              <View className="flex-row justify-end bg-transparent">
-                <Text className="text-xs text-gray-500 mt-1">{timestamp}</Text>
+              {/* タイムスタンプと感情アイコン */}
+              <View className="flex-row justify-end items-center bg-transparent mt-1">
+                {emotionData && (
+                  <View className="mr-2">
+                    <MaterialCommunityIcons
+                      name={emotionData.icon}
+                      size={16}
+                      color={emotionData.color}
+                    />
+                  </View>
+                )}
+                <Text className="text-xs text-gray-500">{timestamp}</Text>
               </View>
             </View>
           </Pressable>
