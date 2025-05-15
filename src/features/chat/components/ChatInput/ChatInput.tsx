@@ -166,6 +166,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
             ref={textInputRef}
             className="flex-1 px-4 py-2 min-h-[40px] text-base"
             placeholder={placeholder}
+            placeholderTextColor={isDisabled ? '#ccc' : '#6b7280'}
             value={message}
             onChangeText={setMessage}
             multiline
