@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
 import { Alert, Keyboard } from 'react-native';
 
 export const useChatImage = () => {
@@ -11,7 +11,7 @@ export const useChatImage = () => {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
 
-    // カメラ・ギャラリーへのアクセス許可を要求
+  // カメラ・ギャラリーへのアクセス許可を要求
   const verifyPermissions = async (mediaType: 'camera' | 'library') => {
     if (mediaType === 'camera') {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -42,7 +42,6 @@ export const useChatImage = () => {
     setSelectedImage(null);
     setImagePreviewUrl(null);
   };
-
 
   const handleImageSelect = async () => {
     const hasPermission = await verifyPermissions('library');
@@ -132,7 +131,6 @@ export const useChatImage = () => {
     setSelectedImage(null);
     setImagePreviewUrl(null);
   };
-
 
   return {
     showAttachMenu,

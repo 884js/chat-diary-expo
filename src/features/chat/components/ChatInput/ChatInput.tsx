@@ -5,55 +5,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
-  Text,
   TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
+import { useChatImage } from '../../hooks/useChatImage';
+import { useChatInputEmotion } from '../../hooks/useChatInputEmotion';
 import { AttachMenu } from './AttachMenu';
+import { ChatInputEmotion } from './ChatInputEmotion';
 import { ErrorMessage } from './ErrorMessage';
 import { ImagePreview } from './ImagePreview';
 import { ReplyPreview } from './ReplyPreview';
-import { useChatImage } from '../../hooks/useChatImage';
-
-// 感情アイコンの定義
-type EmotionIconName =
-  | 'emoticon-outline'
-  | 'emoticon-happy-outline'
-  | 'emoticon-sad-outline'
-  | 'emoticon-angry-outline'
-  | 'emoticon-confused-outline';
-
-type Emotion = {
-  id: string;
-  name: string;
-  icon: EmotionIconName;
-  color: string;
-};
-
-const emotions: Emotion[] = [
-  { id: 'normal', name: '普通', icon: 'emoticon-outline', color: '#60a5fa' },
-  {
-    id: 'happy',
-    name: '嬉しい',
-    icon: 'emoticon-happy-outline',
-    color: '#34d399',
-  },
-  { id: 'sad', name: '悲しい', icon: 'emoticon-sad-outline', color: '#a78bfa' },
-  {
-    id: 'angry',
-    name: '怒り',
-    icon: 'emoticon-angry-outline',
-    color: '#f87171',
-  },
-  {
-    id: 'confused',
-    name: '微妙',
-    icon: 'emoticon-confused-outline',
-    color: '#fbbf24',
-  },
-];
-
 interface ChatInputProps {
   onSend: ({
     imagePath,
@@ -71,9 +33,21 @@ interface ChatInputProps {
 
 export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   const { selectedMessage, mode } = useMessageAction();
+  const { emotions, selectedEmotion, handleSelectEmotion, handleClearEmotion } =
+    useChatInputEmotion();
   const [message, setMessage] = useState('');
-  const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
-  const { showAttachMenu, selectedImage, imagePreviewUrl, isUploading, uploadError, handleImageSelect, handleCameraSelect, handleCancelImage, toggleAttachMenu, resetImage } = useChatImage();
+  const {
+    showAttachMenu,
+    selectedImage,
+    imagePreviewUrl,
+    isUploading,
+    uploadError,
+    handleImageSelect,
+    handleCameraSelect,
+    handleCancelImage,
+    toggleAttachMenu,
+    resetImage,
+  } = useChatImage();
 
   // 入力コンポーネントの参照
   const textInputRef = useRef<TextInput>(null);
@@ -100,7 +74,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
   const handleSend = async () => {
     if (isButtonDisabled) return;
 
-    setMessage("");
+    setMessage('');
     resetImage();
 
     try {
@@ -128,14 +102,6 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     }
   };
 
-  const handleSelectEmotion = (emotion: Emotion) => {
-    setSelectedEmotion(emotion);
-  };
-
-  const handleClearEmotion = () => {
-    setSelectedEmotion(null);
-  };
-
   // プレースホルダーテキスト
   const placeholder = useMemo(() => {
     if (isDisabled) {
@@ -160,40 +126,17 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
       )}
 
       {/* 返信プレビュー */}
-      {mode === "reply" && selectedMessage && (
+      {mode === 'reply' && selectedMessage && (
         <ReplyPreview content={selectedMessage} />
       )}
 
       {/* 感情選択バー */}
-      <View className="flex-row items-center">
-        <Text className="text-gray-500 text-sm mx-2">気分</Text>
-        <View className="flex-row space-x-3">
-          {emotions.map((emotion) => (
-            <TouchableOpacity
-              key={emotion.id}
-              onPress={() => handleSelectEmotion(emotion)}
-              className={`items-center justify-center p-2 rounded-full ${
-                selectedEmotion?.id === emotion.id ? "bg-gray-100" : ""
-              }`}
-            >
-              <MaterialCommunityIcons
-                name={emotion.icon}
-                size={28}
-                color={emotion.color}
-              />
-            </TouchableOpacity>
-          ))}
-          {selectedEmotion && (
-            <TouchableOpacity
-              onPress={handleClearEmotion}
-              className="items-center justify-center p-2"
-            >
-              <Feather name="x" size={18} color="#9ca3af" />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-
+      <ChatInputEmotion
+        emotions={emotions}
+        selectedEmotion={selectedEmotion}
+        handleSelectEmotion={handleSelectEmotion}
+        handleClearEmotion={handleClearEmotion}
+      />
       <View className="flex-row items-center">
         {/* 添付ボタン */}
         <TouchableOpacity
@@ -204,7 +147,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           <Feather
             name="plus"
             size={24}
-            color={isDisabled || isUploading ? "#ccc" : "#6b7280"}
+            color={isDisabled || isUploading ? '#ccc' : '#6b7280'}
           />
         </TouchableOpacity>
 
