@@ -9,12 +9,11 @@ import {
 import { useCallback, useMemo } from 'react';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
-import { useRoomMessageDetail } from '../../hooks/useRoomMessageDetail';
 
 export function MessageContextMenu() {
   const {
     bottomSheetModalRef,
-    messageId,
+    selectedMessage,
     handleEditMessage,
     handleReplyMessage,
     handleDeleteMessage,
@@ -23,43 +22,33 @@ export function MessageContextMenu() {
   // スナップポイントを定義
   const snapPoints = useMemo(() => ['35%'], []);
 
-  const { messageDetail } = useRoomMessageDetail({
-    messageId: messageId as string,
-  });
-
   const handleClose = () => {
     bottomSheetModalRef.current?.dismiss();
   };
 
   const handleEdit = () => {
-    if (!messageDetail?.id || !messageDetail?.content) {
-      console.error('messageDetail is undefined');
+    if (!selectedMessage?.id || !selectedMessage?.content) {
+      console.error('selectedMessage is undefined');
       return;
     }
 
-    handleEditMessage({
-      messageId: messageDetail?.id,
-      message: messageDetail?.content,
-    });
+    handleEditMessage();
     handleClose();
   };
 
   const handleReply = () => {
-    if (!messageDetail?.id || !messageDetail?.content) {
-      console.error('messageDetail is undefined');
+    if (!selectedMessage?.id || !selectedMessage?.content) {
+      console.error('selectedMessage is undefined');
       return;
     }
 
-    handleReplyMessage({
-      parentMessageId: messageDetail?.id,
-      message: messageDetail?.content,
-    });
+    handleReplyMessage();
     handleClose();
   };
 
-  const handleDelete = () => {
-    if (!messageDetail?.id) {
-      console.error('messageDetail is undefined');
+  const handleDelete = async () => {
+    if (!selectedMessage?.id) {
+      console.error('selectedMessage is undefined');
       return;
     }
 
@@ -75,7 +64,7 @@ export function MessageContextMenu() {
           text: '削除する',
           style: 'destructive',
           onPress: async () => {
-            await handleDeleteMessage({ messageId: messageDetail?.id });
+            await handleDeleteMessage();
             handleClose();
           },
         },

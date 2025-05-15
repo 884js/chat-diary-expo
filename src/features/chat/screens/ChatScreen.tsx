@@ -51,14 +51,14 @@ export const ChatScreen = () => {
     const senderType = isOwner ? 'user' : 'ai';
 
     if (mode === 'edit') {
-      await handleSaveEdit({ message: trimmedMessage, emotion: emotion });
+      await handleSaveEdit({ content: trimmedMessage, emotion: emotion });
       refetchMessages();
       return;
     }
 
     if (mode === 'reply') {
       await handleSendReplyMessage({
-        message: trimmedMessage,
+        content: trimmedMessage,
         emotion: emotion,
       });
       refetchMessages();

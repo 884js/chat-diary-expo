@@ -10,7 +10,7 @@ export type ChatRoomMessage = {
   sender: 'user' | 'ai';
   content: string;
   image_path: string | null;
-  emotion: string | null;
+  emotion?: Emotion['slug'];
   reply_to_message_id: string | null;
   created_at: string;
   updated_at: string;

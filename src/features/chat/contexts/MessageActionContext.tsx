@@ -10,42 +10,34 @@ import {
   useState,
 } from 'react';
 import type { Emotion } from '../hooks/useChatInputEmotion';
+import type { TextInput } from 'react-native';
+
+type SelectedMessage = {
+  id: string;
+  content: string;
+  emotion?: Emotion['slug'];
+};
+
+type WithoutId = Omit<SelectedMessage, 'id'>;
 
 const MessageActionContext = createContext<{
-  mode: 'edit' | 'reply' | null;
-  messageId: string | null;
-  selectedMessage: string | null;
-  handleEditMessage: ({
-    messageId,
-    message,
-  }: {
-    messageId: string;
-    message: string;
-  }) => void;
+  textInputRef: React.RefObject<TextInput | null>;
+  mode: "edit" | "reply" | null;
+  selectedMessage: SelectedMessage | null;
+  handleEditMessage: () => void;
   handleResetMode: () => void;
-  handleSaveEdit: ({
-    message,
-    emotion,
-  }: { message: string; emotion: Emotion['slug'] }) => Promise<void>;
-  handleDeleteMessage: ({ messageId }: { messageId: string }) => Promise<void>;
-  handleReplyMessage: ({
-    parentMessageId,
-    message,
-  }: {
-    parentMessageId: string;
-    message: string;
-  }) => Promise<void>;
-  handleSendReplyMessage: ({
-    message,
-    emotion,
-  }: { message: string; emotion: Emotion['slug'] }) => Promise<void>;
-  handleOpenMenu: (id: string) => void;
+  handleDeleteMessage: () => Promise<void>;
+  handleReplyMessage: () => void;
+  handleSaveEdit: ({ content, emotion }: WithoutId) => Promise<void>;
+  handleSendReplyMessage: ({ content, emotion }: WithoutId) => Promise<void>;
+  handleOpenMenu: (message: SelectedMessage) => void;
   bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
 } | null>(null);
 
 export const MessageActionProvider = ({
   children,
 }: { children: React.ReactNode }) => {
+  const textInputRef = useRef<TextInput>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { currentUser } = useCurrentUser();
   const { refetchMessages } = useRoomUserMessages({
@@ -53,38 +45,36 @@ export const MessageActionProvider = ({
   });
   const { api } = useSupabase();
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);
-  const [messageId, setMessageId] = useState<string | null>(null);
-  const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<SelectedMessage | null>(null);
 
-  const handleOpenMenu = useCallback((id: string) => {
-    setMessageId(id);
+  const handleOpenMenu = useCallback((message: SelectedMessage) => {
+    setMode(null);
+
+    setSelectedMessage(message);
     bottomSheetModalRef.current?.present();
   }, []);
 
-  const handleEditMessage = ({
-    messageId,
-    message,
-  }: { messageId: string; message: string }) => {
+  const handleEditMessage = () => {
     setMode('edit');
-    setMessageId(messageId);
-    setSelectedMessage(message);
+    textInputRef.current?.focus();
+  };
+
+  const handleReplyMessage = () => {
+    setMode("reply");
+    textInputRef.current?.focus();
   };
 
   const handleResetMode = () => {
     setMode(null);
-    setMessageId(null);
     setSelectedMessage(null);
   };
 
-  const handleSaveEdit = async ({
-    message,
-    emotion,
-  }: { message: string; emotion: Emotion['slug'] }) => {
-    if (!messageId) return;
+  const handleSaveEdit = async ({ content, emotion }: WithoutId) => {
+    if (!selectedMessage?.id) return;
 
     await api.chatRoomMessage.editMessage({
-      messageId: messageId,
-      content: message,
+      messageId: selectedMessage.id,
+      content: content,
       emotion: emotion,
     });
 
@@ -92,33 +82,19 @@ export const MessageActionProvider = ({
     await refetchMessages();
   };
 
-  const handleDeleteMessage = async ({ messageId }: { messageId: string }) => {
-    if (!messageId) return;
+  const handleDeleteMessage = async () => {
+    if (!selectedMessage?.id) return;
 
-    await api.chatRoomMessage.deleteMessage({ messageId: messageId });
+    await api.chatRoomMessage.deleteMessage({ messageId: selectedMessage.id });
     await refetchMessages();
   };
 
-  const handleReplyMessage = async ({
-    parentMessageId,
-    message,
-  }: { parentMessageId: string; message: string }) => {
-    if (!parentMessageId || !currentUser?.id) return;
-
-    setMode('reply');
-    setMessageId(parentMessageId);
-    setSelectedMessage(message);
-  };
-
-  const handleSendReplyMessage = async ({
-    message,
-    emotion,
-  }: { message: string; emotion: Emotion['slug'] }) => {
-    if (!messageId || !currentUser?.id) return;
+  const handleSendReplyMessage = async ({ content, emotion }: WithoutId) => {
+    if (!selectedMessage?.id || !currentUser?.id) return;
 
     await api.chatRoomMessage.replyMessage({
-      parentMessageId: messageId,
-      content: message,
+      parentMessageId: selectedMessage.id,
+      content: content,
       senderId: currentUser?.id,
       emotion: emotion,
     });
@@ -130,8 +106,8 @@ export const MessageActionProvider = ({
   return (
     <MessageActionContext.Provider
       value={{
+        textInputRef,
         mode,
-        messageId,
         selectedMessage,
         handleEditMessage,
         handleResetMode,

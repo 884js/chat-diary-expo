@@ -6,7 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { Animated, Easing, Pressable } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
-import { emotions } from '../../hooks/useChatInputEmotion';
+import { type Emotion, emotions } from '../../hooks/useChatInputEmotion';
 import { ChatImage } from './ChatImage';
 
 export interface MessageProps {
@@ -23,7 +23,7 @@ export interface MessageProps {
   timestamp: string;
   imagePath?: string | null;
   isOwner: boolean;
-  emotion?: string | null;
+  emotion?: Emotion['slug'];
 }
 
 export function ChatMessage({
@@ -35,7 +35,7 @@ export function ChatMessage({
   replyTo,
   emotion,
 }: MessageProps) {
-  const { messageId, handleOpenMenu } = useMessageAction();
+  const { selectedMessage, handleOpenMenu } = useMessageAction();
 
   // アニメーション用の値
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -50,7 +50,7 @@ export function ChatMessage({
       storageName: 'chats',
     });
 
-  const isSelected = messageId === id;
+  const isSelected = selectedMessage?.id === id;
 
   // 該当するemotionを検索
   const emotionData = emotion ? emotions.find((e) => e.slug === emotion) : null;
@@ -144,7 +144,7 @@ export function ChatMessage({
           }}
         >
           <Pressable
-            onLongPress={() => handleOpenMenu(id)}
+            onLongPress={() => handleOpenMenu({ id, content, emotion })}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             delayLongPress={150}

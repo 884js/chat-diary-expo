@@ -109,7 +109,7 @@ export const ChatMessageList = ({
             isOwner={isOwner}
             timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
             imagePath={sendingMessage?.imagePath ?? ''}
-            emotion={sendingMessage?.emotion ?? ''}
+            emotion={sendingMessage?.emotion}
           />
         )}
       </View>

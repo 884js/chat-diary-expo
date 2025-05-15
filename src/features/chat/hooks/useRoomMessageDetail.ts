@@ -1,21 +1,20 @@
 import { useSupabase } from '@/hooks/useSupabase';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 export const useRoomMessageDetail = ({ messageId }: { messageId: string }) => {
   const { api } = useSupabase();
 
-  const { data: messageDetail, isLoading } = useQuery({
-    queryKey: ['roomMessageDetail', messageId],
-    queryFn: () => {
+  const { mutateAsync: getMessageDetail, isPending: isLoading } = useMutation({
+    mutationKey: ['roomMessageDetail', messageId],
+    mutationFn: () => {
       return api.chatRoomMessage.getMessageDetail({
         messageId: messageId,
       });
     },
-    enabled: !!messageId,
   });
 
   return {
-    messageDetail,
+    getMessageDetail,
     isLoading,
   };
 };

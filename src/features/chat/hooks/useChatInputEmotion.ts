@@ -43,8 +43,14 @@ export const emotions: Emotion[] = [
   },
 ];
 
-export const useChatInputEmotion = () => {
-  const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
+type Props = {
+  initialEmotion?: Emotion['slug'];
+};
+
+export const useChatInputEmotion = ({ initialEmotion }: Props) => {
+  const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(
+    initialEmotion ? emotions.find((e) => e.slug === initialEmotion) ?? null : null,
+  );
 
   const handleSelectEmotion = (emotion: Emotion) => {
     setSelectedEmotion(emotion);

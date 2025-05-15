@@ -1,7 +1,7 @@
 import { View } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
@@ -33,9 +33,11 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
-  const { selectedMessage, mode } = useMessageAction();
+  const { selectedMessage, mode, textInputRef } = useMessageAction();
   const { emotions, selectedEmotion, handleSelectEmotion, handleClearEmotion } =
-    useChatInputEmotion();
+    useChatInputEmotion({
+      initialEmotion: selectedMessage?.emotion,
+    });
   const [message, setMessage] = useState('');
   const {
     showAttachMenu,
@@ -50,15 +52,12 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     resetImage,
   } = useChatImage();
 
-  // 入力コンポーネントの参照
-  const textInputRef = useRef<TextInput>(null);
-
   // 選択されたメッセージがある場合
   useEffect(() => {
     if (selectedMessage) {
       switch (mode) {
         case 'edit':
-          setMessage(selectedMessage);
+          setMessage(selectedMessage.content);
           break;
         case 'reply':
           setMessage('');
@@ -128,7 +127,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
 
       {/* 返信プレビュー */}
       {mode === 'reply' && selectedMessage && (
-        <ReplyPreview content={selectedMessage} />
+        <ReplyPreview content={selectedMessage.content} />
       )}
 
       {/* 感情選択バー */}
