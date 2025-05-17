@@ -33,7 +33,7 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
-  const { selectedMessage, mode, textInputRef } = useMessageAction();
+  const { selectedMessage, mode, textInputRef, handleCancel } = useMessageAction();
   const { emotions, selectedEmotion, handleSelectEmotion, handleClearEmotion } =
     useChatInputEmotion({
       initialEmotion: selectedMessage?.emotion,
@@ -54,21 +54,21 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
 
   // 選択されたメッセージがある場合
   useEffect(() => {
-    if (selectedMessage) {
       switch (mode) {
-        case 'edit':
-          setMessage(selectedMessage.content);
+        case "edit":
+          setMessage(selectedMessage?.content ?? "");
           break;
-        case 'reply':
-          setMessage('');
+        case "reply":
+          setMessage("");
           break;
+        default:
+          setMessage("");
       }
-    }
   }, [selectedMessage, mode]);
 
   // 送信ボタンの無効状態判定
   const isButtonDisabled =
-    (!message.trim() && !selectedImage) || isDisabled || isUploading;
+    !message.trim() || isDisabled || isUploading;
 
   // メッセージ送信処理
   const handleSend = async () => {
@@ -189,6 +189,14 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
             <Feather name="send" size={20} color="#fff" />
           )}
         </TouchableOpacity>
+        {/* キャンセルボタン */}
+        { mode && <TouchableOpacity
+          onPress={handleCancel}
+          className="ml-2 p-2 rounded-full bg-red-500 items-center justify-center disabled:opacity-50"
+        >
+            <Feather name="x" size={20} color="#fff" />
+          </TouchableOpacity>
+        }
       </View>
 
       {/* 添付メニュー */}

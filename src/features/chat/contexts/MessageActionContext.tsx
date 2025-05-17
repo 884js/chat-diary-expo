@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 import type { Emotion } from '../hooks/useChatInputEmotion';
-import type { TextInput } from 'react-native';
+import { Keyboard, type TextInput } from 'react-native';
 
 type SelectedMessage = {
   id: string;
@@ -31,6 +31,7 @@ const MessageActionContext = createContext<{
   handleSaveEdit: ({ content, emotion }: WithoutId) => Promise<void>;
   handleSendReplyMessage: ({ content, emotion }: WithoutId) => Promise<void>;
   handleOpenMenu: (message: SelectedMessage) => void;
+  handleCancel: () => void;
   bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
 } | null>(null);
 
@@ -103,6 +104,11 @@ export const MessageActionProvider = ({
     await refetchMessages();
   };
 
+  const handleCancel = () => {
+    handleResetMode();
+    Keyboard.dismiss();
+  };
+
   return (
     <MessageActionContext.Provider
       value={{
@@ -117,6 +123,7 @@ export const MessageActionProvider = ({
         handleSendReplyMessage,
         bottomSheetModalRef,
         handleOpenMenu,
+        handleCancel,
       }}
     >
       {children}

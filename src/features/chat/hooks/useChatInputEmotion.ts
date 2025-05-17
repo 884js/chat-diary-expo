@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 // 感情アイコンの定義
 export type EmotionIconName =
-  | 'emoticon-outline'
+  | 'emoticon-neutral-outline'
   | 'emoticon-happy-outline'
   | 'emoticon-sad-outline'
   | 'emoticon-angry-outline'
@@ -16,12 +16,18 @@ export type Emotion = {
 };
 
 export const emotions: Emotion[] = [
-  { slug: 'normal', name: '普通', icon: 'emoticon-outline', color: '#60a5fa' },
-  {
+    {
     slug: 'happy',
     name: '嬉しい',
     icon: 'emoticon-happy-outline',
     color: '#34d399',
+  },
+  { slug: 'normal', name: '普通', icon: 'emoticon-neutral-outline', color: '#60a5fa' },
+  {
+    slug: 'confused',
+    name: '微妙',
+    icon: 'emoticon-confused-outline',
+    color: '#fbbf24',
   },
   {
     slug: 'sad',
@@ -35,12 +41,6 @@ export const emotions: Emotion[] = [
     icon: 'emoticon-angry-outline',
     color: '#f87171',
   },
-  {
-    slug: 'confused',
-    name: '微妙',
-    icon: 'emoticon-confused-outline',
-    color: '#fbbf24',
-  },
 ];
 
 type Props = {
@@ -49,7 +49,9 @@ type Props = {
 
 export const useChatInputEmotion = ({ initialEmotion }: Props) => {
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(
-    initialEmotion ? emotions.find((e) => e.slug === initialEmotion) ?? null : null,
+    initialEmotion
+      ? emotions.find((e) => e.slug === initialEmotion) ?? null
+      : emotions.find((e) => e.slug === 'normal') ?? null,
   );
 
   const handleSelectEmotion = (emotion: Emotion) => {
