@@ -28,6 +28,8 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: 12,
         },
+        freezeOnBlur: true,
+        animation: "shift",
       }}
     >
       <Tabs.Screen
@@ -51,9 +53,7 @@ export default function TabLayout() {
         options={{
           title: "メディア",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="image" color={color} />
-          ),
+          tabBarIcon: ({ color }) => <TabBarIcon name="image" color={color} />,
         }}
       />
       <Tabs.Screen

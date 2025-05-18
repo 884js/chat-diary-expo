@@ -3,7 +3,6 @@ import { View } from '@/components/Themed';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
-import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { useSupabase } from '@/hooks/useSupabase';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ChatHeader } from '../components/ChatHeader';
@@ -28,9 +27,6 @@ export const ChatScreen = () => {
   const isOwner = chatRoom ? chatRoom.id === chatRoom?.user_id : false;
   const { mode, handleSaveEdit, handleSendReplyMessage } = useMessageAction();
 
-  useRefreshOnFocus(refetchMessages);
-
-  // メッセージ送信処理
   const handleSendMessage = async ({
     imagePath,
     message,
