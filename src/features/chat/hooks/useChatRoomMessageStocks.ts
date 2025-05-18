@@ -1,7 +1,7 @@
-import { useCurrentUser } from "@/features/user/hooks/useCurrentUser";
-import { useSupabase } from "@/hooks/useSupabase";
-import { useQuery } from "@tanstack/react-query";
-import { useMessageWithDividers } from "./useMessageWithDividers";
+import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
+import { useSupabase } from '@/hooks/useSupabase';
+import { useQuery } from '@tanstack/react-query';
+import { useMessageWithDividers } from './useMessageWithDividers';
 
 export const useChatRoomMessageStocks = () => {
   const { api } = useSupabase();
@@ -12,7 +12,7 @@ export const useChatRoomMessageStocks = () => {
     enabled: !!currentUser?.id,
     queryFn: async () => {
       const data = await api.chatRoomMessageStock.getMessageStocks({
-        userId: currentUser?.id ?? "",
+        userId: currentUser?.id ?? '',
       });
 
       if (error) {
@@ -23,20 +23,30 @@ export const useChatRoomMessageStocks = () => {
     },
   });
 
-  const messages = data?.map((item) => {
-    if (!item.message) {
-      return null;
-    }
+  const messages =
+    data
+      ?.map((item) => {
+        if (!item.message) {
+          return null;
+        }
 
-    return {
-      ...item.message,
-      date: item.created_at || '',
-    }
-  }).filter((item) => item !== null) ?? [];
+        return {
+          ...item.message,
+          date: item.created_at || '',
+        };
+      })
+      .filter((item) => item !== null) ?? [];
 
   const stockedMessageIds = data?.map((item) => item.message_id) ?? [];
 
   const { messagesWithDividers } = useMessageWithDividers({ messages });
 
-  return { data, isLoading, error, messagesWithDividers, stockedMessageIds, refetch };
+  return {
+    data,
+    isLoading,
+    error,
+    messagesWithDividers,
+    stockedMessageIds,
+    refetch,
+  };
 };

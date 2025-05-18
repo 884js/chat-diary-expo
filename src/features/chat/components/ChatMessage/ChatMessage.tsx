@@ -154,12 +154,12 @@ export function ChatMessage({
             style={({ pressed }) => ({
               borderRadius: 8,
               padding: 8,
-              overflow: "hidden",
+              overflow: 'hidden',
             })}
           >
             <Animated.View
               style={{
-                position: "absolute",
+                position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
@@ -171,7 +171,7 @@ export function ChatMessage({
 
             <View
               className={`flex-1 bg-transparent ${
-                isSelected ? "bg-gray-100" : ""
+                isSelected ? 'bg-gray-100' : ''
               }`}
             >
               {replyTo && (
@@ -208,7 +208,7 @@ export function ChatMessage({
                     <MaterialCommunityIcons
                       name="heart"
                       size={16}
-                      color={"#ef4444"}
+                      color={'#ef4444'}
                     />
                   </View>
                 )}

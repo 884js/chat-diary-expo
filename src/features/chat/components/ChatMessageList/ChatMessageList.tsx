@@ -1,13 +1,13 @@
-import { formatDate } from "@/lib/date-fns";
-import type { ChatRoom } from "@/lib/supabase/api/ChatRoom";
-import type { ChatRoomMessage } from "@/lib/supabase/api/ChatRoomMessage";
-import { FlatList, View } from "react-native";
-import type { Emotion } from "../../hooks/useChatInputEmotion";
-import { DateDivider } from "../DateDivider";
-import { useChatRoomMessageStocks } from "../../hooks/useChatRoomMessageStocks";
-import { useMessageAction } from "../../contexts/MessageActionContext";
-import { useCallback, memo, useRef } from "react";
-import { ChatMessage as RawChatMessage } from "../ChatMessage";
+import { formatDate } from '@/lib/date-fns';
+import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
+import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
+import { memo, useCallback, useRef } from 'react';
+import { FlatList, View } from 'react-native';
+import { useMessageAction } from '../../contexts/MessageActionContext';
+import type { Emotion } from '../../hooks/useChatInputEmotion';
+import { useChatRoomMessageStocks } from '../../hooks/useChatRoomMessageStocks';
+import { ChatMessage as RawChatMessage } from '../ChatMessage';
+import { DateDivider } from '../DateDivider';
 
 type Props = {
   chatRoom: ChatRoom;
@@ -21,9 +21,9 @@ type Props = {
   sendingMessage?:
     | {
         content: string;
-        senderType: "user" | "ai";
+        senderType: 'user' | 'ai';
         imagePath?: string | undefined;
-        emotion?: Emotion["slug"];
+        emotion?: Emotion['slug'];
       }
     | undefined;
 };
@@ -41,17 +41,15 @@ export const ChatMessageList = ({
   const flatListRef = useRef<FlatList>(null);
 
   const renderItem = useCallback(
-    ({ item }: { item: Props["messages"][number] }) => {
+    ({ item }: { item: Props['messages'][number] }) => {
       const { message: msg, showDateDivider, date: messageDate } = item;
 
       return (
         <View key={msg.id} style={{ flex: 1 }}>
           {showDateDivider && messageDate && (
-            <View
-              style={{ backgroundColor: "#f3f4f6" }}
-            >
+            <View style={{ backgroundColor: '#f3f4f6' }}>
               <DateDivider
-                date={formatDate(messageDate, "yyyy年M月d日(eee)")}
+                date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
               />
             </View>
           )}
@@ -61,7 +59,7 @@ export const ChatMessageList = ({
             owner={chatRoom.owner}
             sender={msg.sender}
             replyTo={msg.reply_to}
-            timestamp={formatDate(msg.created_at || "", "HH:mm")}
+            timestamp={formatDate(msg.created_at || '', 'HH:mm')}
             imagePath={msg.image_path}
             emotion={msg.emotion}
             isStocked={stockedMessageIds.includes(msg.id)}
@@ -70,7 +68,7 @@ export const ChatMessageList = ({
         </View>
       );
     },
-    [chatRoom.owner, stockedMessageIds, handleOpenMenu]
+    [chatRoom.owner, stockedMessageIds, handleOpenMenu],
   );
 
   // 送信中メッセージをフッターで描画
@@ -83,8 +81,8 @@ export const ChatMessageList = ({
           owner={chatRoom.owner}
           sender="user"
           replyTo={null}
-          timestamp={formatDate(new Date().toISOString(), "HH:mm")}
-          imagePath={sendingMessage.imagePath ?? ""}
+          timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
+          imagePath={sendingMessage.imagePath ?? ''}
           emotion={sendingMessage.emotion}
           isStocked={false}
           onOpenStockMenu={handleOpenMenu}
@@ -103,7 +101,7 @@ export const ChatMessageList = ({
       initialNumToRender={20}
       onEndReachedThreshold={0.5}
       showsVerticalScrollIndicator={false}
-      style={{ flex: 1, backgroundColor: "#f3f4f6" }}
+      style={{ flex: 1, backgroundColor: '#f3f4f6' }}
       inverted
     />
   );

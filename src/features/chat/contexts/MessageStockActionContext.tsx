@@ -8,8 +8,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { Emotion } from '../hooks/useChatInputEmotion';
 import { Keyboard } from 'react-native';
+import type { Emotion } from '../hooks/useChatInputEmotion';
 import { useChatRoomMessageStocks } from '../hooks/useChatRoomMessageStocks';
 
 type SelectedMessage = {
@@ -34,7 +34,8 @@ export const MessageStockActionProvider = ({
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { currentUser } = useCurrentUser();
   const { api } = useSupabase();
-  const [selectedMessage, setSelectedMessage] = useState<SelectedMessage | null>(null);
+  const [selectedMessage, setSelectedMessage] =
+    useState<SelectedMessage | null>(null);
 
   const handleOpenMenu = useCallback((message: SelectedMessage) => {
     setSelectedMessage(message);

@@ -17,7 +17,7 @@ export const ChatScreen = () => {
   const { sendMessage, variables, isPending } = useSendMessage();
   const { currentUser } = useCurrentUser();
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
-    userId: currentUser?.id ?? "",
+    userId: currentUser?.id ?? '',
   });
   const { messages, refetchMessages } = useRoomUserMessages({
     userId: chatRoom?.user_id,
@@ -34,21 +34,21 @@ export const ChatScreen = () => {
     imagePath?: string;
     message: string;
     imageUri?: string;
-    emotion?: Emotion["slug"];
+    emotion?: Emotion['slug'];
   }) => {
     if (!chatRoom?.id || !currentUser?.id) return;
 
     const trimmedMessage = message.trim();
 
-    const senderType = isOwner ? "user" : "ai";
+    const senderType = isOwner ? 'user' : 'ai';
 
-    if (mode === "edit") {
+    if (mode === 'edit') {
       await handleSaveEdit({ content: trimmedMessage, emotion: emotion });
       refetchMessages();
       return;
     }
 
-    if (mode === "reply") {
+    if (mode === 'reply') {
       await handleSendReplyMessage({
         content: trimmedMessage,
         emotion: emotion,
@@ -63,7 +63,7 @@ export const ChatScreen = () => {
       // 画像がある場合はアップロード処理
       if (imageUri) {
         const result = await api.chatRoomMessage.uploadChatImage({
-          file: { uri: imageUri, type: "image/jpeg" },
+          file: { uri: imageUri, type: 'image/jpeg' },
           userId: currentUser.id,
         });
         uploadedImagePath = result.path;
@@ -77,7 +77,7 @@ export const ChatScreen = () => {
         emotion: emotion,
       });
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
     }
   };
 
@@ -87,7 +87,7 @@ export const ChatScreen = () => {
 
   return (
     <>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={'padding'}>
         <View className="flex-1 bg-gray-100">
           <ChatHeader />
           <ChatMessageList

@@ -1,5 +1,5 @@
-import { SafeAreaView } from "@/components/SafeAreaView";
-import { ChatStockScreen } from "@/features/chat/screens/ChatStockScreen";
+import { SafeAreaView } from '@/components/SafeAreaView';
+import { ChatStockScreen } from '@/features/chat/screens/ChatStockScreen';
 
 export default function StockScreen() {
   return (

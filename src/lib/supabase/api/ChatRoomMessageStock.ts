@@ -16,7 +16,9 @@ export class ChatRoomMessageStockApi {
   async getMessageStocks({ userId }: { userId: string }) {
     const { data, error } = await this.supabase
       .from('room_message_stocks')
-      .select('*, message:room_messages (id, content, created_at, sender, room_id, owner_id, image_path, emotion)')
+      .select(
+        '*, message:room_messages (id, content, created_at, sender, room_id, owner_id, image_path, emotion)',
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .overrideTypes<ChatRoomMessageStock[]>();
@@ -29,7 +31,10 @@ export class ChatRoomMessageStockApi {
     return data;
   }
 
-  async createMessageStock({ userId, messageId }: { userId: string; messageId: string }) {
+  async createMessageStock({
+    userId,
+    messageId,
+  }: { userId: string; messageId: string }) {
     const { data, error } = await this.supabase
       .from('room_message_stocks')
       .insert({ user_id: userId, message_id: messageId })
@@ -44,7 +49,10 @@ export class ChatRoomMessageStockApi {
     return data;
   }
 
-  async deleteMessageStock({ userId, messageId }: { userId: string; messageId: string }) {
+  async deleteMessageStock({
+    userId,
+    messageId,
+  }: { userId: string; messageId: string }) {
     const { error } = await this.supabase
       .from('room_message_stocks')
       .delete()

@@ -1,5 +1,5 @@
-import { View, Text } from "@/components/Themed";
-import { SafeAreaView } from "@/components/SafeAreaView";
+import { SafeAreaView } from '@/components/SafeAreaView';
+import { Text, View } from '@/components/Themed';
 
 export default function MediaScreen() {
   return (

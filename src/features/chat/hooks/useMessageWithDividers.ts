@@ -1,8 +1,10 @@
-import type { ChatRoomMessage } from "@/lib/supabase/api/ChatRoomMessage";
+import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { isSameDay, parseISO } from 'date-fns';
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-export const useMessageWithDividers = ({ messages }: { messages: (ChatRoomMessage & { date: string })[] }) => {
+export const useMessageWithDividers = ({
+  messages,
+}: { messages: (ChatRoomMessage & { date: string })[] }) => {
   const messagesWithDividers = useMemo(() => {
     if (!messages) return [];
 

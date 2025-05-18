@@ -96,7 +96,7 @@ export function MessageContextMenu() {
       index={0}
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ width: 40, backgroundColor: "#cbd5e1" }}
+      handleIndicatorStyle={{ width: 40, backgroundColor: '#cbd5e1' }}
     >
       <BottomSheetView className="flex-1 px-4 pt-2 pb-6">
         <View className="bg-transparent">
@@ -115,13 +115,13 @@ export function MessageContextMenu() {
           >
             <View className="w-10 h-10 rounded-full bg-green-50 items-center justify-center mr-3">
               <Feather
-                name={isStocked ? "heart" : "heart"}
+                name={isStocked ? 'heart' : 'heart'}
                 size={18}
-                color={isStocked ? "#3b82f6" : "#ef4444"}
+                color={isStocked ? '#3b82f6' : '#ef4444'}
               />
             </View>
             <Text className="text-base font-medium text-gray-700">
-              {isStocked ? "お気に入り解除" : "お気に入り"}
+              {isStocked ? 'お気に入り解除' : 'お気に入り'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

@@ -16,13 +16,18 @@ export type Emotion = {
 };
 
 export const emotions: Emotion[] = [
-    {
+  {
     slug: 'happy',
     name: '嬉しい',
     icon: 'emoticon-happy-outline',
     color: '#34d399',
   },
-  { slug: 'normal', name: '普通', icon: 'emoticon-neutral-outline', color: '#60a5fa' },
+  {
+    slug: 'normal',
+    name: '普通',
+    icon: 'emoticon-neutral-outline',
+    color: '#60a5fa',
+  },
   {
     slug: 'confused',
     name: '微妙',
@@ -50,8 +55,8 @@ type Props = {
 export const useChatInputEmotion = ({ initialEmotion }: Props) => {
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(
     initialEmotion
-      ? emotions.find((e) => e.slug === initialEmotion) ?? null
-      : emotions.find((e) => e.slug === 'normal') ?? null,
+      ? (emotions.find((e) => e.slug === initialEmotion) ?? null)
+      : (emotions.find((e) => e.slug === 'normal') ?? null),
   );
 
   const handleSelectEmotion = (emotion: Emotion) => {

@@ -1,16 +1,16 @@
-import { Loader } from "@/components/Loader";
-import { View } from "@/components/Themed";
-import { useCurrentUser } from "@/features/user/hooks/useCurrentUser";
-import { useCurrentUserRoom } from "@/features/user/hooks/useCurrentUserRoom";
-import { MessageContextStockMenu } from "../components/ChatMessage/MessageContextStockMenu";
-import { useChatRoomMessageStocks } from "../hooks/useChatRoomMessageStocks";
-import { ChatMessageStockList } from "../components/ChatMessageStockList";
+import { Loader } from '@/components/Loader';
+import { View } from '@/components/Themed';
+import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
+import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
+import { MessageContextStockMenu } from '../components/ChatMessage/MessageContextStockMenu';
+import { ChatMessageStockList } from '../components/ChatMessageStockList';
+import { useChatRoomMessageStocks } from '../hooks/useChatRoomMessageStocks';
 
 export const ChatStockScreen = () => {
   const { currentUser } = useCurrentUser();
 
   const { chatRoom } = useCurrentUserRoom({
-    userId: currentUser?.id ?? "",
+    userId: currentUser?.id ?? '',
   });
   const { messagesWithDividers } = useChatRoomMessageStocks();
 

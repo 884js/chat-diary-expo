@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { AuthProvider } from '@/features/auth/contexts/AuthContext';
 import { MessageActionProvider } from '@/features/chat/contexts/MessageActionContext';
+import { MessageStockActionProvider } from '@/features/chat/contexts/MessageStockActionContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -22,7 +23,6 @@ import {
   ReanimatedLogLevel,
   configureReanimatedLogger,
 } from 'react-native-reanimated';
-import { MessageStockActionProvider } from '@/features/chat/contexts/MessageStockActionContext';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -76,7 +76,7 @@ function RootLayoutNav() {
       <BottomSheetModalProvider>
         <KeyboardProvider>
           <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
           >
             <MessageStockActionProvider>
               <MessageActionProvider>
@@ -89,7 +89,7 @@ function RootLayoutNav() {
                     name="auth/login"
                     options={{
                       headerShown: false,
-                      presentation: "transparentModal",
+                      presentation: 'transparentModal',
                       gestureEnabled: true,
                     }}
                   />

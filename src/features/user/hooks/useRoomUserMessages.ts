@@ -32,7 +32,9 @@ export const useRoomUserMessages = ({ userId }: Props) => {
     };
   });
 
-  const { messagesWithDividers } = useMessageWithDividers({ messages: messages ?? [] });
+  const { messagesWithDividers } = useMessageWithDividers({
+    messages: messages ?? [],
+  });
 
   return {
     messages: messagesWithDividers,

@@ -9,8 +9,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { Emotion } from '../hooks/useChatInputEmotion';
 import { Keyboard, type TextInput } from 'react-native';
+import type { Emotion } from '../hooks/useChatInputEmotion';
 
 export type SelectedMessage = {
   id: string;
@@ -22,7 +22,7 @@ type WithoutId = Omit<SelectedMessage, 'id'>;
 
 const MessageActionContext = createContext<{
   textInputRef: React.RefObject<TextInput | null>;
-  mode: "edit" | "reply" | null;
+  mode: 'edit' | 'reply' | null;
   selectedMessage: SelectedMessage | null;
   handleEditMessage: () => void;
   handleResetMode: () => void;
@@ -48,7 +48,8 @@ export const MessageActionProvider = ({
   });
   const { api } = useSupabase();
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);
-  const [selectedMessage, setSelectedMessage] = useState<SelectedMessage | null>(null);
+  const [selectedMessage, setSelectedMessage] =
+    useState<SelectedMessage | null>(null);
 
   const handleOpenMenu = useCallback((message: SelectedMessage) => {
     setMode(null);
@@ -63,7 +64,7 @@ export const MessageActionProvider = ({
   };
 
   const handleReplyMessage = () => {
-    setMode("reply");
+    setMode('reply');
     textInputRef.current?.focus();
   };
 

@@ -333,6 +333,7 @@ export type Database = {
           content: string
           image_path: string
           reply_to_message_id: string
+          emotion: string
           created_at: string
           updated_at: string
         }[]
