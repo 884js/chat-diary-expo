@@ -5,8 +5,6 @@ import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
 import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
 import { useRefreshOnFocus } from '@/hooks/useRefreshOnFocus';
 import { useSupabase } from '@/hooks/useSupabase';
-import { format } from 'date-fns';
-import type { View as ViewType } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ChatHeader } from '../components/ChatHeader';
 import { ChatInput } from '../components/ChatInput';
@@ -21,7 +19,7 @@ export const ChatScreen = () => {
   const { sendMessage, variables, isPending } = useSendMessage();
   const { currentUser } = useCurrentUser();
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
-    userId: currentUser?.id ?? '',
+    userId: currentUser?.id ?? "",
   });
   const { listItemRefs, scrollRef, handleScrollToDate } = useChatScrollToDate();
   const { messages, refetchMessages } = useRoomUserMessages({
@@ -42,21 +40,21 @@ export const ChatScreen = () => {
     imagePath?: string;
     message: string;
     imageUri?: string;
-    emotion?: Emotion['slug'];
+    emotion?: Emotion["slug"];
   }) => {
     if (!chatRoom?.id || !currentUser?.id) return;
 
     const trimmedMessage = message.trim();
 
-    const senderType = isOwner ? 'user' : 'ai';
+    const senderType = isOwner ? "user" : "ai";
 
-    if (mode === 'edit') {
+    if (mode === "edit") {
       await handleSaveEdit({ content: trimmedMessage, emotion: emotion });
       refetchMessages();
       return;
     }
 
-    if (mode === 'reply') {
+    if (mode === "reply") {
       await handleSendReplyMessage({
         content: trimmedMessage,
         emotion: emotion,
@@ -71,7 +69,7 @@ export const ChatScreen = () => {
       // 画像がある場合はアップロード処理
       if (imageUri) {
         const result = await api.chatRoomMessage.uploadChatImage({
-          file: { uri: imageUri, type: 'image/jpeg' },
+          file: { uri: imageUri, type: "image/jpeg" },
           userId: currentUser.id,
         });
         uploadedImagePath = result.path;
@@ -85,7 +83,7 @@ export const ChatScreen = () => {
         emotion: emotion,
       });
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     }
   };
 
@@ -93,32 +91,19 @@ export const ChatScreen = () => {
     return <Loader />;
   }
 
-  const messagesWithRefs = messages.map((message) => ({
-    ...message,
-    ref: (node: ViewType) => {
-      const key = format(message.date || '', 'yyyy-MM-dd');
-      if (node) {
-        listItemRefs.current[key] = node;
-      } else {
-        delete listItemRefs.current[key];
-      }
-    },
-  }));
-
   return (
     <>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={'padding'}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"}>
         <View className="flex-1 bg-gray-100">
           <ChatHeader onScrollToDate={handleScrollToDate} />
           <ChatMessageList
             scrollViewRef={scrollRef}
             chatRoom={chatRoom}
             isLoading={isLoadingRoom}
-            messages={messagesWithRefs}
-            isChatEnded={false}
-            isOwner={true}
+            messages={messages}
             isPending={isPending ?? false}
             sendingMessage={variables}
+            listItemRefs={listItemRefs}
           />
           <ChatInput onSend={handleSendMessage} isDisabled={false} />
         </View>

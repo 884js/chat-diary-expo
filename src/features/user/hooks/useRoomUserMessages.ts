@@ -1,8 +1,6 @@
+import { useMessageWithDividers } from '@/features/chat/hooks/useMessageWithDividers';
 import { useSupabase } from '@/hooks/useSupabase';
-import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { useQuery } from '@tanstack/react-query';
-import { isSameDay, parseISO } from 'date-fns';
-import { useMemo } from 'react';
 
 type Props = {
   userId: string | undefined;
@@ -11,7 +9,7 @@ export const useRoomUserMessages = ({ userId }: Props) => {
   const { api } = useSupabase();
 
   const {
-    data: messages,
+    data,
     isLoading: isLoadingMessages,
     isRefetching: isRefetchingMessages,
     refetch: refetchMessages,
@@ -27,38 +25,14 @@ export const useRoomUserMessages = ({ userId }: Props) => {
     enabled: !!userId,
   });
 
-  const messagesWithDividers = useMemo(() => {
-    if (!messages) return [];
+  const messages = data?.map((item) => {
+    return {
+      ...item,
+      date: item.created_at,
+    };
+  });
 
-    const result: Array<{
-      message: ChatRoomMessage;
-      showDateDivider: boolean;
-      date: Date | null;
-    }> = [];
-
-    let previousDate: Date | null = null;
-
-    for (const msg of messages) {
-      const messageDate = msg.created_at ? parseISO(msg.created_at) : null;
-      let showDateDivider = false;
-
-      if (
-        messageDate &&
-        (!previousDate || !isSameDay(previousDate, messageDate))
-      ) {
-        showDateDivider = true;
-        previousDate = messageDate;
-      }
-
-      result.push({
-        message: msg,
-        showDateDivider,
-        date: messageDate,
-      });
-    }
-
-    return result;
-  }, [messages]);
+  const { messagesWithDividers } = useMessageWithDividers({ messages: messages ?? [] });
 
   return {
     messages: messagesWithDividers,

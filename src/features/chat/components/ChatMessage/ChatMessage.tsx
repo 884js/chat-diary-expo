@@ -5,6 +5,7 @@ import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { Animated, Easing, Pressable } from 'react-native';
+import type { SelectedMessage } from '../../contexts/MessageActionContext';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { type Emotion, emotions } from '../../hooks/useChatInputEmotion';
 import { ChatImage } from './ChatImage';
@@ -19,11 +20,11 @@ export interface MessageProps {
     display_name: string;
     avatar_url: string;
   };
-  isFromReceiver: boolean;
   timestamp: string;
   imagePath?: string | null;
-  isOwner: boolean;
   emotion?: Emotion['slug'];
+  isStocked: boolean;
+  onOpenStockMenu: (message: SelectedMessage) => void;
 }
 
 export function ChatMessage({
@@ -34,8 +35,10 @@ export function ChatMessage({
   owner,
   replyTo,
   emotion,
+  isStocked,
+  onOpenStockMenu,
 }: MessageProps) {
-  const { selectedMessage, handleOpenMenu } = useMessageAction();
+  const { selectedMessage } = useMessageAction();
 
   // アニメーション用の値
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -144,19 +147,19 @@ export function ChatMessage({
           }}
         >
           <Pressable
-            onLongPress={() => handleOpenMenu({ id, content, emotion })}
+            onLongPress={() => onOpenStockMenu({ id, content, emotion })}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             delayLongPress={150}
             style={({ pressed }) => ({
               borderRadius: 8,
               padding: 8,
-              overflow: 'hidden',
+              overflow: "hidden",
             })}
           >
             <Animated.View
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 0,
                 left: 0,
                 right: 0,
@@ -168,7 +171,7 @@ export function ChatMessage({
 
             <View
               className={`flex-1 bg-transparent ${
-                isSelected ? 'bg-gray-100' : ''
+                isSelected ? "bg-gray-100" : ""
               }`}
             >
               {replyTo && (
@@ -190,13 +193,22 @@ export function ChatMessage({
               ) : null}
 
               {/* タイムスタンプと感情アイコン */}
-              <View className="flex-row justify-end items-center bg-transparent mt-1">
+              <View className="flex-row justify-end items-center bg-transparent mt-1 gap-1">
                 {emotionData && (
-                  <View className="mr-2">
+                  <View className="ml-1">
                     <MaterialCommunityIcons
                       name={emotionData.icon}
                       size={16}
                       color={emotionData.color}
+                    />
+                  </View>
+                )}
+                {isStocked && (
+                  <View className="mr-1">
+                    <MaterialCommunityIcons
+                      name="heart"
+                      size={16}
+                      color={"#ef4444"}
                     />
                   </View>
                 )}

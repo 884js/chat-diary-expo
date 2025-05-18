@@ -87,6 +87,16 @@ CREATE INDEX IF NOT EXISTS idx_stamps_room_id ON public.stamps(room_id);
 CREATE INDEX IF NOT EXISTS idx_room_messages_owner_id_created_at
 ON public.room_messages(owner_id, created_at);
 
+-- メッセージストックテーブル
+CREATE TABLE IF NOT EXISTS public.room_message_stocks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  message_id UUID NOT NULL REFERENCES public.room_messages(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+
+  UNIQUE (user_id, message_id) -- 同じユーザーが同じメッセージを重複して保存できない
+);
+
 -- auth.usersが作成されたとき、自動的にpublic.usersも作成するトリガー
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
@@ -272,4 +282,20 @@ CREATE POLICY "自分のスタンプのみ削除できる"
   FOR DELETE
   USING (auth.uid() = created_by_user_id);
 
+-- room_message_stocksテーブルのRLS
+ALTER TABLE public.room_message_stocks ENABLE ROW LEVEL SECURITY;
 
+-- 自分のストックだけ読み取れる
+CREATE POLICY "自分のストックのみ読み取れる"
+  ON public.room_message_stocks FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- 自分のストックだけ作成できる
+CREATE POLICY "自分のストックのみ作成できる"
+  ON public.room_message_stocks FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- 自分のストックだけ削除できる
+CREATE POLICY "自分のストックのみ削除できる"
+  ON public.room_message_stocks FOR DELETE
+  USING (auth.uid() = user_id);

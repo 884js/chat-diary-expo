@@ -1,11 +1,14 @@
 import { formatDate } from '@/lib/date-fns';
 import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
-import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import type { Emotion } from '../../hooks/useChatInputEmotion';
 import { ChatMessage } from '../ChatMessage';
-import { DateDivider } from './DateDivider';
+import { DateDivider } from '../DateDivider';
+import { useChatRoomMessageStocks } from '../../hooks/useChatRoomMessageStocks';
+import { useMessageAction } from '../../contexts/MessageActionContext';
+import { format } from "date-fns";
+import { useEffect } from 'react';
 
 type Props = {
   chatRoom: ChatRoom;
@@ -15,10 +18,8 @@ type Props = {
     message: ChatRoomMessage;
     showDateDivider: boolean;
     date: Date | null;
-    ref: (node: View) => void;
   }[];
-  isChatEnded: boolean;
-  isOwner: boolean;
+  listItemRefs: React.RefObject<Record<string, View>>;
   isPending: boolean;
   sendingMessage:
     | {
@@ -33,11 +34,23 @@ type Props = {
 export const ChatMessageList = ({
   chatRoom,
   messages,
-  isOwner,
   isPending,
   sendingMessage,
   scrollViewRef,
+  listItemRefs,
 }: Props) => {
+  const { stockedMessageIds } = useChatRoomMessageStocks();
+  const { handleOpenMenu } = useMessageAction();
+
+  const callbackRef = (messageDate: Date) => (node: View) => {
+    const key = format(messageDate || "", "yyyy-MM-dd");
+    if (node) {
+      listItemRefs.current[key] = node;
+    } else {
+      delete listItemRefs.current[key];
+    }
+  };
+
   // メッセージが変更されたら一番下にスクロール
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -47,36 +60,21 @@ export const ChatMessageList = ({
   return (
     <ScrollView
       ref={scrollViewRef}
-      className="flex-1 !bg-gray-100"
+      className="flex-1 !bg-gray-100 px-1"
       contentContainerStyle={{ paddingVertical: 8 }}
       onContentSizeChange={() => {
-        if (scrollViewRef) {
-          scrollViewRef.current?.scrollToEnd({ animated: false });
-        }
+        scrollViewRef.current?.scrollToEnd({ animated: false });
       }}
     >
       {/* チャットメッセージ */}
       {messages.map((item) => {
         const { message: msg, showDateDivider, date: messageDate } = item;
-
-        // 表示処理を単純化: isOwnerとmsg.senderに基づいてisFromReceiverを判定
-        let isFromReceiver: boolean;
-
-        if (isOwner) {
-          // オーナー視点: senderがreceiverかsystemなら自分から送信（反転した形で処理）
-          isFromReceiver = msg.sender !== 'user' && msg.sender !== 'ai';
-        } else {
-          // 送信者視点: senderがreceiverかsystemなら相手から送信（そのまま処理）
-          isFromReceiver = msg.sender === 'user' || msg.sender === 'ai';
-        }
-
         return (
           <View key={msg.id} className="flex-1">
-            {/* 日付区切り線 */}
             {showDateDivider && messageDate && (
-              <View ref={item.ref} className="!bg-gray-100">
+              <View ref={callbackRef(messageDate)} className="!bg-gray-100">
                 <DateDivider
-                  date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
+                  date={formatDate(messageDate, "yyyy年M月d日(eee)")}
                 />
               </View>
             )}
@@ -88,11 +86,11 @@ export const ChatMessageList = ({
               owner={chatRoom.owner}
               sender={msg.sender}
               replyTo={msg.reply_to}
-              isFromReceiver={isFromReceiver}
-              isOwner={isOwner}
-              timestamp={formatDate(msg.created_at || '', 'HH:mm')}
+              timestamp={formatDate(msg.created_at || "", "HH:mm")}
               imagePath={msg.image_path}
               emotion={msg.emotion}
+              isStocked={stockedMessageIds.includes(msg.id)}
+              onOpenStockMenu={handleOpenMenu}
             />
           </View>
         );
@@ -100,16 +98,16 @@ export const ChatMessageList = ({
       <View key={sendingMessage?.content} className="flex-1 opacity-50">
         {isPending && (
           <ChatMessage
-            id={''}
-            content={sendingMessage?.content ?? ''}
+            id={""}
+            content={sendingMessage?.content ?? ""}
             owner={chatRoom.owner}
-            sender={'user'}
+            sender={"user"}
             replyTo={null}
-            isFromReceiver={true}
-            isOwner={isOwner}
-            timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
-            imagePath={sendingMessage?.imagePath ?? ''}
+            timestamp={formatDate(new Date().toISOString(), "HH:mm")}
+            imagePath={sendingMessage?.imagePath ?? ""}
             emotion={sendingMessage?.emotion}
+            isStocked={false}
+            onOpenStockMenu={handleOpenMenu}
           />
         )}
       </View>

@@ -5,6 +5,7 @@ import { ChatRoomMessageApi } from './ChatRoomMessage';
 import { CalendarApi } from './calendar';
 import { ChatSettingApi } from './chatSetting';
 import { UserApi } from './user';
+import { ChatRoomMessageStockApi } from './ChatRoomMessageStock';
 
 export class SupabaseApi {
   private readonly supabase: SupabaseClient<Database>;
@@ -16,6 +17,7 @@ export class SupabaseApi {
     this.chatRoom = new ChatRoomApi(this.supabase);
     this.calendar = new CalendarApi(this.supabase);
     this.chatRoomMessage = new ChatRoomMessageApi(this.supabase);
+    this.chatRoomMessageStock = new ChatRoomMessageStockApi(this.supabase);
   }
 
   public readonly user: UserApi;
@@ -23,4 +25,5 @@ export class SupabaseApi {
   public readonly chatRoom: ChatRoomApi;
   public readonly calendar: CalendarApi;
   public readonly chatRoomMessage: ChatRoomMessageApi;
+  public readonly chatRoomMessageStock: ChatRoomMessageStockApi;
 }

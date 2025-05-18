@@ -12,7 +12,7 @@ import {
 import type { Emotion } from '../hooks/useChatInputEmotion';
 import { Keyboard, type TextInput } from 'react-native';
 
-type SelectedMessage = {
+export type SelectedMessage = {
   id: string;
   content: string;
   emotion?: Emotion['slug'];
@@ -32,6 +32,8 @@ const MessageActionContext = createContext<{
   handleSendReplyMessage: ({ content, emotion }: WithoutId) => Promise<void>;
   handleOpenMenu: (message: SelectedMessage) => void;
   handleCancel: () => void;
+  handleSaveStock: () => Promise<void>;
+  handleDeleteStock: () => Promise<void>;
   bottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
 } | null>(null);
 
@@ -109,6 +111,24 @@ export const MessageActionProvider = ({
     Keyboard.dismiss();
   };
 
+  const handleSaveStock = async () => {
+    if (!selectedMessage?.id || !currentUser?.id) return;
+
+    await api.chatRoomMessageStock.createMessageStock({
+      userId: currentUser?.id,
+      messageId: selectedMessage.id,
+    });
+  };
+
+  const handleDeleteStock = async () => {
+    if (!selectedMessage?.id || !currentUser?.id) return;
+
+    await api.chatRoomMessageStock.deleteMessageStock({
+      userId: currentUser?.id,
+      messageId: selectedMessage.id,
+    });
+  };
+
   return (
     <MessageActionContext.Provider
       value={{
@@ -124,6 +144,8 @@ export const MessageActionProvider = ({
         bottomSheetModalRef,
         handleOpenMenu,
         handleCancel,
+        handleSaveStock,
+        handleDeleteStock,
       }}
     >
       {children}

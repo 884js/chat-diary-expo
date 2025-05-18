@@ -52,7 +52,7 @@ export const ChatImage = ({ imageUrl, alt = '', fullWidth = false }: Props) => {
         )}
         <TouchableOpacity
           onPress={openModal}
-          className="absolute bottom-2 right-2 bg-black/50 p-2 rounded-full"
+          className="absolute top-2 right-2 bg-black/50 p-2 rounded-full"
           activeOpacity={0.7}
           accessibilityLabel="画像を拡大"
         >

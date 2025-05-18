@@ -20,11 +20,11 @@ export default function TabLayout() {
         tabBarStyle: [
           {
             backgroundColor: Colors.light.background,
-            borderTopColor: '#e5e7eb',
+            borderTopColor: "#e5e7eb",
           },
         ],
         tabBarActiveTintColor: Colors.light.tint,
-        tabBarInactiveTintColor: '#6b7280',
+        tabBarInactiveTintColor: "#6b7280",
         tabBarLabelStyle: {
           fontSize: 12,
         },
@@ -33,15 +33,33 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'ホーム',
+          title: "ホーム",
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
+        name="stock"
+        options={{
+          title: "お気に入り",
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="media"
+        options={{
+          title: "メディア",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="image" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="calendar"
         options={{
-          title: 'カレンダー',
+          title: "振り返り",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="calendar" color={color} />
@@ -49,17 +67,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
-        options={{
-          title: '探す',
-          headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="settings"
         options={{
-          title: '設定',
+          title: "設定",
           headerShown: true,
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="settings" color={color} />

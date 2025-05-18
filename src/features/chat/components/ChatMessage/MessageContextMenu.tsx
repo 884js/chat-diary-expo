@@ -9,6 +9,7 @@ import {
 import { useCallback, useMemo } from 'react';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
+import { useChatRoomMessageStocks } from '../../hooks/useChatRoomMessageStocks';
 
 export function MessageContextMenu() {
   const {
@@ -17,10 +18,14 @@ export function MessageContextMenu() {
     handleEditMessage,
     handleReplyMessage,
     handleDeleteMessage,
+    handleSaveStock,
+    handleDeleteStock,
   } = useMessageAction();
-
+  const { stockedMessageIds, refetch } = useChatRoomMessageStocks();
   // スナップポイントを定義
   const snapPoints = useMemo(() => ['35%'], []);
+
+  const isStocked = stockedMessageIds.includes(selectedMessage?.id ?? '');
 
   const handleClose = () => {
     bottomSheetModalRef.current?.dismiss();
@@ -91,10 +96,34 @@ export function MessageContextMenu() {
       index={0}
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ width: 40, backgroundColor: '#cbd5e1' }}
+      handleIndicatorStyle={{ width: 40, backgroundColor: "#cbd5e1" }}
     >
       <BottomSheetView className="flex-1 px-4 pt-2 pb-6">
         <View className="bg-transparent">
+          <TouchableOpacity
+            onPress={async () => {
+              if (isStocked) {
+                await handleDeleteStock();
+              } else {
+                await handleSaveStock();
+              }
+              await refetch();
+              handleClose();
+            }}
+            className="flex-row items-center py-4 border-b border-gray-100 active:bg-gray-100"
+            activeOpacity={0.7}
+          >
+            <View className="w-10 h-10 rounded-full bg-green-50 items-center justify-center mr-3">
+              <Feather
+                name={isStocked ? "heart" : "heart"}
+                size={18}
+                color={isStocked ? "#3b82f6" : "#ef4444"}
+              />
+            </View>
+            <Text className="text-base font-medium text-gray-700">
+              {isStocked ? "お気に入り解除" : "お気に入り"}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               handleEdit();

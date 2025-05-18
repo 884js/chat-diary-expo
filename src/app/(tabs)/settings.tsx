@@ -1,3 +1,4 @@
+import { SafeAreaView } from '@/components/SafeAreaView';
 import { Text, View } from '@/components/Themed';
 import { useAuth } from '@/features/auth/contexts/AuthContext';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
@@ -9,7 +10,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
   const { signOut } = useAuth();
@@ -44,7 +44,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView>
       <ScrollView className="flex-1">
         {/* ユーザー情報 */}
         <View className="p-4 mb-4 border-b border-gray-100">

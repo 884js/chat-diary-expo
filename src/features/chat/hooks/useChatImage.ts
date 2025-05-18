@@ -52,7 +52,6 @@ export const useChatImage = () => {
         mediaTypes: ['images'],
         allowsEditing: true,
         quality: 1,
-        aspect: [4, 3],
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -92,7 +91,6 @@ export const useChatImage = () => {
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         quality: 1,
-        aspect: [4, 3],
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {

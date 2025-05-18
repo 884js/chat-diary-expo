@@ -7,7 +7,7 @@ import {
   ThemeProvider,
 } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -22,13 +22,13 @@ import {
   ReanimatedLogLevel,
   configureReanimatedLogger,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MessageStockActionProvider } from '@/features/chat/contexts/MessageStockActionContext';
 
 export { ErrorBoundary } from 'expo-router';
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
-  strict: false, // Reanimated runs in strict mode by default
+  strict: false,
 });
 
 export const unstable_settings = {
@@ -70,34 +70,32 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
-
-  const top = typeof insets.top === 'number' ? insets.top : 0;
-  const bottom = typeof insets.bottom === 'number' ? insets.bottom : 0;
-  const left = typeof insets.left === 'number' ? insets.left : 0;
-  const right = typeof insets.right === 'number' ? insets.right : 0;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <KeyboardProvider>
           <ThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
-            <MessageActionProvider>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="auth/login"
-                  options={{
-                    headerShown: false,
-                    presentation: 'transparentModal',
-                    gestureEnabled: true,
-                  }}
-                />
-              </Stack>
-            </MessageActionProvider>
+            <MessageStockActionProvider>
+              <MessageActionProvider>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="auth/login"
+                    options={{
+                      headerShown: false,
+                      presentation: "transparentModal",
+                      gestureEnabled: true,
+                    }}
+                  />
+                </Stack>
+              </MessageActionProvider>
+            </MessageStockActionProvider>
           </ThemeProvider>
         </KeyboardProvider>
       </BottomSheetModalProvider>
