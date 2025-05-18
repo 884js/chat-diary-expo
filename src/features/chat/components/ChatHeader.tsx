@@ -20,11 +20,7 @@ type MarkedDates = {
   [date: string]: MarkedDateItem;
 };
 
-type Props = {
-  onScrollToDate: (date: Date) => void;
-};
-
-export function ChatHeader({ onScrollToDate }: Props) {
+export function ChatHeader() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(
     format(selectedDate, 'yyyy年M月'),
@@ -93,7 +89,6 @@ export function ChatHeader({ onScrollToDate }: Props) {
           onDayPress={(day) => {
             const newSelectedDate = new Date(day.timestamp);
             setSelectedDate(newSelectedDate);
-            onScrollToDate(newSelectedDate);
             setMarkedDates({
               [day.dateString]: {
                 selected: true,

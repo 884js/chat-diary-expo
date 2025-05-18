@@ -4,12 +4,11 @@ import { useCurrentUser } from "@/features/user/hooks/useCurrentUser";
 import { useCurrentUserRoom } from "@/features/user/hooks/useCurrentUserRoom";
 import { MessageContextStockMenu } from "../components/ChatMessage/MessageContextStockMenu";
 import { useChatRoomMessageStocks } from "../hooks/useChatRoomMessageStocks";
-import { useChatScrollToDate } from "../hooks/useChatScrollToDate";
 import { ChatMessageStockList } from "../components/ChatMessageStockList";
 
 export const ChatStockScreen = () => {
   const { currentUser } = useCurrentUser();
-  const { scrollRef } = useChatScrollToDate();
+
   const { chatRoom } = useCurrentUserRoom({
     userId: currentUser?.id ?? "",
   });
@@ -22,7 +21,6 @@ export const ChatStockScreen = () => {
   return (
     <View className="flex-1 bg-gray-100">
       <ChatMessageStockList
-        scrollViewRef={scrollRef}
         chatRoom={chatRoom}
         messages={messagesWithDividers}
       />

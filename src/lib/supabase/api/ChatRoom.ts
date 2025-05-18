@@ -51,7 +51,7 @@ export class ChatRoomApi {
         'id, owner_id, content, sender, created_at, image_path, emotion, reply_to:reply_to_message_id (id, content, sender)',
       )
       .eq('owner_id', userId)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: false })
       .overrideTypes<Array<ChatRoomMessage>, { merge: false }>();
 
     if (messagesError) {

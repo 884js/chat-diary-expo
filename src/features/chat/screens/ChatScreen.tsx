@@ -10,7 +10,6 @@ import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import type { Emotion } from '../hooks/useChatInputEmotion';
-import { useChatScrollToDate } from '../hooks/useChatScrollToDate';
 import { useSendMessage } from '../hooks/useSendMessage';
 
 export const ChatScreen = () => {
@@ -20,7 +19,6 @@ export const ChatScreen = () => {
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
     userId: currentUser?.id ?? "",
   });
-  const { listItemRefs, scrollRef, handleScrollToDate } = useChatScrollToDate();
   const { messages, refetchMessages } = useRoomUserMessages({
     userId: chatRoom?.user_id,
   });
@@ -91,15 +89,13 @@ export const ChatScreen = () => {
     <>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={"padding"}>
         <View className="flex-1 bg-gray-100">
-          <ChatHeader onScrollToDate={handleScrollToDate} />
+          <ChatHeader />
           <ChatMessageList
-            scrollViewRef={scrollRef}
             chatRoom={chatRoom}
             isLoading={isLoadingRoom}
             messages={messages}
             isPending={isPending ?? false}
             sendingMessage={variables}
-            listItemRefs={listItemRefs}
           />
           <ChatInput onSend={handleSendMessage} isDisabled={false} />
         </View>

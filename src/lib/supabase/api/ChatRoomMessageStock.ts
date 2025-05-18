@@ -18,7 +18,7 @@ export class ChatRoomMessageStockApi {
       .from('room_message_stocks')
       .select('*, message:room_messages (id, content, created_at, sender, room_id, owner_id, image_path, emotion)')
       .eq('user_id', userId)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: false })
       .overrideTypes<ChatRoomMessageStock[]>();
 
     if (error) {
