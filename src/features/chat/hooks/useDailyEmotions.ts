@@ -58,33 +58,33 @@ export const useDailyEmotions = ({ userId, month, year }: Props) => {
 
       // 日付ごとにメッセージをグループ化
       const messagesByDate: Record<string, MessageData[]> = {};
-      
+
       for (const message of messages) {
         if (typeof message.created_at !== 'string') continue;
-        
+
         const messageDate = format(new Date(message.created_at), 'yyyy-MM-dd');
-        
+
         if (!messagesByDate[messageDate]) {
           messagesByDate[messageDate] = [];
         }
-        
+
         messagesByDate[messageDate].push(message);
       }
 
       // 各日付の主要感情を計算
       const dailyEmotions: DailyEmotion[] = [];
-      
+
       for (const date of Object.keys(messagesByDate)) {
         const messages = messagesByDate[date];
         const emotionCounts: Record<string, number> = {};
-        
+
         // 有効な感情スラッグの初期化
         for (const emotion of emotions) {
           if (emotion.slug) {
             emotionCounts[emotion.slug] = 0;
           }
         }
-        
+
         // メッセージごとの感情をカウント
         for (const message of messages) {
           if (message.emotion) {
@@ -96,7 +96,7 @@ export const useDailyEmotions = ({ userId, month, year }: Props) => {
         const normalCount = emotionCounts.normal || 0;
         let maxCount = 0;
         let primaryEmotion: Emotion['slug'] | undefined = undefined;
-        
+
         for (const [emotion, count] of Object.entries(emotionCounts)) {
           // normalは最優先ではなく、最後の選択肢として扱う
           if (emotion !== 'normal' && count > maxCount) {
@@ -104,17 +104,17 @@ export const useDailyEmotions = ({ userId, month, year }: Props) => {
             primaryEmotion = emotion as Emotion['slug'];
           }
         }
-        
+
         // 他の感情が1つもない場合のみnormalを使用
         if (!primaryEmotion && normalCount > 0) {
           primaryEmotion = 'normal';
         }
-        
+
         // メッセージはあるが感情がない場合はnormalをデフォルトに
         if (!primaryEmotion && messages.length > 0) {
           primaryEmotion = 'normal';
         }
-        
+
         dailyEmotions.push({
           date,
           primaryEmotion,
