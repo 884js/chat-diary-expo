@@ -63,13 +63,13 @@ export function MessageContextStockMenu() {
           >
             <View className="w-10 h-10 rounded-full bg-green-50 items-center justify-center mr-3">
               <Feather
-                name={isStocked ? 'heart' : 'heart'}
+                name={'archive'}
                 size={18}
-                color={isStocked ? '#3b82f6' : '#c'}
+                color={isStocked ? '' : '#3b82f6'}
               />
             </View>
             <Text className="text-base font-medium text-gray-700">
-              {isStocked ? 'お気に入り解除' : 'お気に入り'}
+              {isStocked ? 'ストック解除' : 'ストック'}
             </Text>
           </TouchableOpacity>
         </View>

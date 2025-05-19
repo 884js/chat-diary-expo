@@ -206,9 +206,9 @@ export function ChatMessage({
                 {isStocked && (
                   <View className="mr-1">
                     <MaterialCommunityIcons
-                      name="heart"
+                      name="archive"
                       size={16}
-                      color={'#ef4444'}
+                      color="#3B82F6"
                     />
                   </View>
                 )}

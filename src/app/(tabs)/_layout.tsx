@@ -43,9 +43,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stock"
         options={{
-          title: 'お気に入り',
+          title: 'ストック',
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="archive" color={color} />
+          ),
         }}
       />
       <Tabs.Screen

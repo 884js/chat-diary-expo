@@ -76,6 +76,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
 
     setMessage('');
     resetImage();
+    handleClearEmotion();
 
     try {
       if (selectedImage) {

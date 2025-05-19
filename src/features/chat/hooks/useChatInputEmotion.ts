@@ -9,7 +9,7 @@ export type EmotionIconName =
   | 'emoticon-confused-outline';
 
 export type Emotion = {
-  slug: 'normal' | 'happy' | 'sad' | 'angry' | 'confused' | undefined;
+  slug: 'normal' | 'happy' | 'sad' | undefined;
   name: string;
   icon: EmotionIconName;
   color: string;
@@ -28,24 +28,24 @@ export const emotions: Emotion[] = [
     icon: 'emoticon-neutral-outline',
     color: '#60a5fa',
   },
-  {
-    slug: 'confused',
-    name: '微妙',
-    icon: 'emoticon-confused-outline',
-    color: '#fbbf24',
-  },
+  // {
+  //   slug: 'confused',
+  //   name: '微妙',
+  //   icon: 'emoticon-confused-outline',
+  //   color: '#fbbf24',
+  // },
   {
     slug: 'sad',
     name: '悲しい',
     icon: 'emoticon-sad-outline',
     color: '#a78bfa',
   },
-  {
-    slug: 'angry',
-    name: '怒り',
-    icon: 'emoticon-angry-outline',
-    color: '#f87171',
-  },
+  // {
+  //   slug: 'angry',
+  //   name: '怒り',
+  //   icon: 'emoticon-angry-outline',
+  //   color: '#f87171',
+  // },
 ];
 
 type Props = {
