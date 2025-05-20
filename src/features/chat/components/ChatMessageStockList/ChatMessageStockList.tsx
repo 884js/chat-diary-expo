@@ -49,7 +49,6 @@ export const ChatMessageStockList = ({ chatRoom, messages }: Props) => {
               onOpenStockMenu={() =>
                 handleOpenMenu({
                   id: msg.id,
-                  replyId: msg.reply_to_message_id ?? undefined,
                   content: msg.content,
                   emotion: msg.emotion,
                 })
