@@ -61,14 +61,13 @@ export function useChatRoomMessages({ userId, startAt, endAt }: Props) {
             end_at: dateRange.end,
           },
         })
-        .overrideTypes<RoomMessage[]>();
 
       if (error) {
         console.error('Error fetching room messages:', error);
         throw error;
       }
 
-      return data;
+      return data as RoomMessage[];
     },
     enabled: !!userId,
   });

@@ -16,6 +16,7 @@ type SelectedMessage = {
   id: string;
   content: string;
   emotion?: Emotion['slug'];
+  replyId?: string;
 };
 
 const MessageStockActionContext = createContext<{
@@ -61,7 +62,9 @@ export const MessageStockActionProvider = ({
 
     await api.chatRoomMessageStock.deleteMessageStock({
       userId: currentUser?.id,
-      messageId: selectedMessage.id,
+      messageId: selectedMessage.replyId
+        ? selectedMessage.replyId
+        : selectedMessage.id,
     });
     await refetch();
   };

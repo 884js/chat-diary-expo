@@ -1,5 +1,5 @@
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
+import { useChatRoomUserMessages } from "@/features/chat/hooks/useChatRoomUserMessages";
 import { useSupabase } from '@/hooks/useSupabase';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import {
@@ -16,6 +16,7 @@ export type SelectedMessage = {
   id: string;
   content: string;
   emotion?: Emotion['slug'];
+  replyId?: string;
 };
 
 type WithoutId = Omit<SelectedMessage, 'id'>;
@@ -43,8 +44,8 @@ export const MessageActionProvider = ({
   const textInputRef = useRef<TextInput>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { currentUser } = useCurrentUser();
-  const { refetchMessages } = useRoomUserMessages({
-    userId: currentUser?.id ?? '',
+  const { refetchMessages } = useChatRoomUserMessages({
+    userId: currentUser?.id ?? "",
   });
   const { api } = useSupabase();
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);
@@ -77,7 +78,9 @@ export const MessageActionProvider = ({
     if (!selectedMessage?.id) return;
 
     await api.chatRoomMessage.editMessage({
-      messageId: selectedMessage.id,
+      messageId: selectedMessage.replyId
+        ? selectedMessage.replyId
+        : selectedMessage.id,
       content: content,
       emotion: emotion,
     });
@@ -89,7 +92,11 @@ export const MessageActionProvider = ({
   const handleDeleteMessage = async () => {
     if (!selectedMessage?.id) return;
 
-    await api.chatRoomMessage.deleteMessage({ messageId: selectedMessage.id });
+    await api.chatRoomMessage.deleteMessage({
+      messageId: selectedMessage.replyId
+        ? selectedMessage.replyId
+        : selectedMessage.id,
+    });
     await refetchMessages();
   };
 
@@ -117,16 +124,21 @@ export const MessageActionProvider = ({
 
     await api.chatRoomMessageStock.createMessageStock({
       userId: currentUser?.id,
-      messageId: selectedMessage.id,
+      messageId: selectedMessage.replyId
+        ? selectedMessage.replyId
+        : selectedMessage.id,
     });
   };
 
   const handleDeleteStock = async () => {
     if (!selectedMessage?.id || !currentUser?.id) return;
 
+    // リプライの場合はリプライのIDを使用
     await api.chatRoomMessageStock.deleteMessageStock({
       userId: currentUser?.id,
-      messageId: selectedMessage.id,
+      messageId: selectedMessage.replyId
+        ? selectedMessage.replyId
+        : selectedMessage.id,
     });
   };
 

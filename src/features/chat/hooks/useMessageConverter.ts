@@ -1,21 +1,18 @@
 import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { isSameDay, parseISO } from 'date-fns';
-import { useMemo } from 'react';
+import { useCallback } from 'react';
+import type { ChatRoomMessageWithReplies } from './useChatRoomUserMessages';
 
-export const useMessageWithDividers = ({
-  messages,
-}: { messages: (ChatRoomMessage & { date: string })[] }) => {
-  const messagesWithDividers = useMemo(() => {
+export const useMessageConverter = () => {
+
+  const getMessagesWithDividers = useCallback(({messages}: {messages: ChatRoomMessageWithReplies[]}) => {
     if (!messages || messages.length === 0) return [];
 
     const result: Array<{
-      message: ChatRoomMessage;
+      message: ChatRoomMessage & { date: string; replies: ChatRoomMessage[] };
       showDateDivider: boolean;
       date: Date | null;
     }> = [];
-
-    // FlatListはinverted=trueで表示されるため、
-    // 日付区切りは「次のメッセージが異なる日付」のときに表示する
 
     // 最後のメッセージは必ず区切りを表示（逆順表示では一番上）
     if (messages.length > 0) {
@@ -52,7 +49,41 @@ export const useMessageWithDividers = ({
     }
 
     return result;
-  }, [messages]);
+  }, []);
 
-  return { messagesWithDividers };
+  const getMessageWithReplies = useCallback(({messages}: {messages: ChatRoomMessage[]}) => {
+    if (!messages) return [];
+
+    type ExtendedMessage = ChatRoomMessage & {
+      replies: ChatRoomMessage[];
+      date: string;
+    };
+
+    const messageMap = new Map(
+      messages.map((msg) => [
+        msg.id,
+        { ...msg, replies: [] as ChatRoomMessage[], date: msg.created_at },
+      ]),
+    );
+
+    const roots: ExtendedMessage[] = [];
+
+    for (const msg of messages) {
+      const current = messageMap.get(msg.id);
+      if (!current) continue;
+
+      if (msg.reply_to_message_id && messageMap.has(msg.reply_to_message_id)) {
+        const parent = messageMap.get(msg.reply_to_message_id);
+        if (parent) {
+          parent.replies.unshift(msg);
+        }
+      } else {
+        roots.push(current);
+      }
+    }
+
+    return roots;
+  }, []);
+
+  return { getMessagesWithDividers, getMessageWithReplies };
 };

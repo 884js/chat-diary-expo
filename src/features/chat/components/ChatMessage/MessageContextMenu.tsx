@@ -22,10 +22,14 @@ export function MessageContextMenu() {
     handleDeleteStock,
   } = useMessageAction();
   const { stockedMessageIds, refetch } = useChatRoomMessageStocks();
-  // スナップポイントを定義
+
   const snapPoints = useMemo(() => ['35%'], []);
 
-  const isStocked = stockedMessageIds.includes(selectedMessage?.id ?? '');
+  const isStocked = stockedMessageIds.includes(
+    selectedMessage?.replyId
+      ? selectedMessage.replyId
+      : selectedMessage?.id ?? '',
+  );
 
   const handleClose = () => {
     bottomSheetModalRef.current?.dismiss();
@@ -77,7 +81,6 @@ export function MessageContextMenu() {
     );
   };
 
-  // カスタムバックドロップコンポーネント
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop

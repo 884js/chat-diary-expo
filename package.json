@@ -16,7 +16,8 @@
     "build:android:development": "eas build --profile development --platform android",
     "migrate:reset": "supabase db reset --linked && npm run generate && npm run format",
     "migrate:up": "supabase db push --linked",
-    "generate": "supabase gen types typescript --project-id wgupnbwuurvjrhyqoohq > ./src/lib/supabase/databaseTypes.ts"
+    "generate": "supabase gen types typescript --project-id wgupnbwuurvjrhyqoohq > ./src/lib/supabase/databaseTypes.ts",
+    "typecheck": "tsc --noEmit"
   },
   "jest": {
     "preset": "jest-expo"

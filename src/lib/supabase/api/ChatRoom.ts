@@ -48,7 +48,7 @@ export class ChatRoomApi {
     const { data: messages, error: messagesError } = await this.supabase
       .from('room_messages')
       .select(
-        'id, owner_id, content, sender, created_at, image_path, emotion, reply_to:reply_to_message_id (id, content, sender)',
+        'id, owner_id, content, sender, created_at, image_path, emotion, reply_to_message_id',
       )
       .eq('owner_id', userId)
       .order('created_at', { ascending: false })

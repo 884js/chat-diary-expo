@@ -2,7 +2,7 @@ import { Loader } from '@/components/Loader';
 import { View } from '@/components/Themed';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
-import { useRoomUserMessages } from '@/features/user/hooks/useRoomUserMessages';
+import { useChatRoomUserMessages } from "@/features/chat/hooks/useChatRoomUserMessages";
 import { useSupabase } from '@/hooks/useSupabase';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ChatHeader } from '../components/ChatHeader';
@@ -19,7 +19,7 @@ export const ChatScreen = () => {
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
     userId: currentUser?.id ?? '',
   });
-  const { messages, refetchMessages } = useRoomUserMessages({
+  const { messages, refetchMessages } = useChatRoomUserMessages({
     userId: chatRoom?.user_id,
   });
   const isOwner = chatRoom ? chatRoom.id === chatRoom?.user_id : false;

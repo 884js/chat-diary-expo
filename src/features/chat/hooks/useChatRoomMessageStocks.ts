@@ -1,11 +1,12 @@
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useQuery } from '@tanstack/react-query';
-import { useMessageWithDividers } from './useMessageWithDividers';
+import { useMessageConverter } from './useMessageConverter';
 
 export const useChatRoomMessageStocks = () => {
   const { api } = useSupabase();
   const { currentUser } = useCurrentUser();
+  const { getMessagesWithDividers, getMessageWithReplies } = useMessageConverter();
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['chatRoomMessageStocks'],
@@ -23,23 +24,10 @@ export const useChatRoomMessageStocks = () => {
     },
   });
 
-  const messages =
-    data
-      ?.map((item) => {
-        if (!item.message) {
-          return null;
-        }
-
-        return {
-          ...item.message,
-          date: item.created_at || '',
-        };
-      })
-      .filter((item) => item !== null) ?? [];
-
   const stockedMessageIds = data?.map((item) => item.message_id) ?? [];
 
-  const { messagesWithDividers } = useMessageWithDividers({ messages });
+  const messagesWithReplies = getMessageWithReplies({ messages: data?.map((item) => item.message).filter((item) => item !== null) ?? [] });
+  const messagesWithDividers = getMessagesWithDividers({ messages: messagesWithReplies });
 
   return {
     data,

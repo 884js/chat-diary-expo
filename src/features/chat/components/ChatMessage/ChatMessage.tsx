@@ -1,30 +1,26 @@
 import { Image } from '@/components/Image';
 import { Text, View } from '@/components/Themed';
 import { useStorageImage } from '@/hooks/useStorageImage';
-import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { Animated, Easing, Pressable } from 'react-native';
-import type { SelectedMessage } from '../../contexts/MessageActionContext';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { type Emotion, emotions } from '../../hooks/useChatInputEmotion';
 import { ChatImage } from './ChatImage';
-
 export interface MessageProps {
   id: string;
   content: string;
   sender: 'user' | 'ai';
-  replyTo: ChatRoomMessage | null;
   owner: {
     id: string;
     display_name: string;
     avatar_url: string;
-  };
+  } | null;
   timestamp: string;
   imagePath?: string | null;
   emotion?: Emotion['slug'];
   isStocked: boolean;
-  onOpenStockMenu: (message: SelectedMessage) => void;
+  onOpenStockMenu: () => void;
 }
 
 export function ChatMessage({
@@ -33,7 +29,6 @@ export function ChatMessage({
   timestamp,
   imagePath = null,
   owner,
-  replyTo,
   emotion,
   isStocked,
   onOpenStockMenu,
@@ -45,8 +40,7 @@ export function ChatMessage({
   const bgColorAnim = useRef(new Animated.Value(0)).current;
 
   // アバター画像のURL
-  const avatarUrl = owner.avatar_url;
-  const displayName = owner.display_name;
+  const avatarUrl = owner?.avatar_url;
   const { imageUrl: storageImageUrl, isLoading: isLoadingImage } =
     useStorageImage({
       imagePath,
@@ -120,17 +114,11 @@ export function ChatMessage({
     : {};
 
   return (
-    <View className="flex-row mb-2 py-1 w-full p-2 !bg-gray-100">
+    <View className="flex-row w-full !bg-gray-100">
       {/* プロフィール画像 */}
-      <View className="w-10 h-10 rounded-md overflow-hidden mr-3">
-        {avatarUrl ? (
+      <View className="w-10 h-10 rounded-md overflow-hidden mr-3 !bg-gray-100">
+        {avatarUrl && (
           <Image source={avatarUrl} style={{ width: 40, height: 40 }} />
-        ) : (
-          <View className="w-full h-full items-center justify-center bg-gray-300">
-            <Text className="text-gray-500 text-sm font-medium">
-              {displayName.charAt(0)}
-            </Text>
-          </View>
         )}
       </View>
 
@@ -147,11 +135,11 @@ export function ChatMessage({
           }}
         >
           <Pressable
-            onLongPress={() => onOpenStockMenu({ id, content, emotion })}
+            onLongPress={() => onOpenStockMenu()}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             delayLongPress={150}
-            style={({ pressed }) => ({
+            style={() => ({
               borderRadius: 8,
               padding: 8,
               overflow: 'hidden',
@@ -174,14 +162,6 @@ export function ChatMessage({
                 isSelected ? 'bg-gray-100' : ''
               }`}
             >
-              {replyTo && (
-                <View className="mb-2 pb-2 border-b border-gray-200 bg-transparent">
-                  <Text className="text-xs !text-gray-500">
-                    {replyTo.content}
-                  </Text>
-                </View>
-              )}
-
               <View className="flex-row items-center">
                 {content && <Text className="flex-1">{content}</Text>}
               </View>
@@ -191,6 +171,30 @@ export function ChatMessage({
                   <ChatImage imageUrl={storageImageUrl} fullWidth={true} />
                 </View>
               ) : null}
+
+              {/* 返信スレッド表示 */}
+              {/* {message?.replies && message.replies.length > 0 && (
+                <View className="mt-3 pt-2 border-t border-gray-200 bg-transparent">
+                  {message.replies.map((reply) => (
+                    <View
+                      key={reply.id}
+                      className="mb-2 pl-3 pb-2 border-l-2 border-gray-300"
+                    >
+                      <View className="pl-2 bg-gray-50 rounded-md py-1">
+                        <Text className="text-sm text-gray-700">
+                          {reply.content}
+                        </Text>
+                        <Text className="text-[10px] text-gray-400 mt-1">
+                          {new Date(reply.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )} */}
 
               {/* タイムスタンプと感情アイコン */}
               <View className="flex-row justify-end items-center bg-transparent mt-1 gap-1">

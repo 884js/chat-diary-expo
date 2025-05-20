@@ -1,6 +1,6 @@
+import type { UseChatRoomUserMessages } from "@/features/chat/hooks/useChatRoomUserMessages";
 import { formatDate } from '@/lib/date-fns';
 import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
-import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { memo, useCallback, useRef } from 'react';
 import { FlatList, View } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
@@ -13,7 +13,7 @@ type Props = {
   chatRoom: ChatRoom;
   isLoading: boolean;
   messages: {
-    message: ChatRoomMessage;
+    message: UseChatRoomUserMessages["messages"][number]["message"];
     showDateDivider: boolean;
     date: Date | null;
   }[];
@@ -21,9 +21,9 @@ type Props = {
   sendingMessage?:
     | {
         content: string;
-        senderType: 'user' | 'ai';
+        senderType: "user" | "ai";
         imagePath?: string | undefined;
-        emotion?: Emotion['slug'];
+        emotion?: Emotion["slug"];
       }
     | undefined;
 };
@@ -47,24 +47,58 @@ export const ChatMessageList = ({
       return (
         <View key={msg.id} style={{ flex: 1 }}>
           {showDateDivider && messageDate && (
-            <View style={{ backgroundColor: '#f3f4f6' }}>
+            <View style={{ backgroundColor: "#f3f4f6" }}>
               <DateDivider
-                date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
+                date={formatDate(messageDate, "yyyy年M月d日(eee)")}
               />
             </View>
           )}
-          <ChatMessage
-            id={msg.id}
-            content={msg.content}
-            owner={chatRoom.owner}
-            sender={msg.sender}
-            replyTo={msg.reply_to}
-            timestamp={formatDate(msg.created_at || '', 'HH:mm')}
-            imagePath={msg.image_path}
-            emotion={msg.emotion}
-            isStocked={stockedMessageIds.includes(msg.id)}
-            onOpenStockMenu={handleOpenMenu}
-          />
+          <View className="mb-4">
+            <ChatMessage
+              id={msg.id}
+              content={msg.content}
+              owner={chatRoom.owner}
+              sender={msg.sender}
+              timestamp={formatDate(msg.created_at || "", "M/d HH:mm")}
+              imagePath={msg.image_path}
+              emotion={msg.emotion}
+              isStocked={stockedMessageIds.includes(msg.id)}
+              onOpenStockMenu={() =>
+                handleOpenMenu({
+                  id: msg.id,
+                  content: msg.content,
+                  emotion: msg.emotion,
+                })
+              }
+            />
+            {msg.replies &&
+              msg.replies.length > 0 &&
+              msg.replies.map((reply, i) => (
+                <View key={reply.id}>
+                  <View className="items-center">
+                    <View className="h-4 w-[2px] bg-gray-300" />
+                  </View>
+                  <ChatMessage
+                    id={msg.id}
+                    owner={null}
+                    content={reply.content}
+                    sender={reply.sender}
+                    timestamp={formatDate(reply.created_at || "", "M/d HH:mm")}
+                    imagePath={reply.image_path}
+                    emotion={reply.emotion}
+                    isStocked={stockedMessageIds.includes(reply.id)}
+                    onOpenStockMenu={() =>
+                      handleOpenMenu({
+                        id: msg.id,
+                        replyId: reply.id,
+                        content: reply.content,
+                        emotion: reply.emotion,
+                      })
+                    }
+                  />
+                </View>
+              ))}
+          </View>
         </View>
       );
     },
@@ -80,12 +114,17 @@ export const ChatMessageList = ({
           content={sendingMessage.content}
           owner={chatRoom.owner}
           sender="user"
-          replyTo={null}
           timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
           imagePath={sendingMessage.imagePath ?? ''}
           emotion={sendingMessage.emotion}
           isStocked={false}
-          onOpenStockMenu={handleOpenMenu}
+          onOpenStockMenu={() =>
+            handleOpenMenu({
+              id: '',
+              content: sendingMessage.content,
+              emotion: sendingMessage.emotion,
+            })
+          }
         />
       </View>
     ) : null;
