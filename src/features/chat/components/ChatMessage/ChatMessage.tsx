@@ -7,6 +7,7 @@ import { Animated, Easing, Pressable } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { type Emotion, emotions } from '../../hooks/useChatInputEmotion';
 import { ChatImage } from './ChatImage';
+import { OGPCardList } from './OGPCardList';
 export interface MessageProps {
   id: string;
   content: string;
@@ -172,29 +173,7 @@ export function ChatMessage({
                 </View>
               ) : null}
 
-              {/* 返信スレッド表示 */}
-              {/* {message?.replies && message.replies.length > 0 && (
-                <View className="mt-3 pt-2 border-t border-gray-200 bg-transparent">
-                  {message.replies.map((reply) => (
-                    <View
-                      key={reply.id}
-                      className="mb-2 pl-3 pb-2 border-l-2 border-gray-300"
-                    >
-                      <View className="pl-2 bg-gray-50 rounded-md py-1">
-                        <Text className="text-sm text-gray-700">
-                          {reply.content}
-                        </Text>
-                        <Text className="text-[10px] text-gray-400 mt-1">
-                          {new Date(reply.created_at).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              )} */}
+              <OGPCardList content={content} />
 
               {/* タイムスタンプと感情アイコン */}
               <View className="flex-row justify-end items-center bg-transparent mt-1 gap-1">
