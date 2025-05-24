@@ -1,15 +1,12 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { format, getMonth, getYear, addMonths, subMonths } from 'date-fns';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { getMonth, getYear, addMonths, subMonths } from 'date-fns';
+import { useState, useMemo } from 'react';
 import { useDailyEmotions, type DailyEmotion } from '../hooks/useDailyEmotions';
 import { WeekCalendar } from './WeekCalendar';
 
 export function ChatHeader() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [currentMonth, setCurrentMonth] = useState(
-    format(selectedDate, 'yyyy年M月'),
-  );
   const [displayedWeekCenter, setDisplayedWeekCenter] = useState(new Date()); // 表示中の週の中央日
 
   const { currentUser } = useCurrentUser();
@@ -49,47 +46,21 @@ export function ChatHeader() {
     return combinedMap;
   }, [emotionResults]);
 
-  // 週変更時の処理
-  const handleWeekChange = useCallback((centerDate: Date) => {
-    setDisplayedWeekCenter(centerDate);
-    setCurrentMonth(format(centerDate, 'yyyy年M月'));
-  }, []);
-
-  // 選択された日付が変わったときに年月表示を更新
-  useEffect(() => {
-    setCurrentMonth(format(selectedDate, 'yyyy年M月'));
-  }, [selectedDate]);
-
   return (
-    <View style={{ maxHeight: 120, flex: 1 }}>
-      {/* 年月表示 */}
-      <View
-        style={{
-          paddingHorizontal: 12,
-          paddingVertical: 6,
-          backgroundColor: 'white',
-          borderBottomWidth: 1,
-          borderBottomColor: '#f0f0f0',
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: '600',
-            color: '#1e293b',
-            textAlign: 'center',
-          }}
-        >
-          {currentMonth}
-        </Text>
-      </View>
-
-      {/* 週カレンダー */}
+    <View style={{ 
+      maxHeight: 180, 
+      flex: 1,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 12,
+      elevation: 8,
+    }}>
       <WeekCalendar
         selectedDate={selectedDate}
         onDateSelect={setSelectedDate}
         dailyEmotionsMap={dailyEmotionsMap}
-        onWeekChange={handleWeekChange}
+        onWeekChange={(centerDate) => setDisplayedWeekCenter(centerDate)}
       />
     </View>
   );

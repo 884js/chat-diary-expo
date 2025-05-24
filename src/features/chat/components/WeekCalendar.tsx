@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { View, FlatList, Text, Pressable, Dimensions, type NativeSyntheticEvent, type NativeScrollEvent } from 'react-native';
 import { format } from 'date-fns';
 import type { DailyEmotion } from '../hooks/useDailyEmotions';
@@ -41,7 +41,7 @@ const WeekItem = ({
       style={{
         width: ITEM_WIDTH,
         flexDirection: 'row',
-        paddingHorizontal: 8,
+        paddingHorizontal: 14,
       }}
     >
       {week.map((day) => (
@@ -49,16 +49,17 @@ const WeekItem = ({
           key={day.dateString}
           style={{
             flex: 1,
-            alignItems: 'center',
-            paddingVertical: 4,
+            paddingVertical: 2,
           }}
         >
           <Pressable
             onPress={() => onDateSelect(day.date)}
-            style={{
+            style={({ pressed }) => ({
               width: '100%',
               alignItems: 'center',
-            }}
+              opacity: pressed ? 0.7 : 1,
+              transform: [{ scale: pressed ? 0.95 : 1 }],
+            })}
           >
             <CalendarDayWithEmotion
               date={{
@@ -71,9 +72,7 @@ const WeekItem = ({
               state={
                 day.isToday
                   ? 'today'
-                  : !day.isCurrentMonth
-                    ? 'disabled'
-                    : undefined
+                  : undefined
               }
               selected={day.dateString === selectedDateString}
               dailyEmotion={dailyEmotionsMap[day.dateString]}
@@ -94,6 +93,9 @@ export const WeekCalendar = ({
 }: Props) => {
   const flatListRef = useRef<FlatList<WeekDay[]>>(null);
   const [baseDate] = useState(selectedDate); // 基準日（変更しない）
+  const [currentMonth, setCurrentMonth] = useState(
+    format(selectedDate, 'yyyy年M月')
+  );
   
   // 週データをstateで管理（初期は1年分）
   const [weeks, setWeeks] = useState<WeekDay[][]>(() => 
@@ -130,6 +132,7 @@ export const WeekCalendar = ({
       const currentWeek = weeks[index];
       const centerDate = currentWeek[Math.floor(currentWeek.length / 2)].date;
       onWeekChange(centerDate);
+      setCurrentMonth(format(centerDate, 'yyyy年M月'));
     }
     
     // 無限スクロールのトリガー（端に近づいたら追加データを読み込み）
@@ -141,6 +144,11 @@ export const WeekCalendar = ({
       loadLaterWeeks();
     }
   }, [onWeekChange, weeks, loadEarlierWeeks, loadLaterWeeks]);
+
+  // 選択された日付が変わったときに年月表示を更新
+  useEffect(() => {
+    setCurrentMonth(format(selectedDate, 'yyyy年M月'));
+  }, [selectedDate]);
 
   // 週データの描画
   const renderWeek = useCallback(
@@ -165,15 +173,52 @@ export const WeekCalendar = ({
   );
 
   return (
-    <View style={{ backgroundColor: 'white' }}>
-      {/* 曜日ラベル */}
+    <View style={{ 
+      backgroundColor: '#ffffff',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
+    }}>
+      {/* クリーンな白背景ヘッダー */}
       <View
         style={{
-          flexDirection: 'row',
-          paddingHorizontal: 8,
-          paddingVertical: 4,
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          paddingBottom: 8,
+          backgroundColor: '#ffffff',
           borderBottomWidth: 1,
           borderBottomColor: '#f0f0f0',
+        }}
+      >
+        <View style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: '600',
+              color: '#1f2937',
+              textAlign: 'center',
+              letterSpacing: 0.3,
+            }}
+          >
+            {currentMonth}
+          </Text>
+        </View>
+      </View>
+
+      {/* 美しい曜日ラベル */}
+      <View
+        style={{
+          width: ITEM_WIDTH,
+          flexDirection: 'row',
+          paddingHorizontal: 16,
+          paddingVertical: 8,
+          gap: 4,
+          borderRadius: 8,
         }}
       >
         {getWeekdayLabels().map((label) => (
@@ -187,8 +232,9 @@ export const WeekCalendar = ({
             <Text
               style={{
                 fontSize: 12,
-                color: '#64748b',
-                fontWeight: '500',
+                color: '#6b7280',
+                fontWeight: '600',
+                letterSpacing: 0.5,
               }}
             >
               {label}
@@ -197,7 +243,7 @@ export const WeekCalendar = ({
         ))}
       </View>
 
-      {/* 週カレンダー */}
+      {/* 洗練された週カレンダー */}
       <FlatList<WeekDay[]>
         ref={flatListRef}
         data={weeks}
@@ -212,7 +258,11 @@ export const WeekCalendar = ({
         scrollEventThrottle={16}
         bounces={false}
         style={{
-          maxHeight: 60,
+          paddingHorizontal: 8,
+        }}
+        contentContainerStyle={{
+          paddingVertical: 4,
+          paddingBottom: 12,
         }}
       />
     </View>
