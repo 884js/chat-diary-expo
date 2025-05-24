@@ -14,7 +14,8 @@ export type ChatRoomMessageWithReplies = ChatRoomMessage & {
 
 export const useChatRoomUserMessages = ({ userId }: Props) => {
   const { api } = useSupabase();
-  const { getMessageWithReplies, getMessagesWithDividers } = useMessageConverter();
+  const { getMessageWithReplies, getMessagesWithDividers } =
+    useMessageConverter();
 
   const {
     data,
@@ -45,4 +46,6 @@ export const useChatRoomUserMessages = ({ userId }: Props) => {
   };
 };
 
-export type UseChatRoomUserMessages = ReturnType<typeof useChatRoomUserMessages>;
+export type UseChatRoomUserMessages = ReturnType<
+  typeof useChatRoomUserMessages
+>;

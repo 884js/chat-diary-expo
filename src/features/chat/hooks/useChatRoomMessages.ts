@@ -53,14 +53,16 @@ export function useChatRoomMessages({ userId, startAt, endAt }: Props) {
     queryFn: async () => {
       if (!userId) return [];
 
-      const { data, error } = await supabase
-        .rpc('get_room_messages_by_date_range', {
+      const { data, error } = await supabase.rpc(
+        'get_room_messages_by_date_range',
+        {
           params: {
             user_id: userId,
             start_at: dateRange.start,
             end_at: dateRange.end,
           },
-        })
+        },
+      );
 
       if (error) {
         console.error('Error fetching room messages:', error);

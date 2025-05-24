@@ -28,7 +28,7 @@ export function MessageContextMenu() {
   const isStocked = stockedMessageIds.includes(
     selectedMessage?.replyId
       ? selectedMessage.replyId
-      : selectedMessage?.id ?? '',
+      : (selectedMessage?.id ?? ''),
   );
 
   const handleClose = () => {

@@ -1,0 +1,66 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# NativeWindスタイリングルール
+
+## 基本方針
+- コンポーネントのスタイリングには基本的にNativeWindを使用する
+- スタイルの複雑さに応じて適切な方法を選択する
+
+## クラス名の命名
+- シンプルな場合は直接インラインでクラス名を指定
+  ```tsx
+  <View className="p-4 bg-white rounded-lg" />
+  ```
+
+- 条件付きクラスは文字列補間またはclsxを使用
+  ```tsx
+  <View className={`p-4 ${isActive ? 'bg-blue-500' : 'bg-gray-200'}`} />
+  ```
+
+- 非常に複雑な場合やパフォーマンスを考慮する場合はuseStylesを使用
+  ```tsx
+  const styles = useStyles();
+  <View style={styles.container} />
+  ```
+
+## パフォーマンス最適化
+- 頻繁に変更されるコンポーネントではuseMemo/useCallbackを活用
+- 子コンポーネントにはReact.memoを使用
+
+## エディタ連携
+- VSCodeではTailwind CSS IntelliSense拡張機能を使用
+- 自動補完と構文ハイライトが可能
+
+## NativeWindの制限
+- WebではサポートされているがReact Nativeでは動作しない一部のプロパティに注意
+- グラデーションなど一部の機能には別のライブラリが必要
+
+## カラーパレット
+- アプリ全体での統一感のために、以下のカラーパレットを使用する
+- プライマリ: blue-500 (#3b82f6)
+- セカンダリ: gray-100～gray-900
+- アクセント: 感情に応じた色（happy: green-400, sad: purple-400など）
+
+## レイアウト
+- Flexboxを基本とし、必要に応じてグリッドレイアウトを使用
+- レスポンシブ対応はスクリーンサイズに応じたクラスで調整
+
+## アニメーション
+- React Native Reanimatedと組み合わせて使用する場合の注意点
+  - スタイルの適用順序に注意
+  - パフォーマンスへの影響を考慮
+
+## 共通コンポーネント
+- 頻繁に使用される要素にはカスタムコンポーネントを作成
+  ```tsx
+  function Card({ children, className }) {
+    return (
+      <View className={`p-4 bg-white rounded-lg shadow ${className}`}>
+        {children}
+      </View>
+    );
+  }
+  ```

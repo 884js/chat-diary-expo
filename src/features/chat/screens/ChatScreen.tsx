@@ -1,8 +1,8 @@
 import { Loader } from '@/components/Loader';
 import { View } from '@/components/Themed';
+import { useChatRoomUserMessages } from '@/features/chat/hooks/useChatRoomUserMessages';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
 import { useCurrentUserRoom } from '@/features/user/hooks/useCurrentUserRoom';
-import { useChatRoomUserMessages } from "@/features/chat/hooks/useChatRoomUserMessages";
 import { useSupabase } from '@/hooks/useSupabase';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ChatHeader } from '../components/ChatHeader';

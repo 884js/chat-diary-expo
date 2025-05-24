@@ -3,9 +3,9 @@ import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
 import { memo, useCallback } from 'react';
 import { FlatList, View } from 'react-native';
 import { useMessageStockAction } from '../../contexts/MessageStockActionContext';
+import type { ChatRoomMessageWithReplies } from '../../hooks/useChatRoomUserMessages';
 import { ChatMessage as RawChatMessage } from '../ChatMessage';
 import { DateDivider } from '../DateDivider';
-import type { ChatRoomMessageWithReplies } from '../../hooks/useChatRoomUserMessages';
 
 type Props = {
   chatRoom: ChatRoom;
@@ -28,9 +28,9 @@ export const ChatMessageStockList = ({ chatRoom, messages }: Props) => {
         <View key={msg.id} style={{ flex: 1 }}>
           {/* 日付区切り線 */}
           {showDateDivider && messageDate && (
-            <View style={{ backgroundColor: "#f3f4f6" }}>
+            <View style={{ backgroundColor: '#f3f4f6' }}>
               <DateDivider
-                date={formatDate(messageDate, "yyyy年M月d日(eee)")}
+                date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
               />
             </View>
           )}
@@ -42,7 +42,7 @@ export const ChatMessageStockList = ({ chatRoom, messages }: Props) => {
               content={msg.content}
               owner={chatRoom.owner}
               sender={msg.sender}
-              timestamp={formatDate(msg.created_at || "", "M/d HH:mm")}
+              timestamp={formatDate(msg.created_at || '', 'M/d HH:mm')}
               imagePath={msg.image_path}
               emotion={msg.emotion}
               isStocked={false}
@@ -66,7 +66,7 @@ export const ChatMessageStockList = ({ chatRoom, messages }: Props) => {
                     owner={null}
                     content={reply.content}
                     sender={reply.sender}
-                    timestamp={formatDate(reply.created_at || "", "M/d HH:mm")}
+                    timestamp={formatDate(reply.created_at || '', 'M/d HH:mm')}
                     imagePath={reply.image_path}
                     emotion={reply.emotion}
                     isStocked={false}

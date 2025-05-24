@@ -1,5 +1,5 @@
+import { useChatRoomUserMessages } from '@/features/chat/hooks/useChatRoomUserMessages';
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { useChatRoomUserMessages } from "@/features/chat/hooks/useChatRoomUserMessages";
 import { useSupabase } from '@/hooks/useSupabase';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import {
@@ -45,7 +45,7 @@ export const MessageActionProvider = ({
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { currentUser } = useCurrentUser();
   const { refetchMessages } = useChatRoomUserMessages({
-    userId: currentUser?.id ?? "",
+    userId: currentUser?.id ?? '',
   });
   const { api } = useSupabase();
   const [mode, setMode] = useState<'edit' | 'reply' | null>(null);

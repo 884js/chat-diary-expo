@@ -1,8 +1,8 @@
 import { Image } from '@/components/Image';
-import { View, Text } from '@/components/Themed';
+import { Text, View } from '@/components/Themed';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type OGP = {
   ogTitle: string;
@@ -65,15 +65,16 @@ export const OGPCardList = ({ content }: Props) => {
   const handleOpenLink = async (url: string) => {
     try {
       await Linking.openURL(url);
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   if (loading) {
     return (
       <View className="flex-row items-center p-2 bg-gray-100 rounded-lg my-1">
         <ActivityIndicator size="small" color="#3b82f6" />
-        <Text className="text-xs text-gray-600 ml-2">リンク情報を取得中...</Text>
+        <Text className="text-xs text-gray-600 ml-2">
+          リンク情報を取得中...
+        </Text>
       </View>
     );
   }
@@ -81,7 +82,11 @@ export const OGPCardList = ({ content }: Props) => {
   if (error) {
     return (
       <View className="flex-row items-center p-2 bg-red-100 rounded-lg my-1">
-        <MaterialCommunityIcons name="alert-circle-outline" size={16} color="#f87171" />
+        <MaterialCommunityIcons
+          name="alert-circle-outline"
+          size={16}
+          color="#f87171"
+        />
         <Text className="text-xs text-red-500 ml-1">{error}</Text>
       </View>
     );
@@ -113,15 +118,27 @@ export const OGPCardList = ({ content }: Props) => {
               </View>
             )}
             <View className="flex-1 p-2 !bg-white">
-              <Text className="text-sm font-bold mb-0.5" numberOfLines={1} ellipsizeMode="tail">
+              <Text
+                className="text-sm font-bold mb-0.5"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {ogp.ogTitle || 'タイトルなし'}
               </Text>
               {ogp.ogDescription && (
-                <Text className="text-xs text-gray-600 mb-0.5" numberOfLines={2} ellipsizeMode="tail">
+                <Text
+                  className="text-xs text-gray-600 mb-0.5"
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
                   {ogp.ogDescription}
                 </Text>
               )}
-              <Text className="text-[11px] text-gray-500" numberOfLines={1} ellipsizeMode="tail">
+              <Text
+                className="text-[11px] text-gray-500"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {ogp.ogUrl}
               </Text>
             </View>
