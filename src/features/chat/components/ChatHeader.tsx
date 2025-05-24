@@ -1,73 +1,64 @@
 import { Text, View } from 'react-native';
-import {
-  CalendarProvider,
-  ExpandableCalendar,
-  WeekCalendar,
-} from 'react-native-calendars';
-import '@/lib/react-native-calendars/locale';
-
 import { useCurrentUser } from '@/features/user/hooks/useCurrentUser';
-import { format, getMonth, getYear } from 'date-fns';
-import { useEffect, useState } from 'react';
-import type { DateData } from 'react-native-calendars';
-import { useDailyEmotions } from '../hooks/useDailyEmotions';
-import { CalendarDayWithEmotion } from './CalendarDayWithEmotion';
-
-// MarkedDatesの型定義
-type MarkedDateItem = {
-  selected?: boolean;
-  marked?: boolean;
-  selectedColor?: string;
-};
-
-type MarkedDates = {
-  [date: string]: MarkedDateItem;
-};
+import { format, getMonth, getYear, addMonths, subMonths } from 'date-fns';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useDailyEmotions, type DailyEmotion } from '../hooks/useDailyEmotions';
+import { WeekCalendar } from './WeekCalendar';
 
 export function ChatHeader() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(
     format(selectedDate, 'yyyy年M月'),
   );
+  const [displayedWeekCenter, setDisplayedWeekCenter] = useState(new Date()); // 表示中の週の中央日
 
   const { currentUser } = useCurrentUser();
-  const year = getYear(selectedDate);
-  const month = getMonth(selectedDate) + 1; // getMonth()は0始まり
+  
+  // 前後2ヶ月ずつ、計5ヶ月分の年月を取得（表示中の週の中央日を基準）
+  const monthsToLoad = useMemo(() => {
+    return [
+      subMonths(displayedWeekCenter, 2),
+      subMonths(displayedWeekCenter, 1),
+      displayedWeekCenter,
+      addMonths(displayedWeekCenter, 1),
+      addMonths(displayedWeekCenter, 2),
+    ];
+  }, [displayedWeekCenter]);
 
-  // 現在表示中の月の日ごとの感情データを取得
-  const { dailyEmotionsMap } = useDailyEmotions({
-    userId: currentUser?.id || '',
-    month,
-    year,
+  // 各月の感情データを取得
+  const emotionResults = monthsToLoad.map(monthDate => {
+    const year = getYear(monthDate);
+    const month = getMonth(monthDate) + 1;
+    
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useDailyEmotions({
+      userId: currentUser?.id || '',
+      month,
+      year,
+    });
   });
 
-  // 選択した日付
-  const selectedDateFormatted = format(selectedDate, 'yyyy-MM-dd');
+  // 5ヶ月分のデータを統合
+  const dailyEmotionsMap = useMemo(() => {
+    const combinedMap: Record<string, DailyEmotion> = {};
+    
+    for (const result of emotionResults) {
+      Object.assign(combinedMap, result.dailyEmotionsMap);
+    }
+    
+    return combinedMap;
+  }, [emotionResults]);
+
+  // 週変更時の処理
+  const handleWeekChange = useCallback((centerDate: Date) => {
+    setDisplayedWeekCenter(centerDate);
+    setCurrentMonth(format(centerDate, 'yyyy年M月'));
+  }, []);
 
   // 選択された日付が変わったときに年月表示を更新
   useEffect(() => {
     setCurrentMonth(format(selectedDate, 'yyyy年M月'));
   }, [selectedDate]);
-
-  // カスタムdayComponentのレンダー関数
-  const renderDayComponent = (props: { date?: DateData; state?: string }) => {
-    const { date, state } = props;
-
-    if (!date) return null;
-
-    return (
-      <CalendarDayWithEmotion
-        date={date}
-        state={state}
-        selected={date.dateString === selectedDateFormatted}
-        dailyEmotion={dailyEmotionsMap[date.dateString]}
-        onPress={(day) => {
-          const newSelectedDate = new Date(day.timestamp);
-          setSelectedDate(newSelectedDate);
-        }}
-      />
-    );
-  };
 
   return (
     <View style={{ maxHeight: 120, flex: 1 }}>
@@ -93,39 +84,13 @@ export function ChatHeader() {
         </Text>
       </View>
 
-      <CalendarProvider
-        date={format(selectedDate, 'yyyy-MM-dd')}
-        disableAutoDaySelection={[
-          ExpandableCalendar.navigationTypes.WEEK_SCROLL,
-        ]}
-        theme={{
-          calendarBackground: '#ffffff',
-          textSectionTitleColor: '#64748b',
-          selectedDayBackgroundColor: '#3498db',
-          selectedDayTextColor: '#ffffff',
-          todayTextColor: '#3498db',
-          dayTextColor: '#1e293b',
-          dotColor: '#3498db',
-          selectedDotColor: '#ffffff',
-          arrowColor: '#3498db',
-          monthTextColor: '#1e293b',
-          textDayFontSize: 14,
-          textMonthFontSize: 16,
-          textDayHeaderFontSize: 14,
-        }}
-      >
-        <WeekCalendar
-          current={format(selectedDate, 'yyyy-MM-dd')}
-          dayComponent={renderDayComponent}
-          onDayPress={(day) => {
-            const newSelectedDate = new Date(day.timestamp);
-            setSelectedDate(newSelectedDate);
-          }}
-          hideArrows={false}
-          allowShadow={false}
-          firstDay={1} // 月曜始まり
-        />
-      </CalendarProvider>
+      {/* 週カレンダー */}
+      <WeekCalendar
+        selectedDate={selectedDate}
+        onDateSelect={setSelectedDate}
+        dailyEmotionsMap={dailyEmotionsMap}
+        onWeekChange={handleWeekChange}
+      />
     </View>
   );
 }
