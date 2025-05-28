@@ -17,7 +17,7 @@ export class ChatRoomMessageStockApi {
     const { data, error } = await this.supabase
       .from('room_message_stocks')
       .select(
-        '*, message:room_messages (id, content, created_at, sender, room_id, owner_id, image_path, emotion, reply_to_message_id)',
+        '*, message:room_messages (id, content, created_at, sender, room_id, owner_id, image_path, emotion, replies:room_message_replies (id, content, created_at, sender, room_message_id, owner_id, image_path, emotion))',
       )
       .eq('user_id', userId)
       .order('created_at', { ascending: false })

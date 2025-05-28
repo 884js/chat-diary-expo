@@ -1,9 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
 import type { DateData } from 'react-native-calendars';
 import { emotions } from '../hooks/useChatInputEmotion';
 import type { DailyEmotion } from '../hooks/useDailyEmotions';
-import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = {
   date: DateData;
@@ -32,11 +32,7 @@ export const CalendarDayWithEmotion = ({
   const selectedGradient = ['#ffffff', '#f8fafc'] as const;
   const defaultGradient = ['#ffffff', '#f8fafc'] as const;
 
-  const textColor = selected
-    ? '#1f2937'
-    : isToday
-      ? '#6b7280'
-      : '#1f2937';
+  const textColor = selected ? '#1f2937' : isToday ? '#6b7280' : '#1f2937';
 
   const containerStyle = {
     borderRadius: 12,
@@ -51,18 +47,24 @@ export const CalendarDayWithEmotion = ({
     shadowRadius: selected ? 8 : isToday ? 6 : 4,
     elevation: selected ? 6 : isToday ? 3 : 2,
     borderWidth: (isToday && !selected) || selected ? 1 : 0,
-    borderColor: selected ? '#d1d5db' : (isToday && !selected) ? '#e5e7eb' : 'transparent',
+    borderColor: selected
+      ? '#d1d5db'
+      : isToday && !selected
+        ? '#e5e7eb'
+        : 'transparent',
   };
 
   const dayContent = (
     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
       {/* 日付 */}
-      <Text style={{ 
-        color: textColor, 
-        fontSize: 16,
-        fontWeight: selected ? '600' : '500',
-        marginBottom: primaryEmotion ? 2 : 0,
-      }}>
+      <Text
+        style={{
+          color: textColor,
+          fontSize: 16,
+          fontWeight: selected ? '600' : '500',
+          marginBottom: primaryEmotion ? 2 : 0,
+        }}
+      >
         {date.day}
       </Text>
 

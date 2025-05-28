@@ -46,7 +46,9 @@
       "tsconfigPaths": true
     },
     "extra": {
-      "router": {},
+      "router": {
+        "origin": "https://chat-diary.expo.app"
+      },
       "eas": {
         "projectId": "c45fdf2a-d3f1-4705-8a03-9b0e798a4600"
       }

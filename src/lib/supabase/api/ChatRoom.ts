@@ -44,12 +44,27 @@ export class ChatRoomApi {
   }
 
   async getChatRoomMessages({ userId }: { userId: string }) {
-    // メッセージを古い順に取得
+    // 親メッセージと返信を一緒に取得
     const { data: messages, error: messagesError } = await this.supabase
       .from('room_messages')
-      .select(
-        'id, owner_id, content, sender, created_at, image_path, emotion, reply_to_message_id',
-      )
+      .select(`
+        id,
+        owner_id,
+        content,
+        sender,
+        created_at,
+        image_path,
+        emotion,
+        replies:room_message_replies (
+          id,
+          owner_id,
+          content,
+          sender,
+          created_at,
+          image_path,
+          emotion
+        )
+      `)
       .eq('owner_id', userId)
       .order('created_at', { ascending: false })
       .overrideTypes<Array<ChatRoomMessage>, { merge: false }>();

@@ -1,11 +1,10 @@
-CREATE FUNCTION get_room_messages_by_date_range(params json)
+CREATE OR REPLACE FUNCTION get_room_messages_by_date_range(params json)
 RETURNS TABLE (
   id uuid,
   owner_id uuid,
   sender text,
   content text,
   image_path text,
-  reply_to_message_id uuid,
   emotion text,
   created_at timestamptz,
   updated_at timestamptz
@@ -18,7 +17,6 @@ AS $$
     rm.sender,
     rm.content,
     rm.image_path,
-    rm.reply_to_message_id,
     rm.emotion,
     rm.created_at,
     rm.updated_at

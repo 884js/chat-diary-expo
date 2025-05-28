@@ -77,31 +77,42 @@ export const MessageActionProvider = ({
   const handleSaveEdit = async ({ content, emotion }: WithoutId) => {
     if (!selectedMessage?.id) return;
 
-    await api.chatRoomMessage.editMessage({
-      messageId: selectedMessage.replyId
-        ? selectedMessage.replyId
-        : selectedMessage.id,
-      content: content,
-      emotion: emotion,
-    });
+    if (selectedMessage.replyId) {
+      await api.chatRoomMessage.editReply({
+        replyId: selectedMessage.replyId,
+        content: content,
+        emotion: emotion,
+      });
+    } else {
+      await api.chatRoomMessage.editMessage({
+        messageId: selectedMessage.id,
+        content: content,
+        emotion: emotion,
+      });
+    }
 
     handleResetMode();
     await refetchMessages();
   };
 
   const handleDeleteMessage = async () => {
-    if (!selectedMessage?.id) return;
+    if (!selectedMessage) return;
 
-    await api.chatRoomMessage.deleteMessage({
-      messageId: selectedMessage.replyId
-        ? selectedMessage.replyId
-        : selectedMessage.id,
-    });
+    if (selectedMessage.replyId) {
+      await api.chatRoomMessage.deleteReply({
+        replyId: selectedMessage.replyId,
+      });
+    } else {
+      await api.chatRoomMessage.deleteMessage({
+        messageId: selectedMessage.id,
+      });
+    }
+
     await refetchMessages();
   };
 
   const handleSendReplyMessage = async ({ content, emotion }: WithoutId) => {
-    if (!selectedMessage?.id || !currentUser?.id) return;
+    if (!selectedMessage || !currentUser?.id) return;
 
     await api.chatRoomMessage.replyMessage({
       parentMessageId: selectedMessage.id,
@@ -124,9 +135,7 @@ export const MessageActionProvider = ({
 
     await api.chatRoomMessageStock.createMessageStock({
       userId: currentUser?.id,
-      messageId: selectedMessage.replyId
-        ? selectedMessage.replyId
-        : selectedMessage.id,
+      messageId: selectedMessage.id,
     });
   };
 

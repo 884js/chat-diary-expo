@@ -50,6 +50,57 @@ export type Database = {
           },
         ];
       };
+      room_message_replies: {
+        Row: {
+          content: string | null;
+          created_at: string | null;
+          emotion: string | null;
+          id: string;
+          image_path: string | null;
+          owner_id: string | null;
+          room_message_id: string;
+          sender: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          content?: string | null;
+          created_at?: string | null;
+          emotion?: string | null;
+          id?: string;
+          image_path?: string | null;
+          owner_id?: string | null;
+          room_message_id: string;
+          sender?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          content?: string | null;
+          created_at?: string | null;
+          emotion?: string | null;
+          id?: string;
+          image_path?: string | null;
+          owner_id?: string | null;
+          room_message_id?: string;
+          sender?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'room_message_replies_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'room_message_replies_room_message_id_fkey';
+            columns: ['room_message_id'];
+            isOneToOne: false;
+            referencedRelation: 'room_messages';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       room_message_stocks: {
         Row: {
           created_at: string | null;
@@ -94,7 +145,6 @@ export type Database = {
           id: string;
           image_path: string | null;
           owner_id: string | null;
-          reply_to_message_id: string | null;
           room_id: string | null;
           sender: string | null;
           updated_at: string | null;
@@ -106,7 +156,6 @@ export type Database = {
           id?: string;
           image_path?: string | null;
           owner_id?: string | null;
-          reply_to_message_id?: string | null;
           room_id?: string | null;
           sender?: string | null;
           updated_at?: string | null;
@@ -118,7 +167,6 @@ export type Database = {
           id?: string;
           image_path?: string | null;
           owner_id?: string | null;
-          reply_to_message_id?: string | null;
           room_id?: string | null;
           sender?: string | null;
           updated_at?: string | null;
@@ -129,13 +177,6 @@ export type Database = {
             columns: ['owner_id'];
             isOneToOne: false;
             referencedRelation: 'users';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'room_messages_reply_to_message_id_fkey';
-            columns: ['reply_to_message_id'];
-            isOneToOne: false;
-            referencedRelation: 'room_messages';
             referencedColumns: ['id'];
           },
           {

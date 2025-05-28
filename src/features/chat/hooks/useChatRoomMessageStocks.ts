@@ -6,8 +6,7 @@ import { useMessageConverter } from './useMessageConverter';
 export const useChatRoomMessageStocks = () => {
   const { api } = useSupabase();
   const { currentUser } = useCurrentUser();
-  const { getMessagesWithDividers, getMessageWithReplies } =
-    useMessageConverter();
+  const { getMessagesWithDividers } = useMessageConverter();
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['chatRoomMessageStocks'],
@@ -27,12 +26,9 @@ export const useChatRoomMessageStocks = () => {
 
   const stockedMessageIds = data?.map((item) => item.message_id) ?? [];
 
-  const messagesWithReplies = getMessageWithReplies({
+  const messagesWithDividers = getMessagesWithDividers({
     messages:
       data?.map((item) => item.message).filter((item) => item !== null) ?? [],
-  });
-  const messagesWithDividers = getMessagesWithDividers({
-    messages: messagesWithReplies,
   });
 
   return {

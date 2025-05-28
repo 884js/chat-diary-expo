@@ -1,15 +1,23 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
-import { View, FlatList, Text, Pressable, Dimensions, type NativeSyntheticEvent, type NativeScrollEvent } from 'react-native';
 import { format } from 'date-fns';
-import type { DailyEmotion } from '../hooks/useDailyEmotions';
-import { CalendarDayWithEmotion } from './CalendarDayWithEmotion';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  getWeekdayLabels,
-  getMultipleWeeks,
-  prependWeeks,
-  appendWeeks,
+  Dimensions,
+  FlatList,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
+import type { DailyEmotion } from '../hooks/useDailyEmotions';
+import {
   type WeekDay,
+  appendWeeks,
+  getMultipleWeeks,
+  getWeekdayLabels,
+  prependWeeks,
 } from '../utils/dateUtils';
+import { CalendarDayWithEmotion } from './CalendarDayWithEmotion';
 
 const { width: screenWidth } = Dimensions.get('window');
 const ITEM_WIDTH = screenWidth;
@@ -69,11 +77,7 @@ const WeekItem = ({
                 year: day.date.getFullYear(),
                 timestamp: day.date.getTime(),
               }}
-              state={
-                day.isToday
-                  ? 'today'
-                  : undefined
-              }
+              state={day.isToday ? 'today' : undefined}
               selected={day.dateString === selectedDateString}
               dailyEmotion={dailyEmotionsMap[day.dateString]}
               onPress={() => onDateSelect(day.date)}
@@ -94,56 +98,59 @@ export const WeekCalendar = ({
   const flatListRef = useRef<FlatList<WeekDay[]>>(null);
   const [baseDate] = useState(selectedDate); // 基準日（変更しない）
   const [currentMonth, setCurrentMonth] = useState(
-    format(selectedDate, 'yyyy年M月')
+    format(selectedDate, 'yyyy年M月'),
   );
-  
+
   // 週データをstateで管理（初期は1年分）
-  const [weeks, setWeeks] = useState<WeekDay[][]>(() => 
-    getMultipleWeeks(baseDate, baseDate, 104) // 2年分（104週）で開始
+  const [weeks, setWeeks] = useState<WeekDay[][]>(
+    () => getMultipleWeeks(baseDate, baseDate, 104), // 2年分（104週）で開始
   );
   const [currentWeekIndex, setCurrentWeekIndex] = useState(52); // 2年分の中央を初期位置に
 
   // 前方向にデータを追加する関数（過去の週）- 真の無限スクロール
   const loadEarlierWeeks = useCallback(() => {
-    setWeeks(currentWeeks => {
+    setWeeks((currentWeeks) => {
       const newWeeks = prependWeeks(currentWeeks, 52); // 1年分追加
       return newWeeks;
     });
-    
+
     // インデックスを調整（新しいデータが前に追加されたため）
-    setCurrentWeekIndex(prev => prev + 52);
+    setCurrentWeekIndex((prev) => prev + 52);
   }, []);
 
   // 後方向にデータを追加する関数（未来の週）- 真の無限スクロール
   const loadLaterWeeks = useCallback(() => {
-    setWeeks(currentWeeks => {
+    setWeeks((currentWeeks) => {
       const newWeeks = appendWeeks(currentWeeks, 52); // 1年分追加
       return newWeeks;
     });
   }, []);
 
   // スクロール終了時のハンドラー
-  const handleMomentumScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(event.nativeEvent.contentOffset.x / ITEM_WIDTH);
-    setCurrentWeekIndex(index);
-    
-    // 現在表示中の週の中央日付をコールバックで通知
-    if (onWeekChange && weeks[index]) {
-      const currentWeek = weeks[index];
-      const centerDate = currentWeek[Math.floor(currentWeek.length / 2)].date;
-      onWeekChange(centerDate);
-      setCurrentMonth(format(centerDate, 'yyyy年M月'));
-    }
-    
-    // 無限スクロールのトリガー（端に近づいたら追加データを読み込み）
-    if (index < 26) {
-      // 前方向のデータ追加（半年以内になったら1年分追加）
-      loadEarlierWeeks();
-    } else if (index > weeks.length - 26) {
-      // 後方向のデータ追加（半年以内になったら1年分追加）
-      loadLaterWeeks();
-    }
-  }, [onWeekChange, weeks, loadEarlierWeeks, loadLaterWeeks]);
+  const handleMomentumScrollEnd = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const index = Math.round(event.nativeEvent.contentOffset.x / ITEM_WIDTH);
+      setCurrentWeekIndex(index);
+
+      // 現在表示中の週の中央日付をコールバックで通知
+      if (onWeekChange && weeks[index]) {
+        const currentWeek = weeks[index];
+        const centerDate = currentWeek[Math.floor(currentWeek.length / 2)].date;
+        onWeekChange(centerDate);
+        setCurrentMonth(format(centerDate, 'yyyy年M月'));
+      }
+
+      // 無限スクロールのトリガー（端に近づいたら追加データを読み込み）
+      if (index < 26) {
+        // 前方向のデータ追加（半年以内になったら1年分追加）
+        loadEarlierWeeks();
+      } else if (index > weeks.length - 26) {
+        // 後方向のデータ追加（半年以内になったら1年分追加）
+        loadLaterWeeks();
+      }
+    },
+    [onWeekChange, weeks, loadEarlierWeeks, loadLaterWeeks],
+  );
 
   // 選択された日付が変わったときに年月表示を更新
   useEffect(() => {
@@ -160,7 +167,7 @@ export const WeekCalendar = ({
         dailyEmotionsMap={dailyEmotionsMap}
       />
     ),
-    [selectedDate, onDateSelect, dailyEmotionsMap]
+    [selectedDate, onDateSelect, dailyEmotionsMap],
   );
 
   const getItemLayout = useCallback(
@@ -169,18 +176,20 @@ export const WeekCalendar = ({
       offset: ITEM_WIDTH * index,
       index,
     }),
-    []
+    [],
   );
 
   return (
-    <View style={{ 
-      backgroundColor: '#ffffff',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 4,
-    }}>
+    <View
+      style={{
+        backgroundColor: '#ffffff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+      }}
+    >
       {/* クリーンな白背景ヘッダー */}
       <View
         style={{
@@ -192,10 +201,12 @@ export const WeekCalendar = ({
           borderBottomColor: '#f0f0f0',
         }}
       >
-        <View style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Text
             style={{
               fontSize: 18,
@@ -267,4 +278,4 @@ export const WeekCalendar = ({
       />
     </View>
   );
-}; 
+};

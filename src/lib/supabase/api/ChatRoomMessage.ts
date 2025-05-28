@@ -11,9 +11,19 @@ export type ChatRoomMessage = {
   content: string;
   image_path: string | null;
   emotion?: Emotion['slug'];
-  reply_to_message_id: string | null;
   created_at: string;
   updated_at: string;
+  replies: ChatRoomMessage[];
+};
+
+export type ChatRoomReply = {
+  id: string;
+  owner_id: string;
+  sender: 'user' | 'ai';
+  content: string;
+  image_path: string | null;
+  emotion?: Emotion['slug'];
+  created_at: string;
 };
 
 export class ChatRoomMessageApi {
@@ -200,6 +210,26 @@ export class ChatRoomMessageApi {
     };
   }
 
+  async editReply({
+    replyId,
+    content,
+    emotion,
+  }: { replyId: string; content: string; emotion: Emotion['slug'] }) {
+    const { error } = await this.supabase
+      .from('room_message_replies')
+      .update({ content, emotion })
+      .eq('id', replyId);
+
+    if (error) {
+      console.error('Reply edit error:', error);
+      throw error;
+    }
+
+    return {
+      success: true,
+    };
+  }
+
   async replyMessage({
     parentMessageId,
     content,
@@ -211,16 +241,32 @@ export class ChatRoomMessageApi {
     senderId: string;
     emotion: Emotion['slug'];
   }) {
-    const { error } = await this.supabase.from('room_messages').insert({
+    const { error } = await this.supabase.from('room_message_replies').insert({
       content,
       sender: 'user',
       owner_id: senderId,
-      reply_to_message_id: parentMessageId,
+      room_message_id: parentMessageId,
       emotion,
     });
 
     if (error) {
       console.error('Message reply error:', error);
+      throw error;
+    }
+
+    return {
+      success: true,
+    };
+  }
+
+  async deleteReply({ replyId }: { replyId: string }) {
+    const { error } = await this.supabase
+      .from('room_message_replies')
+      .delete()
+      .eq('id', replyId);
+
+    if (error) {
+      console.error('Reply delete error:', error);
       throw error;
     }
 

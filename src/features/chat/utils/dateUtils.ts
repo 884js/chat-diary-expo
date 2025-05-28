@@ -1,4 +1,4 @@
-import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
+import { addDays, addWeeks, format, startOfWeek, subWeeks } from 'date-fns';
 
 export type WeekDay = {
   date: Date;
@@ -17,15 +17,16 @@ export type WeekDay = {
 export const getWeekDays = (date: Date, currentMonth: Date): WeekDay[] => {
   const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // 月曜始まり
   const today = new Date();
-  
+
   return Array.from({ length: 7 }, (_, i) => {
     const currentDate = addDays(weekStart, i);
-    
+
     return {
       date: currentDate,
       dateString: format(currentDate, 'yyyy-MM-dd'),
       day: currentDate.getDate(),
-      isToday: format(currentDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd'),
+      isToday:
+        format(currentDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd'),
       isCurrentMonth: currentDate.getMonth() === currentMonth.getMonth(),
     };
   });
@@ -48,16 +49,16 @@ export const getWeekdayLabels = (): string[] => {
 export const getMultipleWeeks = (
   centerDate: Date,
   currentMonth: Date,
-  weeksCount = 5
+  weeksCount = 5,
 ): WeekDay[][] => {
   const weeks: WeekDay[][] = [];
   const halfWeeks = Math.floor(weeksCount / 2);
-  
+
   for (let i = -halfWeeks; i <= halfWeeks; i++) {
     const weekDate = i === 0 ? centerDate : addWeeks(centerDate, i);
     weeks.push(getWeekDays(weekDate, currentMonth));
   }
-  
+
   return weeks;
 };
 
@@ -69,7 +70,7 @@ export const getMultipleWeeks = (
  */
 export const getWeekIndex = (date: Date, baseDate: Date): number => {
   const diffWeeks = Math.floor(
-    (date.getTime() - baseDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
+    (date.getTime() - baseDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
   );
   return diffWeeks;
 };
@@ -98,16 +99,16 @@ export const getNextWeek = (date: Date): Date => {
 export const generateConsecutiveWeeks = (
   startDate: Date,
   count: number,
-  direction: 'forward' | 'backward' = 'forward'
+  direction: 'forward' | 'backward' = 'forward',
 ): WeekDay[][] => {
   const weeks: WeekDay[][] = [];
-  
+
   for (let i = 0; i < count; i++) {
     const weekOffset = direction === 'forward' ? i : -i;
     const weekDate = addWeeks(startDate, weekOffset);
     weeks.push(getWeekDays(weekDate, weekDate));
   }
-  
+
   return direction === 'backward' ? weeks.reverse() : weeks;
 };
 
@@ -119,16 +120,20 @@ export const generateConsecutiveWeeks = (
  */
 export const prependWeeks = (
   existingWeeks: WeekDay[][],
-  additionalCount: number
+  additionalCount: number,
 ): WeekDay[][] => {
   if (existingWeeks.length === 0) return [];
-  
+
   // 既存の最初の週の開始日から更に過去へ
   const firstWeek = existingWeeks[0];
   const firstDate = firstWeek[0].date;
   const startDate = subWeeks(firstDate, additionalCount);
-  
-  const newWeeks = generateConsecutiveWeeks(startDate, additionalCount, 'forward');
+
+  const newWeeks = generateConsecutiveWeeks(
+    startDate,
+    additionalCount,
+    'forward',
+  );
   return [...newWeeks, ...existingWeeks];
 };
 
@@ -140,15 +145,19 @@ export const prependWeeks = (
  */
 export const appendWeeks = (
   existingWeeks: WeekDay[][],
-  additionalCount: number
+  additionalCount: number,
 ): WeekDay[][] => {
   if (existingWeeks.length === 0) return [];
-  
+
   // 既存の最後の週の終了日から更に未来へ
   const lastWeek = existingWeeks[existingWeeks.length - 1];
   const lastDate = lastWeek[6].date;
   const startDate = addWeeks(lastDate, 1);
-  
-  const newWeeks = generateConsecutiveWeeks(startDate, additionalCount, 'forward');
+
+  const newWeeks = generateConsecutiveWeeks(
+    startDate,
+    additionalCount,
+    'forward',
+  );
   return [...existingWeeks, ...newWeeks];
-}; 
+};

@@ -1,21 +1,14 @@
 import { useMessageConverter } from '@/features/chat/hooks/useMessageConverter';
 import { useSupabase } from '@/hooks/useSupabase';
-import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { useQuery } from '@tanstack/react-query';
 
 type Props = {
   userId: string | undefined;
 };
 
-export type ChatRoomMessageWithReplies = ChatRoomMessage & {
-  replies: ChatRoomMessage[];
-  date: string;
-};
-
 export const useChatRoomUserMessages = ({ userId }: Props) => {
   const { api } = useSupabase();
-  const { getMessageWithReplies, getMessagesWithDividers } =
-    useMessageConverter();
+  const { getMessagesWithDividers } = useMessageConverter();
 
   const {
     data,
@@ -33,9 +26,8 @@ export const useChatRoomUserMessages = ({ userId }: Props) => {
     staleTime: 1000 * 60,
   });
 
-  const messagesWithReplies = getMessageWithReplies({ messages: data ?? [] });
   const messagesWithDividers = getMessagesWithDividers({
-    messages: messagesWithReplies,
+    messages: data ?? [],
   });
 
   return {

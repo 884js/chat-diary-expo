@@ -53,7 +53,7 @@ export const ChatMessageList = ({
               />
             </View>
           )}
-          <View className="mb-4">
+          <View className="mb-4 flex-1">
             <ChatMessage
               id={msg.id}
               content={msg.content}
@@ -71,33 +71,31 @@ export const ChatMessageList = ({
                 })
               }
             />
-            {msg.replies &&
-              msg.replies.length > 0 &&
-              msg.replies.map((reply, i) => (
-                <View key={reply.id}>
-                  <View className="items-center">
-                    <View className="h-4 w-[2px] bg-gray-300" />
-                  </View>
-                  <ChatMessage
-                    id={msg.id}
-                    owner={null}
-                    content={reply.content}
-                    sender={reply.sender}
-                    timestamp={formatDate(reply.created_at || '', 'M/d HH:mm')}
-                    imagePath={reply.image_path}
-                    emotion={reply.emotion}
-                    isStocked={stockedMessageIds.includes(reply.id)}
-                    onOpenStockMenu={() =>
-                      handleOpenMenu({
-                        id: msg.id,
-                        replyId: reply.id,
-                        content: reply.content,
-                        emotion: reply.emotion,
-                      })
-                    }
-                  />
+            {msg.replies.map((reply) => (
+              <View key={reply.id} className="flex-1">
+                <View className="items-center">
+                  <View className="h-4 w-[2px] bg-gray-300" />
                 </View>
-              ))}
+                <ChatMessage
+                  id={reply.id}
+                  owner={null}
+                  content={reply.content}
+                  sender={reply.sender}
+                  timestamp={formatDate(reply.created_at || '', 'M/d HH:mm')}
+                  imagePath={reply.image_path}
+                  emotion={reply.emotion}
+                  isStocked={stockedMessageIds.includes(reply.id)}
+                  onOpenStockMenu={() =>
+                    handleOpenMenu({
+                      id: msg.id,
+                      replyId: reply.id,
+                      content: reply.content,
+                      emotion: reply.emotion,
+                    })
+                  }
+                />
+              </View>
+            ))}
           </View>
         </View>
       );
@@ -138,7 +136,7 @@ export const ChatMessageList = ({
       contentContainerStyle={{ paddingVertical: 8, paddingHorizontal: 4 }}
       ListFooterComponent={sendingComponent}
       initialNumToRender={20}
-      onEndReachedThreshold={0.5}
+      // onEndReachedThreshold={0.5}
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: '#f3f4f6' }}
       inverted
