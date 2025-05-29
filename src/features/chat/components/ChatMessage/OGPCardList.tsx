@@ -38,7 +38,7 @@ export const OGPCardList = ({ content }: Props) => {
         if (ogps && ogps.length > 0) {
           const promises = ogps.map(async (ogp) => {
             try {
-              const response = await fetch(`/get-ogp?url=${ogp}`);
+              const response = await fetch(`/api/get-ogp?url=${ogp}`);
               if (response.status >= 500) {
                 return null;
               }
