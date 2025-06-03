@@ -1,0 +1,14 @@
+name = "chat-diary-ogp-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = [ "nodejs_compat" ]
+
+# KV Namespaces for caching
+[[kv_namespaces]]
+binding = "OGP_CACHE"
+id = "68b0b06fbc20437f8d129d519fd3cffd"
+
+# Rate limiting
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "025ded4868ef4be4a914bc10381d14cc"
