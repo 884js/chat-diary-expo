@@ -1,8 +1,13 @@
 import { Image } from '@/components/Image';
 import { Text, View } from '@/components/Themed';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { ActivityIndicator, Linking, Pressable } from 'react-native';
+
+// --- util -------------------------------------------------------------
+const URL_REGEX =
+  /https?:\/\/[^\s\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uffef]+/g;
+// ---------------------------------------------------------------------
 
 // 新しいAPIレスポンス型に対応
 type OGPResponse = {
@@ -21,105 +26,90 @@ type ErrorResponse = {
 
 type Props = {
   content: string;
+  onRendered?: () => void;
 };
 
-export const OGPCardList = ({ content }: Props) => {
+export const OGPCardList = ({ content, onRendered }: Props) => {
   const [ogpList, setOgpList] = useState<OGPResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // URL抽出（正規表現を改良）
-        const urlRegex =
-          /https?:\/\/[^\s\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uffef]+/g;
-        const urls = content.match(urlRegex);
-
-        if (urls && urls.length > 0) {
-          // 重複URL除去
-          const uniqueUrls = [...new Set(urls)];
-
-          const promises = uniqueUrls.map(async (url) => {
-            try {
-              // 新しいCloudflare Worker APIエンドポイント
-              const apiUrl =
-                process.env.EXPO_PUBLIC_OGP_WORKER_URL ||
-                'https://chat-diary-ogp-api.mmmr0628.workers.dev';
-
-              // React Nativeでサポートされているタイムアウト実装
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-              const response = await fetch(`${apiUrl}/api/ogp`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url }),
-                signal: controller.signal,
-              });
-
-              // タイムアウトをクリア
-              clearTimeout(timeoutId);
-
-              if (!response.ok) {
-                const errorData: ErrorResponse = await response
-                  .json()
-                  .catch(() => ({ error: 'Unknown error' }));
-
-                // レート制限エラーの場合は特別な処理
-                if (response.status === 429) {
-                  console.warn('Rate limit exceeded for URL:', url);
-                  return null;
-                }
-
-                console.warn(
-                  'OGP API error:',
-                  errorData.error,
-                  'for URL:',
-                  url,
-                );
-                return null;
-              }
-
-              const data: OGPResponse = await response.json();
-
-              // 最低限のバリデーション
-              if (!data.title || data.title.trim() === '') {
-                console.warn('Invalid OGP data (no title) for URL:', url);
-                return null;
-              }
-
-              return data;
-            } catch (err) {
-              if (err instanceof Error && err.name === 'AbortError') {
-                console.warn('OGP fetch timeout for URL:', url);
-              } else {
-                console.warn('OGP fetch error for URL:', url, err);
-              }
-              return null;
-            }
-          });
-
-          const results = await Promise.all(promises);
-          const validResults = results.filter(
-            (result): result is OGPResponse => result !== null,
-          );
-
-          setOgpList(validResults);
-        }
-      } catch (err) {
-        console.error('OGP processing error:', err);
-        setError('リンク情報の取得に失敗しました');
-      } finally {
-        setLoading(false);
-      }
-    })();
+  // content から URL を抽出して重複排除。memo で不要な再計算を防ぐ
+  const urls = useMemo<string[]>(() => {
+    const match = content.match(URL_REGEX);
+    return match ? [...new Set(match)] : [];
   }, [content]);
+
+  useEffect(() => {
+    // URL が無い：即座にリセットして描画完了を通知
+    if (urls.length === 0) {
+      setOgpList([]);
+      setError(null);
+      setLoading(false);
+      onRendered?.();
+      return;
+    }
+
+    // フェッチ用 AbortController を URL ごとに保持
+    const controllers: AbortController[] = [];
+    let cancelled = false;
+
+    const fetchOgp = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const results = await Promise.allSettled(
+          urls.map((url) => {
+            const controller = new AbortController();
+            controllers.push(controller);
+            const apiUrl =
+              process.env.EXPO_PUBLIC_OGP_WORKER_URL ??
+              'https://chat-diary-ogp-api.mmmr0628.workers.dev';
+
+            return fetch(`${apiUrl}/api/ogp`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url }),
+              signal: controller.signal,
+            }).then(async (res) => {
+              if (!res.ok) return null;
+              const data: OGPResponse = await res.json();
+              if (!data.title?.trim()) return null;
+              return data;
+            });
+          }),
+        );
+
+        if (cancelled) return;
+
+        const valid = results
+          .filter((r): r is PromiseFulfilledResult<OGPResponse | null> => r.status === 'fulfilled')
+          .map((r) => r.value)
+          .filter((v): v is OGPResponse => v !== null);
+
+        setOgpList(valid);
+      } catch (e) {
+        if (!cancelled) {
+          console.error('OGP processing error:', e);
+          setError('リンク情報の取得に失敗しました');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          onRendered?.();
+        }
+      }
+    };
+
+    fetchOgp();
+
+    // クリーンアップ：未完了フェッチを中断
+    return () => {
+      cancelled = true;
+      controllers.forEach((c) => c.abort());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urls]);
 
   const handleOpenLink = async (url: string) => {
     try {
@@ -130,11 +120,14 @@ export const OGPCardList = ({ content }: Props) => {
   };
 
   if (loading) {
+    // URLが含まれている場合のみ、小さなローディング表示
+    if (urls.length === 0) return null;
+
     return (
-      <View className="flex-row items-center p-2 bg-gray-100 rounded-lg my-1">
-        <ActivityIndicator size="small" color="#3b82f6" />
-        <Text className="text-xs text-gray-600 ml-2">
-          リンク情報を取得中...
+      <View className="flex-row items-center justify-center p-1 my-1" style={{ minHeight: 80 }}>
+        <ActivityIndicator size="small" color="#9ca3af" />
+        <Text className="text-[10px] text-gray-500 ml-1">
+          リンク読み込み中...
         </Text>
       </View>
     );
@@ -142,7 +135,7 @@ export const OGPCardList = ({ content }: Props) => {
 
   if (error) {
     return (
-      <View className="flex-row items-center p-2 bg-red-100 rounded-lg my-1">
+      <View className="flex-row items-center p-2 bg-red-100 rounded-lg my-1" style={{ minHeight: 32 }}>
         <MaterialCommunityIcons
           name="alert-circle-outline"
           size={16}

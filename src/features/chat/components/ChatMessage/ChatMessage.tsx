@@ -22,6 +22,7 @@ export interface MessageProps {
   emotion?: Emotion['slug'];
   isStocked: boolean;
   onOpenStockMenu: () => void;
+  onRendered?: () => void;
 }
 
 export function ChatMessage({
@@ -33,6 +34,7 @@ export function ChatMessage({
   emotion,
   isStocked,
   onOpenStockMenu,
+  onRendered,
 }: MessageProps) {
   const { selectedMessage } = useMessageAction();
 
@@ -45,7 +47,7 @@ export function ChatMessage({
   const { imageUrl: storageImageUrl, isLoading: isLoadingImage } =
     useStorageImage({
       imagePath,
-      storageName: 'chats',
+      storageName: "chats",
     });
 
   const isSelected = selectedMessage?.id === id;
@@ -102,7 +104,7 @@ export function ChatMessage({
   // 背景色の補間
   const interpolatedBgColor = bgColorAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(255, 255, 255, 0)', 'rgba(230, 230, 230, 0.5)'],
+    outputRange: ["rgba(255, 255, 255, 0)", "rgba(230, 230, 230, 0.5)"],
   });
 
   // emotionに基づくボーダースタイル
@@ -143,12 +145,12 @@ export function ChatMessage({
             style={() => ({
               borderRadius: 8,
               padding: 8,
-              overflow: 'hidden',
+              overflow: "hidden",
             })}
           >
             <Animated.View
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 0,
                 left: 0,
                 right: 0,
@@ -160,7 +162,7 @@ export function ChatMessage({
 
             <View
               className={`flex-1 bg-transparent ${
-                isSelected ? 'bg-gray-100' : ''
+                isSelected ? "bg-gray-100" : ""
               }`}
             >
               <View className="flex-row items-center">
@@ -173,7 +175,7 @@ export function ChatMessage({
                 </View>
               ) : null}
 
-              <OGPCardList content={content} />
+              <OGPCardList content={content} onRendered={onRendered} />
 
               {/* タイムスタンプと感情アイコン */}
               <View className="flex-row justify-end items-center bg-transparent mt-1 gap-1">
