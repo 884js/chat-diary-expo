@@ -1,21 +1,20 @@
-// ChatMessageList.tsx
-import { memo, useCallback, useReducer, useRef } from "react";
-import { View } from "react-native";
-import { FlashList, type ListRenderItem } from "@shopify/flash-list"; // ★ NEW
-import type { ChatRoom } from "@/lib/supabase/api/ChatRoom";
-import type { UseChatRoomUserMessages } from "@/features/chat/hooks/useChatRoomUserMessages";
-import { formatDate } from "@/lib/date-fns";
-import { useMessageAction } from "../../contexts/MessageActionContext";
-import { useChatRoomMessageStocks } from "../../hooks/useChatRoomMessageStocks";
-import { ChatMessage as RawChatMessage } from "../ChatMessage";
-import { DateDivider } from "../DateDivider";
-import type { Emotion } from "../../hooks/useChatInputEmotion";
+import type { UseChatRoomUserMessages } from '@/features/chat/hooks/useChatRoomUserMessages';
+import { formatDate } from '@/lib/date-fns';
+import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
+import { FlashList, type ListRenderItem } from '@shopify/flash-list';
+import { memo, useCallback, useReducer, useRef } from 'react';
+import { View } from 'react-native';
+import { useMessageAction } from '../../contexts/MessageActionContext';
+import type { Emotion } from '../../hooks/useChatInputEmotion';
+import { useChatRoomMessageStocks } from '../../hooks/useChatRoomMessageStocks';
+import { ChatMessage as RawChatMessage } from '../ChatMessage';
+import { DateDivider } from '../DateDivider';
 
 type Props = {
   chatRoom: ChatRoom;
   isLoading: boolean;
   messages: {
-    message: UseChatRoomUserMessages["messages"][number]["message"];
+    message: UseChatRoomUserMessages['messages'][number]['message'];
     showDateDivider: boolean;
     date: Date | null;
   }[];
@@ -23,9 +22,9 @@ type Props = {
   sendingMessage?:
     | {
         content: string;
-        senderType: "user" | "ai";
+        senderType: 'user' | 'ai';
         imagePath?: string;
-        emotion?: Emotion["slug"];
+        emotion?: Emotion['slug'];
       }
     | undefined;
 };
@@ -42,17 +41,17 @@ export const ChatMessageList = ({
   const { handleOpenMenu } = useMessageAction();
   const [refreshKey, forceRefresh] = useReducer((s: number) => s + 1, 0);
 
-  const listRef = useRef<FlashList<Props["messages"][number]>>(null);
+  const listRef = useRef<FlashList<Props['messages'][number]>>(null);
 
-  const renderItem: ListRenderItem<Props["messages"][number]> = useCallback(
+  const renderItem: ListRenderItem<Props['messages'][number]> = useCallback(
     ({ item }) => {
       const { message: msg, showDateDivider, date: messageDate } = item;
       return (
         <View>
           {showDateDivider && messageDate && (
-            <View style={{ backgroundColor: "#f3f4f6" }}>
+            <View style={{ backgroundColor: '#f3f4f6' }}>
               <DateDivider
-                date={formatDate(messageDate, "yyyy年M月d日(eee)")}
+                date={formatDate(messageDate, 'yyyy年M月d日(eee)')}
               />
             </View>
           )}
@@ -61,9 +60,9 @@ export const ChatMessageList = ({
             <ChatMessage
               id={msg.id}
               content={msg.content}
-              owner={chatRoom.owner}
+              avatarUrl={chatRoom.owner.avatar_url}
               sender={msg.sender}
-              timestamp={formatDate(msg.created_at || "", "M/d HH:mm")}
+              timestamp={formatDate(msg.created_at || '', 'M/d HH:mm')}
               imagePath={msg.image_path}
               emotion={msg.emotion}
               isStocked={stockedMessageIds.includes(msg.id)}
@@ -84,10 +83,10 @@ export const ChatMessageList = ({
                 </View>
                 <ChatMessage
                   id={reply.id}
-                  owner={null}
+                  avatarUrl={''}
                   content={reply.content}
                   sender={reply.sender}
-                  timestamp={formatDate(reply.created_at || "", "M/d HH:mm")}
+                  timestamp={formatDate(reply.created_at || '', 'M/d HH:mm')}
                   imagePath={reply.image_path}
                   emotion={reply.emotion}
                   isStocked={stockedMessageIds.includes(reply.id)}
@@ -107,7 +106,7 @@ export const ChatMessageList = ({
         </View>
       );
     },
-    [chatRoom.owner, stockedMessageIds, handleOpenMenu]
+    [chatRoom.owner, stockedMessageIds, handleOpenMenu],
   );
 
   // 送信中メッセージをフッターで描画
@@ -117,15 +116,15 @@ export const ChatMessageList = ({
         <ChatMessage
           id=""
           content={sendingMessage.content}
-          owner={chatRoom.owner}
+          avatarUrl={''}
           sender="user"
-          timestamp={formatDate(new Date().toISOString(), "HH:mm")}
-          imagePath={sendingMessage.imagePath ?? ""}
+          timestamp={formatDate(new Date().toISOString(), 'HH:mm')}
+          imagePath={sendingMessage.imagePath ?? ''}
           emotion={sendingMessage.emotion}
           isStocked={false}
           onOpenStockMenu={() =>
             handleOpenMenu({
-              id: "",
+              id: '',
               content: sendingMessage.content,
               emotion: sendingMessage.emotion,
             })
@@ -135,7 +134,7 @@ export const ChatMessageList = ({
     ) : null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f3f4f6" }}>
+    <View style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
       <FlashList
         ref={listRef}
         inverted

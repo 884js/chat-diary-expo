@@ -40,7 +40,7 @@ export const ChatMessageStockList = ({ chatRoom, messages }: Props) => {
             <ChatMessage
               id={msg.id}
               content={msg.content}
-              owner={chatRoom.owner}
+              avatarUrl={chatRoom.owner.avatar_url}
               sender={msg.sender}
               timestamp={formatDate(msg.created_at || '', 'M/d HH:mm')}
               imagePath={msg.image_path}
@@ -63,7 +63,7 @@ export const ChatMessageStockList = ({ chatRoom, messages }: Props) => {
                   </View>
                   <ChatMessage
                     id={msg.id}
-                    owner={null}
+                    avatarUrl={''}
                     content={reply.content}
                     sender={reply.sender}
                     timestamp={formatDate(reply.created_at || '', 'M/d HH:mm')}

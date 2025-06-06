@@ -11,15 +11,11 @@ import { OGPCardList } from './OGPCardList';
 export interface MessageProps {
   id: string;
   content: string;
-  sender: 'user' | 'ai';
-  owner: {
-    id: string;
-    display_name: string;
-    avatar_url: string;
-  } | null;
+  sender: "user" | "ai";
+  avatarUrl: string;
   timestamp: string;
   imagePath?: string | null;
-  emotion?: Emotion['slug'];
+  emotion?: Emotion["slug"];
   isStocked: boolean;
   onOpenStockMenu: () => void;
   onRendered?: () => void;
@@ -30,7 +26,7 @@ export function ChatMessage({
   content,
   timestamp,
   imagePath = null,
-  owner,
+  avatarUrl,
   emotion,
   isStocked,
   onOpenStockMenu,
@@ -42,12 +38,16 @@ export function ChatMessage({
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const bgColorAnim = useRef(new Animated.Value(0)).current;
 
-  // アバター画像のURL
-  const avatarUrl = owner?.avatar_url;
   const { imageUrl: storageImageUrl, isLoading: isLoadingImage } =
     useStorageImage({
       imagePath,
       storageName: "chats",
+    });
+
+  const { imageUrl: avatarImageUrl, isLoading: isLoadingAvatar } =
+    useStorageImage({
+      imagePath: avatarUrl,
+      storageName: "users",
     });
 
   const isSelected = selectedMessage?.id === id;
@@ -120,8 +120,8 @@ export function ChatMessage({
     <View className="flex-row w-full !bg-gray-100">
       {/* プロフィール画像 */}
       <View className="w-10 h-10 rounded-md overflow-hidden mr-3 !bg-gray-100">
-        {avatarUrl && (
-          <Image source={avatarUrl} style={{ width: 40, height: 40 }} />
+        {avatarImageUrl && (
+          <Image source={avatarImageUrl} style={{ width: 40, height: 40 }} />
         )}
       </View>
 

@@ -1,7 +1,7 @@
 import { Image } from '@/components/Image';
 import { Text, View } from '@/components/Themed';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable } from 'react-native';
 
 // --- util -------------------------------------------------------------
@@ -40,6 +40,7 @@ export const OGPCardList = ({ content, onRendered }: Props) => {
     return match ? [...new Set(match)] : [];
   }, [content]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     // URL が無い：即座にリセットして描画完了を通知
     if (urls.length === 0) {
@@ -83,7 +84,10 @@ export const OGPCardList = ({ content, onRendered }: Props) => {
         if (cancelled) return;
 
         const valid = results
-          .filter((r): r is PromiseFulfilledResult<OGPResponse | null> => r.status === 'fulfilled')
+          .filter(
+            (r): r is PromiseFulfilledResult<OGPResponse | null> =>
+              r.status === 'fulfilled',
+          )
           .map((r) => r.value)
           .filter((v): v is OGPResponse => v !== null);
 
@@ -106,7 +110,9 @@ export const OGPCardList = ({ content, onRendered }: Props) => {
     // クリーンアップ：未完了フェッチを中断
     return () => {
       cancelled = true;
-      controllers.forEach((c) => c.abort());
+      for (const c of controllers) {
+        c.abort();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urls]);
@@ -124,7 +130,10 @@ export const OGPCardList = ({ content, onRendered }: Props) => {
     if (urls.length === 0) return null;
 
     return (
-      <View className="flex-row items-center justify-center p-1 my-1" style={{ minHeight: 80 }}>
+      <View
+        className="flex-row items-center justify-center p-1 my-1"
+        style={{ minHeight: 80 }}
+      >
         <ActivityIndicator size="small" color="#9ca3af" />
         <Text className="text-[10px] text-gray-500 ml-1">
           リンク読み込み中...
@@ -135,7 +144,10 @@ export const OGPCardList = ({ content, onRendered }: Props) => {
 
   if (error) {
     return (
-      <View className="flex-row items-center p-2 bg-red-100 rounded-lg my-1" style={{ minHeight: 32 }}>
+      <View
+        className="flex-row items-center p-2 bg-red-100 rounded-lg my-1"
+        style={{ minHeight: 32 }}
+      >
         <MaterialCommunityIcons
           name="alert-circle-outline"
           size={16}
