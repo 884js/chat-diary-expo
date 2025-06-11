@@ -6,6 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a React Native chat diary application built with Expo SDK 53, TypeScript, and Supabase. The app features a chat-style interface for diary entries with AI responses, emotion tracking, calendar views, and media attachments.
 
+### Key Features
+- Chat-style diary interface with real-time AI responses
+- Emotion tracking and visualization on calendar
+- Image attachments with Supabase Storage
+- Message stock/bookmark functionality
+- OGP (Open Graph Protocol) card previews for URLs
+- Weekly and monthly calendar views
+- Reply threading for messages
+
 ## Essential Commands
 
 ### Development
@@ -15,8 +24,12 @@ npm run ios          # Run on iOS simulator
 npm run android      # Run on Android emulator
 npm run test         # Run Jest tests in watch mode
 npm run typecheck    # TypeScript type checking
-npm run lint         # Biome linter with auto-fix
+npm run lint         # Biome linter with auto-fix (unsafe)
+npm run fix          # Biome check and fix (safe)
 npm run format       # Format code with Biome
+
+# Run a single test file
+npm test -- path/to/test.test.ts
 ```
 
 ### Building
@@ -49,6 +62,7 @@ npm run migrate:reset # Reset Supabase database (destructive)
   - `(tabs)/` - Tab navigation screens
   - `auth/` - Authentication screens
   - `api/` - API route handlers
+  - `generated-summary+api.ts` - Server-side API for AI summary generation
 - `/src/features/` - Feature modules with components, hooks, and contexts
   - `auth/` - Authentication logic
   - `calendar/` - Calendar functionality
@@ -56,7 +70,7 @@ npm run migrate:reset # Reset Supabase database (destructive)
   - `user/` - User profile management
 - `/src/lib/supabase/` - Database client and API modules
 - `/src/components/` - Shared UI components
-- `/src/workers/ogp-api/` - Cloudflare Worker for OGP metadata
+- `/src/workers/ogp-api/` - Cloudflare Worker for OGP metadata (separate deployment)
 
 ### Key Patterns
 1. **Feature-based organization**: Each feature has its own directory with components, hooks, and contexts
@@ -64,6 +78,8 @@ npm run migrate:reset # Reset Supabase database (destructive)
 3. **Typed API layer**: Supabase queries are wrapped in typed functions in `/src/lib/supabase/api/`
 4. **Component composition**: Complex components are broken down into smaller, focused components
 5. **Optimistic updates**: React Query mutations with optimistic updates for better UX
+6. **Server-side API routes**: Expo Router API routes (`+api.ts` files) for secure operations like AI integration
+7. **Authentication**: Supabase Auth with persistent session management and auto-refresh
 
 ### Database Schema
 Key tables include:
@@ -79,6 +95,8 @@ Key tables include:
 - Custom theme colors defined in `tailwind.config.js`
 - Themed components in `/src/components/Themed/`
 - Global styles in `/src/global.css`
+- **Important**: Follow NativeWind v4 patterns (uses className prop, not style)
+- Prefer semantic color names from the theme over hardcoded values
 
 ## Development Guidelines
 
@@ -101,3 +119,9 @@ Key tables include:
 - OGP Worker URL: `EXPO_PUBLIC_OGP_WORKER_URL`
 - Supabase credentials configured in the client
 - Use EAS for managing environment-specific builds
+
+### Additional Development Resources
+- **Cursor Rules**: The project includes Cursor IDE rules in `.cursor/rules/`
+  - `global.mdc` - General development guidelines (Japanese)
+  - `nativewind.mdc` - NativeWind styling conventions and best practices
+- **OGP Worker**: Separate Cloudflare Worker project in `/src/workers/ogp-api/` with its own deployment process (see worker README)
