@@ -2,7 +2,6 @@ import type { Emotion } from '@/features/chat/hooks/useChatInputEmotion';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import * as FileSystem from 'expo-file-system';
 import type { Database } from '../databaseTypes';
-import { CalendarApi } from './calendar';
 
 export type ChatRoomMessage = {
   id: string;
@@ -27,10 +26,7 @@ export type ChatRoomReply = {
 };
 
 export class ChatRoomMessageApi {
-  private calendarApi: CalendarApi;
-  constructor(private supabase: SupabaseClient<Database>) {
-    this.calendarApi = new CalendarApi(supabase);
-  }
+  constructor(private supabase: SupabaseClient<Database>) {}
 
   async getRoomMessagesByDateRange({
     userId,
@@ -120,9 +116,6 @@ export class ChatRoomMessageApi {
       console.error('Message send error:', error);
       throw error;
     }
-
-    // カレンダーの要約を更新
-    await this.calendarApi.upsertCalendarDay(senderId, data.created_at);
 
     return data;
   }

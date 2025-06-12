@@ -59,16 +59,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="calendar"
-        options={{
-          title: '振り返り',
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="calendar" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="settings"
         options={{
           title: '設定',

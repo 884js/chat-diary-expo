@@ -3,7 +3,6 @@ import type { Database } from '../databaseTypes';
 import { ChatRoomApi } from './ChatRoom';
 import { ChatRoomMessageApi } from './ChatRoomMessage';
 import { ChatRoomMessageStockApi } from './ChatRoomMessageStock';
-import { CalendarApi } from './calendar';
 import { ChatSettingApi } from './chatSetting';
 import { UserApi } from './user';
 
@@ -15,7 +14,6 @@ export class SupabaseApi {
     this.user = new UserApi(this.supabase);
     this.chatSetting = new ChatSettingApi(this.supabase);
     this.chatRoom = new ChatRoomApi(this.supabase);
-    this.calendar = new CalendarApi(this.supabase);
     this.chatRoomMessage = new ChatRoomMessageApi(this.supabase);
     this.chatRoomMessageStock = new ChatRoomMessageStockApi(this.supabase);
   }
@@ -23,7 +21,6 @@ export class SupabaseApi {
   public readonly user: UserApi;
   public readonly chatSetting: ChatSettingApi;
   public readonly chatRoom: ChatRoomApi;
-  public readonly calendar: CalendarApi;
   public readonly chatRoomMessage: ChatRoomMessageApi;
   public readonly chatRoomMessageStock: ChatRoomMessageStockApi;
 }
