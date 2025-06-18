@@ -2,8 +2,9 @@
 
 // 環境変数の型定義
 export interface Env {
-  OGP_CACHE: KVNamespace;
+  AI_CACHE: KVNamespace;
   RATE_LIMIT: KVNamespace;
+  GEMINI_API_KEY: string;
 }
 
 // OGP APIレスポンスの型定義
@@ -19,6 +20,22 @@ export interface OGPResponse {
 export interface ErrorResponse {
   error: string;
   code?: string;
+}
+
+// AI関連の型定義
+export interface AIEmotionResponse {
+  emotion: string;
+  confidence: number;
+}
+
+export interface AIChatResponse {
+  message: string;
+  followupQuestions?: string[];
+}
+
+export interface AIPromptResponse {
+  prompt: string;
+  type: 'morning' | 'afternoon' | 'evening' | 'emotion-based';
 }
 
 // OGP画像オブジェクトの型定義

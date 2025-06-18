@@ -10,11 +10,10 @@ import { ChatInput } from '../components/ChatInput';
 import { ChatMessageList } from '../components/ChatMessageList/ChatMessageList';
 import { useMessageAction } from '../contexts/MessageActionContext';
 import type { Emotion } from '../hooks/useChatInputEmotion';
-import { useSendMessage } from '../hooks/useSendMessage';
-
+import { useSendMessageWithAI } from '../hooks/useSendMessageWithAI';
 export const ChatScreen = () => {
   const { api } = useSupabase();
-  const { sendMessage, variables, isPending } = useSendMessage();
+  const { sendMessage, variables, isPending } = useSendMessageWithAI();
   const { currentUser } = useCurrentUser();
   const { chatRoom, isLoadingRoom } = useCurrentUserRoom({
     userId: currentUser?.id ?? '',
@@ -22,8 +21,7 @@ export const ChatScreen = () => {
   const { messages, refetchMessages } = useChatRoomUserMessages({
     userId: chatRoom?.user_id,
   });
-  const isOwner = chatRoom ? chatRoom.id === chatRoom?.user_id : false;
-  const { mode, handleSaveEdit, handleSendReplyMessage } = useMessageAction();
+  const { mode, selectedMessage, handleSaveEdit, handleSendReplyMessage } = useMessageAction();
 
   const handleSendMessage = async ({
     imagePath,
@@ -40,18 +38,18 @@ export const ChatScreen = () => {
 
     const trimmedMessage = message.trim();
 
-    const senderType = isOwner ? 'user' : 'ai';
-
     if (mode === 'edit') {
-      await handleSaveEdit({ content: trimmedMessage, emotion: emotion });
+      // 編集時は既存の感情を保持
+      await handleSaveEdit({ content: trimmedMessage, emotion: selectedMessage?.emotion });
       refetchMessages();
       return;
     }
 
     if (mode === 'reply') {
+      // 返信時はnormal固定（将来的にAI判定に変更可能）
       await handleSendReplyMessage({
         content: trimmedMessage,
-        emotion: emotion,
+        emotion: 'normal',
       });
       refetchMessages();
       return;
@@ -69,12 +67,11 @@ export const ChatScreen = () => {
         uploadedImagePath = result.path;
       }
 
-      // メッセージ送信
+      // メッセージ送信（AI感情判定付き）
       await sendMessage({
-        senderType,
         content: trimmedMessage,
         imagePath: uploadedImagePath,
-        emotion: emotion,
+        emotion: emotion, // 手動で選択された場合はそれを使用、なければAI判定
       });
     } catch (error) {
       console.error('Error sending message:', error);
@@ -95,9 +92,17 @@ export const ChatScreen = () => {
             isLoading={isLoadingRoom}
             messages={messages}
             isPending={isPending ?? false}
-            sendingMessage={variables}
+            sendingMessage={variables ? {
+              content: variables.content,
+              senderType: 'user' as const,
+              imagePath: variables.imagePath,
+              emotion: variables.emotion,
+            } : undefined}
           />
-          <ChatInput onSend={handleSendMessage} isDisabled={false} />
+          <ChatInput 
+            onSend={handleSendMessage} 
+            isDisabled={false}
+          />
         </View>
       </KeyboardAvoidingView>
     </>

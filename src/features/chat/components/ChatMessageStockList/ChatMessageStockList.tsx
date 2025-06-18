@@ -3,14 +3,14 @@ import type { ChatRoom } from '@/lib/supabase/api/ChatRoom';
 import { memo, useCallback } from 'react';
 import { FlatList, View } from 'react-native';
 import { useMessageStockAction } from '../../contexts/MessageStockActionContext';
-import type { ChatRoomMessageWithReplies } from '../../hooks/useChatRoomUserMessages';
+import type { ChatRoomMessage } from '@/lib/supabase/api/ChatRoomMessage';
 import { ChatMessage as RawChatMessage } from '../ChatMessage';
 import { DateDivider } from '../DateDivider';
 
 type Props = {
   chatRoom: ChatRoom;
   messages: {
-    message: ChatRoomMessageWithReplies;
+    message: ChatRoomMessage;
     showDateDivider: boolean;
     date: Date | null;
   }[];
@@ -56,7 +56,7 @@ export const ChatMessageStockList = ({ chatRoom, messages }: Props) => {
             />
             {msg.replies &&
               msg.replies.length > 0 &&
-              msg.replies.map((reply, i) => (
+              msg.replies.map((reply: ChatRoomMessage, i: number) => (
                 <View key={reply.id}>
                   <View className="items-center">
                     <View className="h-4 w-[2px] bg-gray-300" />

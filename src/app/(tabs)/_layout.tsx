@@ -41,6 +41,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="diary"
+        options={{
+          title: '日記',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="edit" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="stock"
         options={{
           title: 'ストック',

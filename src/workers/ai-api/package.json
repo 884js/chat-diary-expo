@@ -1,7 +1,7 @@
 {
-  "name": "chat-diary-ogp-worker",
+  "name": "chat-diary-ai-worker",
   "version": "1.0.0",
-  "description": "Cloudflare Worker for OGP data extraction",
+  "description": "Cloudflare Worker for AI features in chat diary app",
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",
@@ -9,7 +9,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "hono": "^4.6.10"
+    "hono": "4.8.0",
+    "@google/generative-ai": "0.24.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241205.0",

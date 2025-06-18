@@ -1,6 +1,5 @@
 import { View } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,10 +9,8 @@ import {
 } from 'react-native';
 import { useMessageAction } from '../../contexts/MessageActionContext';
 import { useChatImage } from '../../hooks/useChatImage';
-import { useChatInputEmotion } from '../../hooks/useChatInputEmotion';
 import type { Emotion } from '../../hooks/useChatInputEmotion';
 import { AttachMenu } from './AttachMenu';
-import { ChatInputEmotion } from './ChatInputEmotion';
 import { ErrorMessage } from './ErrorMessage';
 import { ImagePreview } from './ImagePreview';
 import { ReplyPreview } from './ReplyPreview';
@@ -30,15 +27,12 @@ interface ChatInputProps {
     emotion?: Emotion['slug'];
   }) => Promise<void>;
   isDisabled: boolean;
+  initialMessage?: string;
 }
 
-export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
+export function ChatInput({ onSend, isDisabled, initialMessage }: ChatInputProps) {
   const { selectedMessage, mode, textInputRef, handleCancel } =
     useMessageAction();
-  const { emotions, selectedEmotion, handleSelectEmotion, handleClearEmotion } =
-    useChatInputEmotion({
-      initialEmotion: selectedMessage?.emotion,
-    });
   const [message, setMessage] = useState('');
   const {
     showAttachMenu,
@@ -67,6 +61,15 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
     }
   }, [selectedMessage, mode]);
 
+  // 初期メッセージを設定
+  useEffect(() => {
+    if (initialMessage && !mode) {
+      setMessage(initialMessage);
+      // テキストインプットにフォーカス
+      textInputRef.current?.focus();
+    }
+  }, [initialMessage, mode, textInputRef]);
+
   // 送信ボタンの無効状態判定
   const isButtonDisabled = !message.trim() || isDisabled || isUploading;
 
@@ -76,7 +79,6 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
 
     setMessage('');
     resetImage();
-    handleClearEmotion();
 
     try {
       if (selectedImage) {
@@ -85,7 +87,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           imageUri: selectedImage.uri,
           message,
           imagePath: undefined, // サーバー側で設定される
-          emotion: selectedEmotion?.slug,
+          emotion: undefined, // AI自動判定
         });
       } else {
         // メッセージのみ送信
@@ -93,7 +95,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
           imagePath: undefined,
           message,
           imageUri: undefined,
-          emotion: selectedEmotion?.slug,
+          emotion: undefined, // AI自動判定
         });
       }
 
@@ -131,13 +133,6 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
         <ReplyPreview content={selectedMessage.content} />
       )}
 
-      {/* 感情選択バー */}
-      <ChatInputEmotion
-        emotions={emotions}
-        selectedEmotion={selectedEmotion}
-        onSelectEmotion={handleSelectEmotion}
-        onClearEmotion={handleClearEmotion}
-      />
       <View className="flex-row items-center">
         {/* 添付ボタン */}
         <TouchableOpacity
@@ -153,16 +148,7 @@ export function ChatInput({ onSend, isDisabled }: ChatInputProps) {
         </TouchableOpacity>
 
         {/* テキスト入力エリア */}
-        <View className="flex-1 bg-gray-100 overflow-hidden flex-row items-center">
-          {selectedEmotion && (
-            <View className="ml-2">
-              <MaterialCommunityIcons
-                name={selectedEmotion.icon}
-                size={24}
-                color={selectedEmotion.color}
-              />
-            </View>
-          )}
+        <View className="flex-1 bg-gray-100 rounded-full overflow-hidden">
           <TextInput
             ref={textInputRef}
             className="flex-1 px-4 py-2 min-h-[40px] text-base"
